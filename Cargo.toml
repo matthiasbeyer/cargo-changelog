@@ -3,6 +3,12 @@ name = "changer"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
+clap = { version = "3", features = [ "cargo", "derive", "wrap_help" ] }
+dialoguer = "0.10.2"
+git2 = "0.15.0"
+human-panic = "1.0.3"
+semver = "1.0.13"
+serde = { version = "1", features = [ "derive" ] }
+time = "0.3.14"
+
