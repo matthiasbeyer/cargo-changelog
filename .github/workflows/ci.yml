@@ -74,22 +74,6 @@ jobs:
           args: -- --check
 
 
-
-
-  doc:
-    name: doc
-    runs-on: ubuntu-latest
-    needs: check
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: cargo-doc
-        uses: actions-rs/cargo@v1
-        with:
-          command: doc
-          args: --all-features --workspace --no-deps --document-private-items
-
-
   test:
     needs: check
     name: test
