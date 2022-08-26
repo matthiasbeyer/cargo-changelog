@@ -5,10 +5,13 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "3", features = [ "cargo", "derive", "wrap_help" ] }
+colored = "1.9.0"
 dialoguer = "0.10.2"
 git2 = "0.15.0"
 human-panic = "1.0.3"
+pager = "0.16.0"
 semver = "1.0.13"
 serde = { version = "1", features = [ "derive" ] }
+tabled = "0.8.0"
 time = "0.3.14"
 
