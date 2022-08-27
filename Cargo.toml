@@ -12,6 +12,7 @@ git2 = "0.15.0"
 human-panic = "1.0.3"
 log = "0.4.17"
 pager = "0.16.0"
+scrawl = "1.1.0"
 semver = "1.0.13"
 serde = { version = "1", features = [ "derive" ] }
 tabled = "0.8.0"

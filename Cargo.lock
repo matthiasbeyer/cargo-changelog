@@ -82,6 +82,7 @@ dependencies = [
  "human-panic",
  "log",
  "pager",
+ "scrawl",
  "semver",
  "serde",
  "tabled",
@@ -612,6 +613,12 @@ name = "rustc-demangle"
 version = "0.1.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ef03e0a2b150c7a90d01faf6254c9c48a41e95fb2a8c2ac1c6f0d2b9aefc342"
+
+[[package]]
+name = "scrawl"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8fbfda0f5cf9c3c8a8058bc9c48b8c1bcdaec976086ad389ae0df6e98b302dd2"
 
 [[package]]
 name = "semver"
