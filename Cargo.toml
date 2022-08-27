@@ -8,6 +8,7 @@ clap = { version = "3", features = [ "cargo", "derive", "wrap_help" ] }
 colored = "1.9.0"
 dialoguer = "0.10.2"
 env_logger = "0.9.0"
+getset = "0.1.2"
 git2 = "0.15.0"
 human-panic = "1.0.3"
 log = "0.4.17"
