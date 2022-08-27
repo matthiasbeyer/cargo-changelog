@@ -43,7 +43,11 @@ enum ReleaseSubcommand {
     },
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    env_logger::try_init()?;
+
     let _args = Args::parse();
     println!("Hello, world!");
+
+    Ok(())
 }
