@@ -28,6 +28,9 @@ pub struct Configuration {
     group_by: Option<FragmentDataDescriptionName>,
 
     entry_template: PathBuf,
+
+    /// Whether to edit the data of a changelog entry in the editor
+    edit_data: bool,
     entry_data: Vec<FragmentDataDescription>,
 }
 
@@ -41,6 +44,7 @@ impl Default for Configuration {
             fragment_dir: PathBuf::from("fragments"),
 
             entry_template: PathBuf::from("entry_template.md"),
+            edit_data: true,
             entry_data: vec![FragmentDataDescription {
                 key: FragmentDataDescriptionName("type".to_string()),
                 required: true,
