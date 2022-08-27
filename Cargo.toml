@@ -12,7 +12,7 @@ getset = "0.1.2"
 git2 = "0.15.0"
 human-panic = "1.0.3"
 log = "0.4.17"
-miette = "5.3.0"
+miette = { version = "5.3.0", features = ["fancy"] }
 pager = "0.16.0"
 scrawl = "1.1.0"
 semver = "1.0.13"
