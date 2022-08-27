@@ -16,6 +16,7 @@ fn no_configuration_file_errors() {
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
+        .args(&["release"]) // we need some subcommand, otherwise nothing happens
         .current_dir(&temp_dir)
         .assert()
         .failure();
@@ -37,6 +38,7 @@ fn no_configuration_file_errors_with_error_message() {
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
+        .args(&["release"]) // we need some subcommand, otherwise nothing happens
         .current_dir(&temp_dir)
         .assert()
         .stderr(predicates::str::contains(
