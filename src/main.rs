@@ -70,9 +70,13 @@ fn main() -> miette::Result<()> {
 fn init(repo_workdir_path: PathBuf) -> miette::Result<()> {
     use std::io::Write;
 
-    std::fs::create_dir_all(repo_workdir_path.join(crate::config::fragment_dir_default()))
-        .map_err(Error::from)
-        .into_diagnostic()?;
+    std::fs::create_dir_all({
+        repo_workdir_path
+            .join(crate::config::fragment_dir_default())
+            .join("unreleased")
+    })
+    .map_err(Error::from)
+    .into_diagnostic()?;
 
     let default_config = crate::config::Configuration::default();
     let default_config = toml::to_string(&default_config).unwrap(); // cannot happen
