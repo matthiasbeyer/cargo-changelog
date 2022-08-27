@@ -22,6 +22,7 @@ pub struct Args {
 
 #[derive(Subcommand)]
 pub enum Command {
+    Init,
     New {},
 
     #[clap(subcommand)]
