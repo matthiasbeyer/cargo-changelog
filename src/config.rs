@@ -25,10 +25,10 @@ pub struct Configuration {
     #[serde(default = "fragment_dir_default")]
     fragment_dir: PathBuf,
 
+    group_by: Option<FragmentDataDescriptionName>,
+
     entry_template: PathBuf,
     entry_data: Vec<FragmentDataDescription>,
-
-    group_by: Option<FragmentDataDescriptionName>,
 }
 
 impl Default for Configuration {
