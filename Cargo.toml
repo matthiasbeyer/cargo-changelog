@@ -8,10 +8,11 @@ clap = { version = "3", features = [ "cargo", "derive", "wrap_help" ] }
 colored = "1.9.0"
 dialoguer = "0.10.2"
 env_logger = "0.9.0"
+getset = "0.1.2"
 git2 = "0.15.0"
 human-panic = "1.0.3"
 log = "0.4.17"
-miette = "5.3.0"
+miette = { version = "5.3.0", features = ["fancy"] }
 pager = "0.16.0"
 scrawl = "1.1.0"
 semver = "1.0.13"
@@ -20,3 +21,8 @@ tabled = "0.8.0"
 thiserror = "1.0.32"
 time = "0.3.14"
 toml = "0.5.9"
+
+[dev-dependencies]
+assert_cmd = "2.0.4"
+predicates = "2.1.1"
+tempdir = "0.3.7"

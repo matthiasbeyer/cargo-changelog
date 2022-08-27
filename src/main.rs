@@ -1,3 +1,5 @@
+use miette::IntoDiagnostic;
+
 mod cli;
 mod config;
 mod error;
@@ -5,11 +7,38 @@ mod fragment;
 
 use crate::cli::Command;
 use crate::cli::VersionSpec;
+use crate::error::Error;
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    env_logger::try_init()?;
+fn main() -> miette::Result<()> {
+    env_logger::try_init().into_diagnostic()?;
 
-    let _config = crate::config::load()?;
+    let cwd = std::env::current_dir()
+        .map_err(Error::from)
+        .into_diagnostic()?;
+
+    let repository = git2::Repository::open(cwd)
+        .map_err(Error::from)
+        .into_diagnostic()?;
+
+    let repo_workdir_path = repository
+        .workdir()
+        .ok_or_else(|| Error::NoWorkTree)
+        .into_diagnostic()?
+        .to_path_buf();
+
+    let config = crate::config::load(&repo_workdir_path)?;
+
+    if !config.fragment_dir().exists() {
+        let fragment_dir_path = {
+            let mut fragment_dir_path = repo_workdir_path.to_path_buf();
+            fragment_dir_path.push(config.fragment_dir());
+            fragment_dir_path
+        };
+
+        std::fs::create_dir_all(fragment_dir_path)
+            .map_err(Error::from)
+            .into_diagnostic()?;
+    }
 
     let args = cli::get_args();
     match args.command {
