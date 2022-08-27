@@ -22,8 +22,7 @@ pub struct Args {
 
 #[derive(Subcommand)]
 pub enum Command {
-    New {
-    },
+    New {},
 
     #[clap(subcommand)]
     Generate(VersionSpec),

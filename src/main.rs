@@ -10,23 +10,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let args = cli::get_args();
     match args.command {
-        Command::New { .. } => {
-        }
+        Command::New { .. } => {}
 
-        Command::Generate(VersionSpec::Patch) => {
-        }
+        Command::Generate(VersionSpec::Patch) => {}
 
-        Command::Generate(VersionSpec::Minor) => {
-        }
+        Command::Generate(VersionSpec::Minor) => {}
 
-        Command::Generate(VersionSpec::Major) => {
-        }
+        Command::Generate(VersionSpec::Major) => {}
 
-        Command::Generate(VersionSpec::Custom { custom: _ }) => {
-        }
+        Command::Generate(VersionSpec::Custom { custom: _ }) => {}
 
-        Command::Release => {
-        }
+        Command::Release => {}
     }
 
     Ok(())

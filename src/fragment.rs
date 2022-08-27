@@ -11,5 +11,5 @@ pub enum FragmentData {
     Bool(bool),
     Int(u64),
     String(String),
-    Map(HashMap<String, FragmentData>)
+    Map(HashMap<String, FragmentData>),
 }

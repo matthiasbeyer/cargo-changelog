@@ -32,4 +32,3 @@ pub enum FragmentDataValueType {
     String,
     Map(HashMap<String, FragmentDataDescription>),
 }
-
