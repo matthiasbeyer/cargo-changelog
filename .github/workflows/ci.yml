@@ -147,7 +147,6 @@ jobs:
       - check
       - clippy
       - deny
-      - doc
       - fmt
       - outdated
       - test
