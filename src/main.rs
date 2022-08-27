@@ -1,5 +1,6 @@
 mod cli;
 mod config;
+mod error;
 mod fragment;
 
 use crate::cli::Command;
@@ -7,6 +8,8 @@ use crate::cli::VersionSpec;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::try_init()?;
+
+    let _config = crate::config::load()?;
 
     let args = cli::get_args();
     match args.command {
