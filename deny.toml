@@ -29,6 +29,10 @@ allow-osi-fsf-free = "either"
 # [possible values: any between 0.0 and 1.0].
 confidence-threshold = 0.8
 
+exceptions = [
+    { allow = ["GPL-2.0"], name = "cargo-changelog", version = "*" }
+]
+
 [bans]
 # Lint level for when multiple versions of the same crate are detected
 multiple-versions = "warn"
