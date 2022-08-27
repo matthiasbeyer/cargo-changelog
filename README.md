@@ -1,4 +1,4 @@
-# changer
+# cargo-changelog
 
 Changelog management tool for CLI.
 
