@@ -43,7 +43,7 @@ impl Default for Configuration {
             version_prefix: "v".to_string(),
             add_version_date: true,
 
-            fragment_dir: PathBuf::from("fragments"),
+            fragment_dir: fragment_dir_default(),
 
             entry_template: PathBuf::from("entry_template.md"),
             edit_data: true,
