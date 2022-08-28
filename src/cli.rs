@@ -33,7 +33,7 @@ pub enum Command {
         #[clap(short, long, action = clap::ArgAction::Set)]
         interactive: bool,
 
-        #[clap(short, long, action = clap::ArgAction::Set)]
+        #[clap(short, long, action = clap::ArgAction::Set, default_value_t = true)]
         edit: bool,
 
         #[clap(short, long, arg_enum, value_parser, default_value_t = Format::Yaml)]
