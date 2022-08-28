@@ -57,32 +57,18 @@ fn new_command_creates_yaml_file() {
     }
 
     let new_fragment_file_contents = std::fs::read_to_string(new_fragment_file.path()).unwrap();
-    let yaml = {
-        let yaml = serde_yaml::from_str::<serde_yaml::Value>(&new_fragment_file_contents);
-        assert!(
-            yaml.is_ok(),
-            "Failed to parse fragment file: {:?}",
-            yaml.unwrap_err()
-        );
-        yaml.unwrap()
-    };
+    let yaml_header = new_fragment_file_contents
+        .lines()
+        .skip(1)
+        .take_while(|line| *line != "---")
+        .collect::<String>();
 
-    match yaml {
-        serde_yaml::Value::Mapping(map) => {
-            assert!(
-                map.contains_key("text"),
-                "map does not contain key 'text': {:?}",
-                map
-            );
-            assert!(
-                map.contains_key("data"),
-                "map does not contain key 'data': {:?}",
-                map
-            );
-        }
-
-        other => panic!("Fragment is not a Map: {:?}", other),
-    }
+    let yaml = serde_yaml::from_str::<serde_yaml::Value>(&yaml_header);
+    assert!(
+        yaml.is_ok(),
+        "Failed to parse fragment file: {:?}",
+        yaml.unwrap_err()
+    );
 }
 
 #[test]
@@ -136,15 +122,14 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
         .unwrap();
 
     let new_fragment_file_contents = std::fs::read_to_string(fragment_file.path()).unwrap();
-    let yaml = serde_yaml::from_str::<serde_yaml::Value>(&new_fragment_file_contents).unwrap();
+    let contents = new_fragment_file_contents
+        .lines()
+        .skip(1)
+        .skip_while(|line| *line != "---")
+        .skip(1)
+        .collect::<String>();
 
-    match yaml {
-        serde_yaml::Value::Mapping(map) => {
-            let text = map.get("text").unwrap().as_str().unwrap();
-            assert_eq!(text, test_text);
-        }
-        other => panic!("Fragment is not a Map: {:?}", other),
-    }
+    assert_eq!(contents, test_text);
 }
 
 #[test]
@@ -200,13 +185,12 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
         .unwrap();
 
     let new_fragment_file_contents = std::fs::read_to_string(fragment_file.path()).unwrap();
-    let yaml = serde_yaml::from_str::<serde_yaml::Value>(&new_fragment_file_contents).unwrap();
+    let contents = new_fragment_file_contents
+        .lines()
+        .skip(1)
+        .skip_while(|line| *line != "---")
+        .skip(1)
+        .collect::<String>();
 
-    match yaml {
-        serde_yaml::Value::Mapping(map) => {
-            let text = map.get("text").unwrap().as_str().unwrap();
-            assert_eq!(text, test_text);
-        }
-        other => panic!("Fragment is not a Map: {:?}", other),
-    }
+    assert_eq!(contents, test_text);
 }
