@@ -1,6 +1,8 @@
 use clap::Parser;
 use clap::Subcommand;
 
+use crate::format::Format;
+
 /// Get CLI args via `clap` while also handling when we are invoked as a cargo
 /// subcommand
 pub fn get_args() -> Args {
@@ -23,7 +25,16 @@ pub struct Args {
 #[derive(Subcommand)]
 pub enum Command {
     Init,
-    New {},
+    New {
+        #[clap(short, long, action = clap::ArgAction::Set)]
+        interactive: bool,
+
+        #[clap(short, long, action = clap::ArgAction::Set)]
+        edit: bool,
+
+        #[clap(short, long, arg_enum, value_parser, default_value_t = Format::Yaml)]
+        format: Format,
+    },
 
     #[clap(subcommand)]
     Generate(VersionSpec),
