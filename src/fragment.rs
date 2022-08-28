@@ -83,6 +83,18 @@ pub enum FragmentData {
     Map(HashMap<String, FragmentData>),
 }
 
+impl FragmentData {
+    pub fn type_name(&self) -> &'static str {
+        match self {
+            FragmentData::Bool(_) => "bool",
+            FragmentData::Int(_) => "int",
+            FragmentData::Str(_) => "string",
+            FragmentData::List(_) => "list",
+            FragmentData::Map(_) => "map",
+        }
+    }
+}
+
 /// Something that describes a FragmentData
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
 pub struct FragmentDataDesc {
