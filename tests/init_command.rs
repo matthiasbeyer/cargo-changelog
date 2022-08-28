@@ -1,18 +1,11 @@
 use assert_cmd::Command;
 
+mod common;
+
 #[test]
 fn init_command_creates_config_file() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
-
-    if !std::process::Command::new("git")
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .status()
-        .unwrap()
-        .success()
-    {
-        panic!("Failed to git-init");
-    }
+    self::common::init_git(temp_dir.path());
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
@@ -30,16 +23,7 @@ fn init_command_creates_config_file() {
 #[test]
 fn init_command_creates_fragment_dir() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
-
-    if !std::process::Command::new("git")
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .status()
-        .unwrap()
-        .success()
-    {
-        panic!("Failed to git-init");
-    }
+    self::common::init_git(temp_dir.path());
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
@@ -57,16 +41,7 @@ fn init_command_creates_fragment_dir() {
 #[test]
 fn init_command_creates_fragment_dir_unreleased() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
-
-    if !std::process::Command::new("git")
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .status()
-        .unwrap()
-        .success()
-    {
-        panic!("Failed to git-init");
-    }
+    self::common::init_git(temp_dir.path());
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
