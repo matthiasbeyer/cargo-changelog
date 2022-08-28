@@ -17,10 +17,12 @@ pager = "0.16.0"
 scrawl = "1.1.0"
 semver = "1.0.13"
 serde = { version = "1", features = [ "derive" ] }
+serde_yaml = "0.9.3"
 tabled = "0.8.0"
 thiserror = "1.0.32"
-time = "0.3.14"
+time = { version = "0.3.14", features = [ "formatting" ] }
 toml = "0.5.9"
+typed-builder = "0.10.0"
 
 [dev-dependencies]
 assert_cmd = "2.0.4"

@@ -3,12 +3,16 @@ use std::path::PathBuf;
 use miette::IntoDiagnostic;
 
 mod cli;
+mod command;
 mod config;
+mod consts;
 mod error;
+mod format;
 mod fragment;
 
 use crate::cli::Command;
 use crate::cli::VersionSpec;
+use crate::command::Command as _;
 use crate::error::Error;
 
 fn main() -> miette::Result<()> {
@@ -51,20 +55,39 @@ fn main() -> miette::Result<()> {
     match args.command {
         Command::Init => unreachable!(), // reached above
 
-        Command::New { .. } => {}
+        Command::New {
+            interactive,
+            edit,
+            format,
+            read,
+        } => crate::command::NewCommand::builder()
+            .interactive(interactive)
+            .edit(edit)
+            .format(format)
+            .text(read)
+            .build()
+            .execute(&repo_workdir_path, &config),
 
-        Command::Generate(VersionSpec::Patch) => {}
+        Command::Generate(VersionSpec::Patch) => {
+            unimplemented!()
+        }
 
-        Command::Generate(VersionSpec::Minor) => {}
+        Command::Generate(VersionSpec::Minor) => {
+            unimplemented!()
+        }
 
-        Command::Generate(VersionSpec::Major) => {}
+        Command::Generate(VersionSpec::Major) => {
+            unimplemented!()
+        }
 
-        Command::Generate(VersionSpec::Custom { custom: _ }) => {}
+        Command::Generate(VersionSpec::Custom { custom: _ }) => {
+            unimplemented!()
+        }
 
-        Command::Release => {}
+        Command::Release => {
+            unimplemented!()
+        }
     }
-
-    Ok(())
 }
 
 fn init(repo_workdir_path: PathBuf) -> miette::Result<()> {
