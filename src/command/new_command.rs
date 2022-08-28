@@ -4,6 +4,7 @@ use std::path::PathBuf;
 
 use miette::IntoDiagnostic;
 
+use crate::cli::TextProvider;
 use crate::config::Configuration;
 use crate::error::Error;
 use crate::format::Format;
@@ -13,6 +14,7 @@ pub struct NewCommand {
     interactive: bool,
     edit: bool,
     format: Format,
+    text: Option<TextProvider>,
 }
 
 impl crate::command::Command for NewCommand {
@@ -40,7 +42,12 @@ impl crate::command::Command for NewCommand {
             .map_err(Error::from)
             .into_diagnostic()?;
 
-        let fragment = crate::fragment::Fragment::empty();
+        let mut fragment = crate::fragment::Fragment::empty();
+
+        if let Some(text_provider) = self.text.as_ref() {
+            let text = text_provider.read()?;
+            fragment.set_text(text);
+        }
 
         let serialized_fragment = {
             serde_yaml::to_string(&fragment)
