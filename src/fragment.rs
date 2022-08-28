@@ -86,6 +86,7 @@ pub enum FragmentData {
 /// Something that describes a FragmentData
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
 pub struct FragmentDataDesc {
+    #[serde(rename = "type")]
     fragment_type: FragmentDataType,
     default_value: Option<FragmentData>,
     required: bool,
@@ -93,8 +94,11 @@ pub struct FragmentDataDesc {
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
 pub enum FragmentDataType {
+    #[serde(rename = "bool")]
     Bool,
+    #[serde(rename = "int")]
     Int,
+    #[serde(rename = "string")]
     String,
     List(Box<FragmentDataType>),
     Map(HashMap<String, FragmentDataType>),
