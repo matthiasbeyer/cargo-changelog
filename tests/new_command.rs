@@ -1,3 +1,5 @@
+use std::io::Write;
+
 use assert_cmd::Command;
 
 mod common;
@@ -79,6 +81,68 @@ fn new_command_creates_yaml_file() {
             );
         }
 
+        other => panic!("Fragment is not a Map: {:?}", other),
+    }
+}
+
+#[test]
+fn new_command_with_text_creates_yaml_with_text() {
+    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    self::common::init_git(temp_dir.path());
+
+    Command::cargo_bin("cargo-changelog")
+        .unwrap()
+        .args(&["init"])
+        .current_dir(&temp_dir)
+        .assert()
+        .success();
+
+    let test_text = "This is a test text";
+    {
+        let text_temp_dir = tempdir::TempDir::new("cargo-changelog-new-test-text").unwrap();
+        let path = text_temp_dir.path().join("text_file.txt");
+        let mut file = std::fs::OpenOptions::new()
+            .create(true)
+            .write(true)
+            .append(false)
+            .open(&path)
+            .unwrap();
+
+        write!(file, "{}", test_text).unwrap();
+        file.sync_all().unwrap();
+        drop(file); // make sure we close the handle
+
+        Command::cargo_bin("cargo-changelog")
+            .unwrap()
+            .args(&[
+                "new",
+                "--interactive=false",
+                "--edit=false",
+                "--format=yaml",
+                "--read=-", // read text from STDIN
+            ])
+            .current_dir(&temp_dir)
+            .pipe_stdin(path)
+            .unwrap()
+            .assert()
+            .success();
+    }
+
+    let fragment_file = std::fs::read_dir(&temp_dir.path().join(".changelogs").join("unreleased"))
+        .unwrap()
+        .into_iter()
+        .next()
+        .unwrap()
+        .unwrap();
+
+    let new_fragment_file_contents = std::fs::read_to_string(fragment_file.path()).unwrap();
+    let yaml = serde_yaml::from_str::<serde_yaml::Value>(&new_fragment_file_contents).unwrap();
+
+    match yaml {
+        serde_yaml::Value::Mapping(map) => {
+            let text = map.get("text").unwrap().as_str().unwrap();
+            assert_eq!(text, test_text);
+        }
         other => panic!("Fragment is not a Map: {:?}", other),
     }
 }
