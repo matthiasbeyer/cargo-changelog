@@ -32,6 +32,7 @@ pub struct Configuration {
     edit_data: bool,
     /// Format to edit data in
     edit_format: EditFormat,
+    #[getset(get = "pub")]
     header_fields: HashMap<String, FragmentDataDesc>,
 }
 
