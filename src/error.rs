@@ -11,6 +11,9 @@ pub enum Error {
     #[error("TOML deserialization error")]
     Toml(#[from] toml::de::Error),
 
+    #[error("YAML error")]
+    Yaml(#[from] serde_yaml::Error),
+
     #[error("Time formatting error")]
     TimeFormat(#[from] time::error::Format),
 
