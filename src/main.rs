@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use miette::IntoDiagnostic;
 
 mod cli;
+mod command;
 mod config;
 mod error;
 mod format;
