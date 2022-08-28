@@ -11,6 +11,9 @@ pub enum Error {
     #[error("TOML deserialization error")]
     Toml(#[from] toml::de::Error),
 
+    #[error("Time formatting error")]
+    TimeFormat(#[from] time::error::Format),
+
     #[error("Repository has no worktree")]
     NoWorkTree,
 
