@@ -50,14 +50,7 @@ impl crate::command::Command for NewCommand {
             fragment.set_text(text);
         }
 
-        let serialized_fragment = {
-            serde_yaml::to_string(&fragment)
-                .map_err(Error::from)
-                .into_diagnostic()?
-        };
-        write!(file, "{}", serialized_fragment)
-            .map_err(Error::from)
-            .into_diagnostic()?;
+        fragment.write_to(&mut file)?;
         file.sync_all().map_err(Error::from).into_diagnostic()?;
         drop(file);
 
