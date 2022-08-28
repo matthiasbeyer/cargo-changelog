@@ -25,8 +25,6 @@ pub struct Configuration {
     #[serde(default = "fragment_dir_default")]
     fragment_dir: PathBuf,
 
-    group_by: Option<FragmentDataDescriptionName>,
-
     entry_template: PathBuf,
 
     /// Whether to edit the data of a changelog entry in the editor
@@ -54,8 +52,6 @@ impl Default for Configuration {
                 default_value: None,
                 value: FragmentDataValueType::String,
             }],
-
-            group_by: Some(FragmentDataDescriptionName("type".to_string())),
         }
     }
 }
