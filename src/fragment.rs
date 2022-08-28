@@ -126,6 +126,21 @@ impl FragmentDataType {
             FragmentDataType::Map(_) => "map".to_string(),
         }
     }
+
+    pub fn matches(&self, data: &FragmentData) -> bool {
+        match (self, data) {
+            (FragmentDataType::Bool, FragmentData::Bool(_)) => true,
+            (FragmentDataType::Int, FragmentData::Int(_)) => true,
+            (FragmentDataType::Str, FragmentData::Str(_)) => true,
+            (FragmentDataType::List(_t_inner), FragmentData::List(_d_inner)) => {
+                unimplemented!()
+            }
+            (FragmentDataType::Map(_t_inner), FragmentData::Map(_d_inner)) => {
+                unimplemented!()
+            }
+            (_, _) => false,
+        }
+    }
 }
 
 #[cfg(test)]
