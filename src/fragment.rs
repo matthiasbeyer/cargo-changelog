@@ -13,6 +13,10 @@ impl Fragment {
             text: String::new(),
         }
     }
+
+    pub fn set_text(&mut self, text: String) {
+        self.text = text;
+    }
 }
 
 #[derive(Debug, serde::Serialize)]
