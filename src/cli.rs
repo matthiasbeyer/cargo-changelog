@@ -1,6 +1,10 @@
+use std::path::PathBuf;
+
 use clap::Parser;
 use clap::Subcommand;
+use miette::IntoDiagnostic;
 
+use crate::error::Error;
 use crate::format::Format;
 
 /// Get CLI args via `clap` while also handling when we are invoked as a cargo
@@ -34,12 +38,62 @@ pub enum Command {
 
         #[clap(short, long, arg_enum, value_parser, default_value_t = Format::Yaml)]
         format: Format,
+
+        #[clap(long, value_parser = text_provider_parser)]
+        read: Option<TextProvider>,
     },
 
     #[clap(subcommand)]
     Generate(VersionSpec),
 
     Release,
+}
+
+fn text_provider_parser(s: &str) -> Result<TextProvider, String> {
+    if s == "-" {
+        return Ok(TextProvider::Stdin);
+    }
+
+    let path = PathBuf::from(s);
+    if !path.exists() {
+        return Err(format!("Path does not exist: {}", path.display()));
+    }
+
+    if !path.is_file() {
+        return Err(format!("Path is not a file: {}", path.display()));
+    }
+
+    Ok(TextProvider::Path(path))
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum TextProvider {
+    Stdin,
+    Path(PathBuf),
+}
+
+impl TextProvider {
+    pub fn read(&self) -> miette::Result<String> {
+        use std::io::Read;
+
+        match self {
+            TextProvider::Stdin => {
+                let mut buf = Vec::new();
+
+                std::io::stdin()
+                    .read_to_end(&mut buf)
+                    .map_err(Error::from)
+                    .into_diagnostic()?;
+
+                String::from_utf8(buf)
+                    .map_err(Error::from)
+                    .into_diagnostic()
+            }
+            TextProvider::Path(path) => std::fs::read_to_string(path)
+                .map_err(Error::from)
+                .into_diagnostic(),
+        }
+    }
 }
 
 #[derive(Subcommand)]

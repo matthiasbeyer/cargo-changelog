@@ -5,6 +5,9 @@ pub enum Error {
     #[error("IO")]
     Io(#[from] std::io::Error),
 
+    #[error("UTF8 error")]
+    Utf8(#[from] std::string::FromUtf8Error),
+
     #[error("git error")]
     Git(#[from] git2::Error),
 
