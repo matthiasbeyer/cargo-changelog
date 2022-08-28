@@ -2,6 +2,10 @@ use std::collections::HashMap;
 use std::io::Read;
 use std::io::Write;
 
+use miette::IntoDiagnostic;
+
+use crate::error::Error;
+
 #[derive(Debug, getset::Getters)]
 pub struct Fragment {
     #[getset(get = "pub")]
@@ -23,7 +27,37 @@ impl Fragment {
     }
 
     pub fn from_reader<R: Read>(reader: &mut R) -> miette::Result<Self> {
-        unimplemented!()
+        let mut buf = String::new();
+        reader
+            .read_to_string(&mut buf)
+            .map_err(Error::from)
+            .into_diagnostic()?;
+
+        let mut lines = buf.lines();
+        if let Some(header_sep) = lines.next() {
+            if header_sep != "---" {
+                miette::bail!("Expected header seperator: '---', found: '{}'", header_sep)
+            }
+        } else {
+            miette::bail!("Header seperator '---' missing")
+        }
+
+        let header = {
+            let mut header = Vec::new();
+            while let Some(line) = lines.next() {
+                if line == "---" {
+                    break;
+                }
+                header.push(line);
+            }
+            serde_yaml::from_str::<HashMap<String, FragmentData>>(&header.join("\n"))
+                .map_err(Error::from)
+                .into_diagnostic()?
+        };
+
+        let text = lines.collect::<String>();
+
+        Ok(Fragment { header, text })
     }
 
     pub fn write_to<W: Write>(&self, writer: &mut W) -> miette::Result<()> {
@@ -31,7 +65,8 @@ impl Fragment {
     }
 }
 
-#[derive(Debug, serde::Serialize)]
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[serde(untagged)]
 pub enum FragmentData {
     Bool(bool),
     Int(u64),
