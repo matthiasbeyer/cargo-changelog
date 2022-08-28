@@ -5,6 +5,7 @@ use miette::IntoDiagnostic;
 mod cli;
 mod command;
 mod config;
+mod consts;
 mod error;
 mod format;
 mod fragment;
