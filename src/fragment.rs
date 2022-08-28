@@ -83,6 +83,23 @@ pub enum FragmentData {
     Map(HashMap<String, FragmentData>),
 }
 
+/// Something that describes a FragmentData
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
+pub struct FragmentDataDesc {
+    fragment_type: FragmentDataType,
+    default_value: Option<FragmentData>,
+    required: bool,
+}
+
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
+pub enum FragmentDataType {
+    Bool,
+    Int,
+    String,
+    List(Box<FragmentDataType>),
+    Map(HashMap<String, FragmentDataType>),
+}
+
 #[cfg(test)]
 mod tests {
     use std::io::Cursor;
