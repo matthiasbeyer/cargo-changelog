@@ -5,6 +5,7 @@ use miette::IntoDiagnostic;
 mod cli;
 mod config;
 mod error;
+mod format;
 mod fragment;
 
 use crate::cli::Command;
