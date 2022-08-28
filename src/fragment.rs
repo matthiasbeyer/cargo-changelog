@@ -26,6 +26,32 @@ impl Fragment {
         self.text = text;
     }
 
+    pub fn fill_header_from(
+        &mut self,
+        header: &HashMap<String, FragmentDataDesc>,
+    ) -> miette::Result<()> {
+        let new_header = header
+            .iter()
+            .filter_map(|(key, data_desc)| {
+                if let Some(default) = data_desc.default_value() {
+                    if data_desc.fragment_type().matches(&default) {
+                        Some(Ok((key.clone(), default.clone())))
+                    } else {
+                        Some(Err(miette::miette!(
+                            "Required data type: {}, but default value is {}",
+                            data_desc.fragment_type().type_name(),
+                            default.type_name()
+                        )))
+                    }
+                } else {
+                    None
+                }
+            })
+            .collect::<miette::Result<HashMap<String, FragmentData>>>()?;
+        self.header = new_header;
+        Ok(())
+    }
+
     pub fn from_reader<R: Read>(reader: &mut R) -> miette::Result<Self> {
         let mut buf = String::new();
         reader
