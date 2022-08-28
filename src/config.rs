@@ -28,6 +28,11 @@ pub struct Configuration {
     group_by: Option<FragmentDataDescriptionName>,
 
     entry_template: PathBuf,
+
+    /// Whether to edit the data of a changelog entry in the editor
+    edit_data: bool,
+    /// Format to edit data in
+    edit_format: EditFormat,
     entry_data: Vec<FragmentDataDescription>,
 }
 
@@ -41,6 +46,8 @@ impl Default for Configuration {
             fragment_dir: PathBuf::from("fragments"),
 
             entry_template: PathBuf::from("entry_template.md"),
+            edit_data: true,
+            edit_format: EditFormat::Yaml,
             entry_data: vec![FragmentDataDescription {
                 key: FragmentDataDescriptionName("type".to_string()),
                 required: true,
@@ -55,6 +62,24 @@ impl Default for Configuration {
 
 pub fn fragment_dir_default() -> PathBuf {
     PathBuf::from(".changelogs")
+}
+
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
+pub enum EditFormat {
+    Yaml,
+    Toml,
+}
+
+impl std::str::FromStr for EditFormat {
+    type Err = miette::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "yaml" => Ok(Self::Yaml),
+            "toml" => Ok(Self::Toml),
+            fmt => Err(miette::miette!("Unknown edit format {}", fmt)),
+        }
+    }
 }
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
