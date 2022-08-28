@@ -73,7 +73,7 @@ impl Fragment {
     }
 }
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 #[serde(untagged)]
 pub enum FragmentData {
     Bool(bool),
