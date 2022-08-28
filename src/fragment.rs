@@ -61,7 +61,15 @@ impl Fragment {
     }
 
     pub fn write_to<W: Write>(&self, writer: &mut W) -> miette::Result<()> {
-        unimplemented!()
+        let header = serde_yaml::to_string(&self.header)
+            .map_err(Error::from)
+            .into_diagnostic()?;
+
+        writeln!(writer, "---").into_diagnostic()?;
+        writeln!(writer, "{}", header).into_diagnostic()?;
+        writeln!(writer, "---").into_diagnostic()?;
+        writeln!(writer, "{}", self.text).into_diagnostic()?;
+        Ok(())
     }
 }
 
