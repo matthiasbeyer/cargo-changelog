@@ -1,6 +1,7 @@
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::process::Command;
 
 use miette::IntoDiagnostic;
 
@@ -57,7 +58,27 @@ impl crate::command::Command for NewCommand {
         write!(file, "{}", serialized_fragment)
             .map_err(Error::from)
             .into_diagnostic()?;
-        file.sync_all().map_err(Error::from).into_diagnostic()
+        file.sync_all().map_err(Error::from).into_diagnostic()?;
+        drop(file);
+
+        if self.edit {
+            let mut editor_command = get_editor_command()?;
+            let std::process::Output { status, .. } = editor_command
+                .arg(&new_file_path)
+                .stderr(std::process::Stdio::inherit())
+                .stdout(std::process::Stdio::inherit())
+                .output()
+                .map_err(Error::from)
+                .into_diagnostic()?;
+
+            if status.success() {
+                log::info!("Successfully edited");
+            } else {
+                log::error!("Failure editing {}", new_file_path.display());
+            }
+        }
+
+        Ok(())
     }
 }
 
@@ -70,4 +91,20 @@ fn ensure_fragment_dir(workdir: &Path, config: &Configuration) -> miette::Result
         .into_diagnostic()?;
 
     Ok(unreleased_dir_path)
+}
+
+fn get_editor_command() -> miette::Result<Command> {
+    let editor = match std::env::var("EDITOR") {
+        Ok(editor) => editor,
+        Err(std::env::VarError::NotPresent) => match std::env::var("VISUAL") {
+            Ok(editor) => editor,
+            Err(std::env::VarError::NotPresent) => {
+                miette::bail!("EDITOR and VISUAL are not set, cannot find editor")
+            }
+            Err(std::env::VarError::NotUnicode(_)) => miette::bail!("VISUAL is not unicode"),
+        },
+        Err(std::env::VarError::NotUnicode(_)) => miette::bail!("EDITOR is not unicode"),
+    };
+
+    Ok(Command::new(editor))
 }
