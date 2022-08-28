@@ -50,6 +50,8 @@ impl crate::command::Command for NewCommand {
             fragment.set_text(text);
         }
 
+        fragment.fill_header_from(config.header_fields())?;
+
         fragment.write_to(&mut file)?;
         file.sync_all().map_err(Error::from).into_diagnostic()?;
         drop(file);

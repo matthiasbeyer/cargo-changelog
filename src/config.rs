@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use miette::IntoDiagnostic;
 
 use crate::error::Error;
+use crate::fragment::FragmentDataDesc;
 
 pub const CONFIG_FILE_NAME: &'static str = ".changelog.toml";
 
@@ -31,7 +32,8 @@ pub struct Configuration {
     edit_data: bool,
     /// Format to edit data in
     edit_format: EditFormat,
-    entry_data: Vec<FragmentDataDescription>,
+    #[getset(get = "pub")]
+    header_fields: HashMap<String, FragmentDataDesc>,
 }
 
 impl Default for Configuration {
@@ -46,12 +48,7 @@ impl Default for Configuration {
             entry_template: PathBuf::from("entry_template.md"),
             edit_data: true,
             edit_format: EditFormat::Yaml,
-            entry_data: vec![FragmentDataDescription {
-                key: FragmentDataDescriptionName("type".to_string()),
-                required: true,
-                default_value: None,
-                value: FragmentDataValueType::String,
-            }],
+            header_fields: HashMap::new(),
         }
     }
 }
@@ -76,26 +73,6 @@ impl std::str::FromStr for EditFormat {
             fmt => Err(miette::miette!("Unknown edit format {}", fmt)),
         }
     }
-}
-
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
-#[serde(transparent)]
-pub struct FragmentDataDescriptionName(String);
-
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
-pub struct FragmentDataDescription {
-    key: FragmentDataDescriptionName,
-    required: bool,
-    default_value: Option<String>,
-    value: FragmentDataValueType,
-}
-
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
-pub enum FragmentDataValueType {
-    Bool,
-    Int,
-    String,
-    Map(HashMap<String, FragmentDataDescription>),
 }
 
 /// Load the configuration from the repository

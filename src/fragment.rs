@@ -26,6 +26,32 @@ impl Fragment {
         self.text = text;
     }
 
+    pub fn fill_header_from(
+        &mut self,
+        header: &HashMap<String, FragmentDataDesc>,
+    ) -> miette::Result<()> {
+        let new_header = header
+            .iter()
+            .filter_map(|(key, data_desc)| {
+                if let Some(default) = data_desc.default_value() {
+                    if data_desc.fragment_type().matches(&default) {
+                        Some(Ok((key.clone(), default.clone())))
+                    } else {
+                        Some(Err(miette::miette!(
+                            "Required data type: {}, but default value is {}",
+                            data_desc.fragment_type().type_name(),
+                            default.type_name()
+                        )))
+                    }
+                } else {
+                    None
+                }
+            })
+            .collect::<miette::Result<HashMap<String, FragmentData>>>()?;
+        self.header = new_header;
+        Ok(())
+    }
+
     pub fn from_reader<R: Read>(reader: &mut R) -> miette::Result<Self> {
         let mut buf = String::new();
         reader
@@ -73,7 +99,7 @@ impl Fragment {
     }
 }
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 #[serde(untagged)]
 pub enum FragmentData {
     Bool(bool),
@@ -81,6 +107,68 @@ pub enum FragmentData {
     Str(String),
     List(Vec<FragmentData>),
     Map(HashMap<String, FragmentData>),
+}
+
+impl FragmentData {
+    pub fn type_name(&self) -> &'static str {
+        match self {
+            FragmentData::Bool(_) => "bool",
+            FragmentData::Int(_) => "int",
+            FragmentData::Str(_) => "string",
+            FragmentData::List(_) => "list",
+            FragmentData::Map(_) => "map",
+        }
+    }
+}
+
+/// Something that describes a FragmentData
+#[derive(Debug, serde::Deserialize, serde::Serialize, getset::Getters)]
+pub struct FragmentDataDesc {
+    #[serde(rename = "type")]
+    #[getset(get = "pub")]
+    fragment_type: FragmentDataType,
+    #[getset(get = "pub")]
+    default_value: Option<FragmentData>,
+    required: bool,
+}
+
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
+pub enum FragmentDataType {
+    #[serde(rename = "bool")]
+    Bool,
+    #[serde(rename = "int")]
+    Int,
+    #[serde(rename = "string")]
+    Str,
+    List(Box<FragmentDataType>),
+    Map(HashMap<String, FragmentDataType>),
+}
+
+impl FragmentDataType {
+    pub fn type_name(&self) -> String {
+        match self {
+            FragmentDataType::Bool => "bool".to_string(),
+            FragmentDataType::Int => "int".to_string(),
+            FragmentDataType::Str => "string".to_string(),
+            FragmentDataType::List(inner) => format!("list<{}>", inner.type_name()),
+            FragmentDataType::Map(_) => "map".to_string(),
+        }
+    }
+
+    pub fn matches(&self, data: &FragmentData) -> bool {
+        match (self, data) {
+            (FragmentDataType::Bool, FragmentData::Bool(_)) => true,
+            (FragmentDataType::Int, FragmentData::Int(_)) => true,
+            (FragmentDataType::Str, FragmentData::Str(_)) => true,
+            (FragmentDataType::List(_t_inner), FragmentData::List(_d_inner)) => {
+                unimplemented!()
+            }
+            (FragmentDataType::Map(_t_inner), FragmentData::Map(_d_inner)) => {
+                unimplemented!()
+            }
+            (_, _) => false,
+        }
+    }
 }
 
 #[cfg(test)]
