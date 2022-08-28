@@ -111,9 +111,21 @@ pub enum FragmentDataType {
     #[serde(rename = "int")]
     Int,
     #[serde(rename = "string")]
-    String,
+    Str,
     List(Box<FragmentDataType>),
     Map(HashMap<String, FragmentDataType>),
+}
+
+impl FragmentDataType {
+    pub fn type_name(&self) -> String {
+        match self {
+            FragmentDataType::Bool => "bool".to_string(),
+            FragmentDataType::Int => "int".to_string(),
+            FragmentDataType::Str => "string".to_string(),
+            FragmentDataType::List(inner) => format!("list<{}>", inner.type_name()),
+            FragmentDataType::Map(_) => "map".to_string(),
+        }
+    }
 }
 
 #[cfg(test)]
