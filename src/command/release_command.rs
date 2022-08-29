@@ -18,6 +18,13 @@ handlebars_helper!(sort_versions: |args: Vec<VersionData>| {
                                         // TODO: Make this helper nice
 });
 
+handlebars_helper!(reverse: |args: Vec<VersionData>| {
+    let args: Vec<VersionData> = args.clone().into_iter().rev().collect();
+    serde_json::to_value(args).unwrap() // handlebars deserializes this for us, so we can serialize
+                                        // it back without issue
+                                        // TODO: Make this helper nice
+});
+
 impl crate::command::Command for ReleaseCommand {
     fn execute(self, workdir: &Path, config: &Configuration) -> miette::Result<()> {
         let template = {
@@ -34,6 +41,7 @@ impl crate::command::Command for ReleaseCommand {
                 .map_err(Error::from)
                 .into_diagnostic()?;
             handlebars.register_helper("sort_versions", Box::new(sort_versions));
+            handlebars.register_helper("reverse", Box::new(reverse));
             handlebars
         };
 
@@ -197,6 +205,7 @@ mod tests {
         hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
             .unwrap();
         hb.register_helper("sort_versions", Box::new(sort_versions));
+        hb.register_helper("reverse", Box::new(reverse));
         let template = hb.render("t", &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
@@ -229,6 +238,7 @@ mod tests {
         hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
             .unwrap();
         hb.register_helper("sort_versions", Box::new(sort_versions));
+        hb.register_helper("reverse", Box::new(reverse));
         let template = hb.render("t", &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
@@ -267,6 +277,7 @@ mod tests {
         hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
             .unwrap();
         hb.register_helper("sort_versions", Box::new(sort_versions));
+        hb.register_helper("reverse", Box::new(reverse));
         let template = hb.render("t", &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
@@ -312,6 +323,7 @@ mod tests {
         hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
             .unwrap();
         hb.register_helper("sort_versions", Box::new(sort_versions));
+        hb.register_helper("reverse", Box::new(reverse));
         let template = hb.render("t", &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
