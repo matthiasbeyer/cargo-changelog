@@ -134,3 +134,209 @@ fn compute_template_data(
     hm.insert("versions".to_string(), versions.collect());
     Ok(hm)
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::fragment::FragmentData;
+
+    use super::*;
+    use predicates::prelude::*;
+
+    #[test]
+    fn test_template_data_is_sorted() {
+        let result = compute_template_data(
+            [
+                Ok((
+                    semver::Version::new(0, 2, 0),
+                    Fragment::new(
+                        {
+                            let mut hm = HashMap::new();
+                            hm.insert("issue".to_string(), FragmentData::Int(123));
+                            hm
+                        },
+                        "text of fragment for version 0.2.0".to_string(),
+                    ),
+                )),
+                Ok((
+                    semver::Version::new(0, 1, 0),
+                    Fragment::new(
+                        {
+                            let mut hm = HashMap::new();
+                            hm.insert("issue".to_string(), FragmentData::Int(345));
+                            hm
+                        },
+                        "text of fragment for version 0.1.0".to_string(),
+                    ),
+                )),
+            ]
+            .into_iter(),
+        );
+
+        assert!(result.is_ok());
+        let result = result.unwrap();
+
+        let versions = result.get("versions").unwrap();
+        assert_eq!(versions[0].version, "0.1.0");
+        assert_eq!(versions[1].version, "0.2.0");
+    }
+
+    #[test]
+    fn default_template_renders_with_empty_data() {
+        let mut hb = Handlebars::new();
+        let data: HashMap<String, Vec<String>> = HashMap::new();
+        hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
+            .unwrap();
+        let template = hb.render("t", &data);
+        assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
+        let template = template.unwrap();
+
+        assert!(
+            predicates::str::contains("CHANGELOG").eval(&template),
+            "Does not contain 'CHANGELOG': {}",
+            template
+        );
+    }
+
+    #[test]
+    fn default_template_renders_with_one_entry() {
+        let mut hb = Handlebars::new();
+        let mut data: HashMap<String, Vec<_>> = HashMap::new();
+        data.insert(
+            "versions".to_string(),
+            vec![VersionData {
+                version: "0.1.0".to_string(),
+                entries: vec![Fragment::new(
+                    {
+                        let mut hdr = HashMap::new();
+                        hdr.insert("issue".to_string(), FragmentData::Int(123));
+                        hdr
+                    },
+                    "test for 0.1.0".to_string(),
+                )],
+            }],
+        );
+        hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
+            .unwrap();
+        let template = hb.render("t", &data);
+        assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
+        let template = template.unwrap();
+
+        assert!(
+            predicates::str::contains("## v0.1.0").eval(&template),
+            "Does not contain '## v0.1.0': {}",
+            template
+        );
+
+        assert!(
+            predicates::str::contains("test for 0.1.0").eval(&template),
+            "Does not contain 'test text': {}",
+            template
+        );
+    }
+
+    #[test]
+    fn default_template_renders_with_one_entry_with_header() {
+        let mut hb = Handlebars::new();
+        let mut data: HashMap<String, Vec<_>> = HashMap::new();
+        data.insert(
+            "versions".to_string(),
+            vec![VersionData {
+                version: "0.1.0".to_string(),
+                entries: vec![Fragment::new(
+                    {
+                        let mut hdr = HashMap::new();
+                        hdr.insert("issue".to_string(), FragmentData::Int(123));
+                        hdr
+                    },
+                    "test for 0.1.0".to_string(),
+                )],
+            }],
+        );
+        hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
+            .unwrap();
+        let template = hb.render("t", &data);
+        assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
+        let template = template.unwrap();
+
+        assert!(
+            predicates::str::contains("(#123)").eval(&template),
+            "Does not contain '(#123)': {}",
+            template
+        );
+    }
+
+    #[test]
+    fn default_template_renders_versions_sorted() {
+        let mut hb = Handlebars::new();
+        let mut data: HashMap<String, Vec<_>> = HashMap::new();
+        data.insert(
+            "versions".to_string(),
+            vec![
+                VersionData {
+                    version: "0.1.0".to_string(),
+                    entries: vec![Fragment::new(
+                        {
+                            let mut hdr = HashMap::new();
+                            hdr.insert("issue".to_string(), FragmentData::Int(123));
+                            hdr
+                        },
+                        "test for 0.1.0".to_string(),
+                    )],
+                },
+                VersionData {
+                    version: "0.2.0".to_string(),
+                    entries: vec![Fragment::new(
+                        {
+                            let mut hdr = HashMap::new();
+                            hdr.insert("issue".to_string(), FragmentData::Int(234));
+                            hdr
+                        },
+                        "test for 0.2.0".to_string(),
+                    )],
+                },
+            ],
+        );
+        hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
+            .unwrap();
+        let template = hb.render("t", &data);
+        assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
+        let template = template.unwrap();
+
+        assert!(
+            predicates::str::contains("## v0.1.0").eval(&template),
+            "Does not contain '## v0.1.0': {}",
+            template
+        );
+        assert!(
+            predicates::str::contains("## v0.2.0").eval(&template),
+            "Does not contain '## v0.2.0': {}",
+            template
+        );
+
+        let line_number_of_010 = {
+            template
+                .lines()
+                .enumerate()
+                .filter(|(_n, line)| *line == "## v0.1.0")
+                .next()
+                .map(|(n, _)| n)
+                .unwrap()
+        };
+
+        let line_number_of_020 = {
+            template
+                .lines()
+                .enumerate()
+                .filter(|(_n, line)| *line == "## v0.2.0")
+                .next()
+                .map(|(n, _)| n)
+                .unwrap()
+        };
+
+        assert!(
+            line_number_of_020 < line_number_of_010,
+            "line with v0.1.0 should come _after_ line with v0.2.0: {}",
+            template
+        );
+    }
+}

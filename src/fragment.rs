@@ -97,6 +97,11 @@ impl Fragment {
         writeln!(writer, "{}", self.text).into_diagnostic()?;
         Ok(())
     }
+
+    #[cfg(test)]
+    pub fn new(header: HashMap<String, FragmentData>, text: String) -> Self {
+        Self { header, text }
+    }
 }
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
