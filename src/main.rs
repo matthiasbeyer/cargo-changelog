@@ -68,21 +68,10 @@ fn main() -> miette::Result<()> {
             .build()
             .execute(&repo_workdir_path, &config),
 
-        Command::Generate(VersionSpec::Patch) => {
-            unimplemented!()
-        }
-
-        Command::Generate(VersionSpec::Minor) => {
-            unimplemented!()
-        }
-
-        Command::Generate(VersionSpec::Major) => {
-            unimplemented!()
-        }
-
-        Command::Generate(VersionSpec::Custom { custom: _ }) => {
-            unimplemented!()
-        }
+        Command::Generate(version) => crate::command::GenerateCommand::builder()
+            .version(version)
+            .build()
+            .execute(&repo_workdir_path, &config),
 
         Command::Release => {
             unimplemented!()
