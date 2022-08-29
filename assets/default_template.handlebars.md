@@ -2,11 +2,11 @@
 
 <!-- generated from cargo-changelog -->
 
-{{#each this}}
-## v{{@key}}
+{{#each versions}}
+## v{{this.version}}
 
-{{#each this}}
-- (#{{header.issue}}) {{text}}
+{{#each this.entries}}
+- (#{{this.header.issue}}) {{this.text}}
 {{/each}}
 
 {{/each}}

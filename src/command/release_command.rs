@@ -28,13 +28,27 @@ impl crate::command::Command for ReleaseCommand {
         };
 
         let template_data = {
-            let mut hm = HashMap::new();
-            for r in load_release_files(workdir, config) {
-                let (version, fragment) = r?;
-                hm.entry(version.to_string())
-                    .or_insert_with(Vec::new)
-                    .push(fragment);
+            #[derive(Debug, serde::Serialize)]
+            struct VersionData {
+                version: String,
+                entries: Vec<Fragment>,
             }
+            let versions = {
+                use itertools::Itertools;
+                let mut hm = HashMap::new();
+                for r in load_release_files(workdir, config) {
+                    let (version, fragment) = r?;
+                    hm.entry(version.to_string())
+                        .or_insert_with(Vec::new)
+                        .push(fragment);
+                }
+                hm.into_iter()
+                    .map(|(version, entries)| VersionData { version, entries })
+                    .sorted_by(|va, vb| va.version.cmp(&vb.version))
+            };
+
+            let mut hm: HashMap<String, Vec<VersionData>> = HashMap::new();
+            hm.insert("versions".to_string(), versions.collect());
             hm
         };
 

@@ -119,6 +119,7 @@ dependencies = [
  "git2",
  "handlebars",
  "indoc",
+ "itertools",
  "log",
  "miette",
  "predicates",

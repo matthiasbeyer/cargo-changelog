@@ -21,21 +21,34 @@ fn default_template_renders_with_empty_data() {
     );
 }
 
+#[derive(serde::Serialize)]
+struct FragmentMock {
+    text: String,
+    header: HashMap<String, u64>,
+}
+
+#[derive(serde::Serialize)]
+struct VersionMock {
+    version: String,
+    entries: Vec<FragmentMock>,
+}
+
 #[test]
 fn default_template_renders_with_one_entry() {
-    #[derive(serde::Serialize)]
-    struct FragmentMock {
-        text: String,
-        header: HashMap<String, bool>,
-    }
-
     let mut hb = Handlebars::new();
-    let mut data: HashMap<String, Vec<FragmentMock>> = HashMap::new();
+    let mut data: HashMap<String, Vec<_>> = HashMap::new();
     data.insert(
-        "0.1.0".to_string(),
-        vec![FragmentMock {
-            text: "test text".to_string(),
-            header: HashMap::new(),
+        "versions".to_string(),
+        vec![VersionMock {
+            version: "0.1.0".to_string(),
+            entries: vec![FragmentMock {
+                text: "test for 0.1.0".to_string(),
+                header: {
+                    let mut hdr = HashMap::new();
+                    hdr.insert("issue".to_string(), 123);
+                    hdr
+                },
+            }],
         }],
     );
     hb.register_template_string("t", TEMPLATE).unwrap();
@@ -50,7 +63,7 @@ fn default_template_renders_with_one_entry() {
     );
 
     assert!(
-        predicates::str::contains("test text").eval(&template),
+        predicates::str::contains("test for 0.1.0").eval(&template),
         "Does not contain 'test text': {}",
         template
     );
@@ -58,23 +71,20 @@ fn default_template_renders_with_one_entry() {
 
 #[test]
 fn default_template_renders_with_one_entry_with_header() {
-    #[derive(serde::Serialize)]
-    struct FragmentMock {
-        text: String,
-        header: HashMap<String, u64>,
-    }
-
     let mut hb = Handlebars::new();
-    let mut data: HashMap<String, Vec<FragmentMock>> = HashMap::new();
+    let mut data: HashMap<String, Vec<_>> = HashMap::new();
     data.insert(
-        "0.1.0".to_string(),
-        vec![FragmentMock {
-            text: "test text".to_string(),
-            header: {
-                let mut hdr = HashMap::new();
-                hdr.insert("issue".to_string(), 123);
-                hdr
-            },
+        "versions".to_string(),
+        vec![VersionMock {
+            version: "0.1.0".to_string(),
+            entries: vec![FragmentMock {
+                text: "test for 0.1.0".to_string(),
+                header: {
+                    let mut hdr = HashMap::new();
+                    hdr.insert("issue".to_string(), 123);
+                    hdr
+                },
+            }],
         }],
     );
     hb.register_template_string("t", TEMPLATE).unwrap();
