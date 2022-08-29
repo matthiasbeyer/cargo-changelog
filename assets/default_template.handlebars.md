@@ -8,4 +8,5 @@
 {{#each this}}
 - (#{{header.issue}}) {{text}}
 {{/each}}
+
 {{/each}}
