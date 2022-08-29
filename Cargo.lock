@@ -125,6 +125,7 @@ dependencies = [
  "predicates",
  "semver",
  "serde",
+ "serde_json",
  "serde_yaml",
  "tempdir",
  "thiserror",

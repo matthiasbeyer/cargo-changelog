@@ -9,6 +9,10 @@ use crate::{config::Configuration, error::Error, fragment::Fragment};
 #[derive(Debug, typed_builder::TypedBuilder)]
 pub struct ReleaseCommand {}
 
+use handlebars::handlebars_helper;
+use serde_json;
+handlebars_helper!(sort_versions: |args: Vec<VersionData>| args.clone().sort_by(|a, b| a.version.cmp(&b.version)));
+
 impl crate::command::Command for ReleaseCommand {
     fn execute(self, workdir: &Path, config: &Configuration) -> miette::Result<()> {
         let template = {
@@ -24,6 +28,7 @@ impl crate::command::Command for ReleaseCommand {
                 .register_template_string(crate::consts::INTERNAL_TEMPLATE_NAME, template_source)
                 .map_err(Error::from)
                 .into_diagnostic()?;
+            handlebars.register_helper("sort_versions", Box::new(sort_versions));
             handlebars
         };
 
@@ -107,7 +112,7 @@ fn load_release_files(
 /// Helper type for storing version associated with Fragments
 ///
 /// only used for handlebars templating
-#[derive(Debug, serde::Serialize)]
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 struct VersionData {
     version: String,
     entries: Vec<Fragment>,
@@ -186,6 +191,7 @@ mod tests {
         let data: HashMap<String, Vec<String>> = HashMap::new();
         hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
             .unwrap();
+        hb.register_helper("sort_versions", Box::new(sort_versions));
         let template = hb.render("t", &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
@@ -217,6 +223,7 @@ mod tests {
         );
         hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
             .unwrap();
+        hb.register_helper("sort_versions", Box::new(sort_versions));
         let template = hb.render("t", &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
@@ -254,6 +261,7 @@ mod tests {
         );
         hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
             .unwrap();
+        hb.register_helper("sort_versions", Box::new(sort_versions));
         let template = hb.render("t", &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
@@ -298,6 +306,7 @@ mod tests {
         );
         hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
             .unwrap();
+        hb.register_helper("sort_versions", Box::new(sort_versions));
         let template = hb.render("t", &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();

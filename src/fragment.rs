@@ -6,7 +6,7 @@ use miette::IntoDiagnostic;
 
 use crate::error::Error;
 
-#[derive(Debug, getset::Getters, serde::Serialize)]
+#[derive(Clone, Debug, getset::Getters, serde::Deserialize, serde::Serialize)]
 pub struct Fragment {
     #[getset(get = "pub")]
     header: HashMap<String, FragmentData>,
