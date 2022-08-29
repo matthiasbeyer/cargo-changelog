@@ -1,0 +1,52 @@
+# Configuration for cargo-changelog
+
+#
+# unimplemented
+#
+add_version_date = true
+
+#
+# The directory where the changelog fragments and other data will be stored.
+# Relative to repository root.
+#
+fragment_dir = ".changelogs"
+
+#
+# The path to the template file, relative to `fragment_dir`
+#
+template_path = "template.md"
+
+#
+# Whether to edit the header data when opening $EDITOR for a new changelog
+# fragment
+#
+edit_data = true
+
+#
+# The format to edit the header with.
+# Possible values: "yaml", "toml"
+#
+# Right now, only "yaml" is supported
+#
+edit_format = "Yaml"
+
+#
+# The header fields that each fragment can have
+#
+# Format:
+#
+# ```
+# <header field name> = { type = "<type>", required = <bool>, default_value = <data> }
+# ```
+#
+# The `default_value` key is optional.
+# Possible values for `type` are "bool", "int", "string", "list", "map"
+# Possible values for `data` are "bool", "int", "string", "list", "map"
+#
+[header_fields]
+
+# A header field named "issue"
+# which is of type "integer"
+# and is required, but does not have a default value
+issue = { type = "int", required = true }
+
