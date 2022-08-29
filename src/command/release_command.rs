@@ -27,30 +27,7 @@ impl crate::command::Command for ReleaseCommand {
             handlebars
         };
 
-        let template_data = {
-            #[derive(Debug, serde::Serialize)]
-            struct VersionData {
-                version: String,
-                entries: Vec<Fragment>,
-            }
-            let versions = {
-                use itertools::Itertools;
-                let mut hm = HashMap::new();
-                for r in load_release_files(workdir, config) {
-                    let (version, fragment) = r?;
-                    hm.entry(version.to_string())
-                        .or_insert_with(Vec::new)
-                        .push(fragment);
-                }
-                hm.into_iter()
-                    .map(|(version, entries)| VersionData { version, entries })
-                    .sorted_by(|va, vb| va.version.cmp(&vb.version))
-            };
-
-            let mut hm: HashMap<String, Vec<VersionData>> = HashMap::new();
-            hm.insert("versions".to_string(), versions.collect());
-            hm
-        };
+        let template_data = compute_template_data(load_release_files(workdir, config))?;
 
         let changelog_contents = template
             .render(crate::consts::INTERNAL_TEMPLATE_NAME, &template_data)
@@ -125,4 +102,35 @@ fn load_release_files(
                 Ok((version, fragment))
             })
         })
+}
+
+/// Helper type for storing version associated with Fragments
+///
+/// only used for handlebars templating
+#[derive(Debug, serde::Serialize)]
+struct VersionData {
+    version: String,
+    entries: Vec<Fragment>,
+}
+
+fn compute_template_data(
+    release_files: impl Iterator<Item = miette::Result<(semver::Version, Fragment)>>,
+) -> miette::Result<HashMap<String, Vec<VersionData>>> {
+    let versions = {
+        use itertools::Itertools;
+        let mut hm = HashMap::new();
+        for r in release_files {
+            let (version, fragment) = r?;
+            hm.entry(version.to_string())
+                .or_insert_with(Vec::new)
+                .push(fragment);
+        }
+        hm.into_iter()
+            .map(|(version, entries)| VersionData { version, entries })
+            .sorted_by(|va, vb| va.version.cmp(&vb.version))
+    };
+
+    let mut hm: HashMap<String, Vec<VersionData>> = HashMap::new();
+    hm.insert("versions".to_string(), versions.collect());
+    Ok(hm)
 }
