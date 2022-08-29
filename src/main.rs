@@ -73,9 +73,9 @@ fn main() -> miette::Result<()> {
             .build()
             .execute(&repo_workdir_path, &config),
 
-        Command::Release => {
-            unimplemented!()
-        }
+        Command::Release => crate::command::ReleaseCommand::builder()
+            .build()
+            .execute(&repo_workdir_path, &config),
     }
 }
 
