@@ -23,6 +23,9 @@ pub enum Error {
     #[error("Error getting cargo meta information")]
     Cargo(#[from] cargo_metadata::Error),
 
+    #[error("Error in handlebars template")]
+    HandlebarsTemplate(#[from] handlebars::TemplateError),
+
     #[error("Repository has no worktree")]
     NoWorkTree,
 
