@@ -8,6 +8,7 @@ use crate::error::Error;
 use crate::fragment::FragmentDataDesc;
 
 pub const CONFIG_FILE_NAME: &'static str = ".changelog.toml";
+pub const DEFAULT_CONFIG: &'static str = include_str!("../assets/default_config.toml");
 
 #[derive(Debug, getset::Getters, serde::Deserialize, serde::Serialize)]
 pub struct Configuration {
@@ -52,20 +53,6 @@ pub struct Configuration {
     edit_format: EditFormat,
     #[getset(get = "pub")]
     header_fields: HashMap<String, FragmentDataDesc>,
-}
-
-impl Default for Configuration {
-    fn default() -> Self {
-        Self {
-            add_version_date: true,
-            fragment_dir: fragment_dir_default(),
-            template_path: template_path_default(),
-            changelog: changelog_default(),
-            edit_data: true,
-            edit_format: EditFormat::Yaml,
-            header_fields: HashMap::new(),
-        }
-    }
 }
 
 pub fn fragment_dir_default() -> PathBuf {
@@ -117,4 +104,35 @@ pub fn load(repo_workdir_path: &Path) -> miette::Result<Configuration> {
     toml::from_str(&config)
         .map_err(Error::from)
         .into_diagnostic()
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_default_config_deserializes_to_configuration() {
+        let config = toml::from_str::<super::Configuration>(super::DEFAULT_CONFIG);
+        assert!(config.is_ok(), "Not ok: {:?}", config.unwrap_err());
+    }
+
+    #[test]
+    fn test_default_config_has_default_fragment_dir() {
+        let config: super::Configuration = toml::from_str(super::DEFAULT_CONFIG).unwrap();
+        assert_eq!(
+            *config.fragment_dir(),
+            super::fragment_dir_default(),
+            "Fragment dir from default config is not {}",
+            super::fragment_dir_default().display()
+        );
+    }
+
+    #[test]
+    fn test_default_config_has_default_template_path() {
+        let config: super::Configuration = toml::from_str(super::DEFAULT_CONFIG).unwrap();
+        assert_eq!(
+            *config.template_path(),
+            super::template_path_default(),
+            "Template path from default config is not {}",
+            super::fragment_dir_default().display()
+        );
+    }
 }

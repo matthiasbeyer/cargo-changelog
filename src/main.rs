@@ -90,9 +90,6 @@ fn init(repo_workdir_path: PathBuf) -> miette::Result<()> {
     .map_err(Error::from)
     .into_diagnostic()?;
 
-    let default_config = crate::config::Configuration::default();
-    let default_config_str = toml::to_string(&default_config).unwrap(); // cannot happen
-
     let mut config_file = std::fs::OpenOptions::new()
         .create(true)
         .append(false)
@@ -101,7 +98,7 @@ fn init(repo_workdir_path: PathBuf) -> miette::Result<()> {
         .map_err(Error::from)
         .into_diagnostic()?;
 
-    write!(&mut config_file, "{}", default_config_str)
+    write!(&mut config_file, "{}", crate::config::DEFAULT_CONFIG)
         .map_err(Error::from)
         .into_diagnostic()?;
 
@@ -116,8 +113,8 @@ fn init(repo_workdir_path: PathBuf) -> miette::Result<()> {
         .write(true)
         .open({
             repo_workdir_path
-                .join(default_config.fragment_dir())
-                .join(default_config.template_path())
+                .join(crate::config::fragment_dir_default())
+                .join(crate::config::template_path_default())
         })
         .map_err(Error::from)
         .into_diagnostic()?;
