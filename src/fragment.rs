@@ -6,7 +6,7 @@ use miette::IntoDiagnostic;
 
 use crate::error::Error;
 
-#[derive(Debug, getset::Getters, serde::Serialize)]
+#[derive(Clone, Debug, getset::Getters, serde::Deserialize, serde::Serialize)]
 pub struct Fragment {
     #[getset(get = "pub")]
     header: HashMap<String, FragmentData>,
@@ -96,6 +96,11 @@ impl Fragment {
         writeln!(writer, "---").into_diagnostic()?;
         writeln!(writer, "{}", self.text).into_diagnostic()?;
         Ok(())
+    }
+
+    #[cfg(test)]
+    pub fn new(header: HashMap<String, FragmentData>, text: String) -> Self {
+        Self { header, text }
     }
 }
 
