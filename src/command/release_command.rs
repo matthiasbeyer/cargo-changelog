@@ -1,6 +1,7 @@
 use std::io::Write;
 use std::{collections::HashMap, io::BufReader, path::Path};
 
+use handlebars::handlebars_helper;
 use handlebars::Handlebars;
 use miette::IntoDiagnostic;
 
@@ -9,9 +10,13 @@ use crate::{config::Configuration, error::Error, fragment::Fragment};
 #[derive(Debug, typed_builder::TypedBuilder)]
 pub struct ReleaseCommand {}
 
-use handlebars::handlebars_helper;
-use serde_json;
-handlebars_helper!(sort_versions: |args: Vec<VersionData>| args.clone().sort_by(|a, b| a.version.cmp(&b.version)));
+handlebars_helper!(sort_versions: |args: Vec<VersionData>| {
+    let mut args = args.clone();
+    args.sort_by(|a, b| a.version.cmp(&b.version));
+    serde_json::to_value(args).unwrap() // handlebars deserializes this for us, so we can serialize
+                                        // it back without issue
+                                        // TODO: Make this helper nice
+});
 
 impl crate::command::Command for ReleaseCommand {
     fn execute(self, workdir: &Path, config: &Configuration) -> miette::Result<()> {
