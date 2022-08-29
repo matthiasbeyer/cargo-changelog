@@ -20,6 +20,9 @@ pub enum Error {
     #[error("Time formatting error")]
     TimeFormat(#[from] time::error::Format),
 
+    #[error("Error getting cargo meta information")]
+    Cargo(#[from] cargo_metadata::Error),
+
     #[error("Repository has no worktree")]
     NoWorkTree,
 
