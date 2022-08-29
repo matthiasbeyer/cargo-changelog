@@ -11,8 +11,6 @@ pub const CONFIG_FILE_NAME: &'static str = ".changelog.toml";
 
 #[derive(Debug, getset::Getters, serde::Deserialize, serde::Serialize)]
 pub struct Configuration {
-    changelog_header: String,
-    version_prefix: String,
     add_version_date: bool,
 
     /// Directory name where fragments will be stored
@@ -37,6 +35,17 @@ pub struct Configuration {
     #[serde(default = "template_path_default")]
     template_path: PathBuf,
 
+    /// The path of the changelog file
+    ///
+    /// By default: "CHANGELOG.md"
+    ///
+    /// ```rust
+    /// assert_eq!(changelog_default(), "CHANGELOG.md");
+    /// ```
+    #[getset(get = "pub")]
+    #[serde(default = "changelog_default")]
+    changelog: PathBuf,
+
     /// Whether to edit the data of a changelog entry in the editor
     edit_data: bool,
     /// Format to edit data in
@@ -48,12 +57,10 @@ pub struct Configuration {
 impl Default for Configuration {
     fn default() -> Self {
         Self {
-            changelog_header: "# Changelog".to_string(),
-            version_prefix: "v".to_string(),
             add_version_date: true,
-
             fragment_dir: fragment_dir_default(),
             template_path: template_path_default(),
+            changelog: changelog_default(),
             edit_data: true,
             edit_format: EditFormat::Yaml,
             header_fields: HashMap::new(),
@@ -67,6 +74,10 @@ pub fn fragment_dir_default() -> PathBuf {
 
 pub fn template_path_default() -> PathBuf {
     PathBuf::from("template.md")
+}
+
+pub fn changelog_default() -> PathBuf {
+    PathBuf::from("CHANGELOG.md")
 }
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
