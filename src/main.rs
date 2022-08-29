@@ -125,7 +125,11 @@ fn init(repo_workdir_path: PathBuf) -> miette::Result<()> {
         .create(true)
         .append(false)
         .write(true)
-        .open(repo_workdir_path.join(default_config.template_path()))
+        .open({
+            repo_workdir_path
+                .join(default_config.fragment_dir())
+                .join(default_config.template_path())
+        })
         .map_err(Error::from)
         .into_diagnostic()?;
 
