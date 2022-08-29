@@ -2,7 +2,7 @@
 
 <!-- generated from cargo-changelog -->
 
-{{#each versions}}
+{{#each (sort_versions this.versions)}}
 ## v{{this.version}}
 
 {{#each this.entries}}
