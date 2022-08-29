@@ -26,7 +26,16 @@ pub struct Configuration {
     #[serde(default = "fragment_dir_default")]
     fragment_dir: PathBuf,
 
-    entry_template: PathBuf,
+    /// The path of the template _inside the fragment directory_.
+    ///
+    /// By default: "template.md"
+    ///
+    /// ```rust
+    /// assert_eq!(fragment_dir_default(), "template.md");
+    /// ```
+    #[getset(get = "pub")]
+    #[serde(default = "template_path_default")]
+    template_path: PathBuf,
 
     /// Whether to edit the data of a changelog entry in the editor
     edit_data: bool,
@@ -44,8 +53,7 @@ impl Default for Configuration {
             add_version_date: true,
 
             fragment_dir: fragment_dir_default(),
-
-            entry_template: PathBuf::from("entry_template.md"),
+            template_path: template_path_default(),
             edit_data: true,
             edit_format: EditFormat::Yaml,
             header_fields: HashMap::new(),
@@ -55,6 +63,10 @@ impl Default for Configuration {
 
 pub fn fragment_dir_default() -> PathBuf {
     PathBuf::from(".changelogs")
+}
+
+pub fn template_path_default() -> PathBuf {
+    PathBuf::from("template.md")
 }
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
