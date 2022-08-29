@@ -55,3 +55,23 @@ fn init_command_creates_fragment_dir_unreleased() {
         panic!("Fragments directory '.changelogs/unreleased' does not exist after `cargo-changelog init`");
     }
 }
+
+#[test]
+fn init_command_creates_default_template() {
+    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    self::common::init_git(temp_dir.path());
+
+    Command::cargo_bin("cargo-changelog")
+        .unwrap()
+        .args(&["init"])
+        .current_dir(&temp_dir)
+        .assert()
+        .success();
+
+    let template_path = temp_dir.path().join(".changelogs").join("template.md");
+    if !template_path.exists() {
+        panic!(
+            "Template file '.changelogs/template.md' does not exist after `cargo-changelog init`"
+        );
+    }
+}
