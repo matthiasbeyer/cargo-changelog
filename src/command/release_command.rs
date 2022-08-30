@@ -28,7 +28,8 @@ impl crate::command::Command for ReleaseCommand {
                 "sort_versions",
                 Box::new(crate::template::helpers::sort_versions),
             );
-            handlebars.register_helper("reverse", Box::new(crate::template::helpers::reverse));
+            handlebars
+                .register_helper("reverse", Box::new(crate::template::helpers::ReverseHelper));
             handlebars
         };
 
@@ -197,7 +198,7 @@ mod tests {
             "sort_versions",
             Box::new(crate::template::helpers::sort_versions),
         );
-        hb.register_helper("reverse", Box::new(crate::template::helpers::reverse));
+        hb.register_helper("reverse", Box::new(crate::template::helpers::ReverseHelper));
         let template = hb.render("t", &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
@@ -233,7 +234,7 @@ mod tests {
             "sort_versions",
             Box::new(crate::template::helpers::sort_versions),
         );
-        hb.register_helper("reverse", Box::new(crate::template::helpers::reverse));
+        hb.register_helper("reverse", Box::new(crate::template::helpers::ReverseHelper));
         let template = hb.render("t", &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
@@ -275,7 +276,7 @@ mod tests {
             "sort_versions",
             Box::new(crate::template::helpers::sort_versions),
         );
-        hb.register_helper("reverse", Box::new(crate::template::helpers::reverse));
+        hb.register_helper("reverse", Box::new(crate::template::helpers::ReverseHelper));
         let template = hb.render("t", &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
@@ -324,7 +325,7 @@ mod tests {
             "sort_versions",
             Box::new(crate::template::helpers::sort_versions),
         );
-        hb.register_helper("reverse", Box::new(crate::template::helpers::reverse));
+        hb.register_helper("reverse", Box::new(crate::template::helpers::ReverseHelper));
         let template = hb.render("t", &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
