@@ -9,6 +9,7 @@ mod consts;
 mod error;
 mod format;
 mod fragment;
+mod template;
 
 use crate::cli::Command;
 use crate::cli::VersionSpec;
