@@ -1,7 +1,6 @@
 use std::io::Write;
 use std::{collections::HashMap, io::BufReader, path::Path};
 
-use handlebars::handlebars_helper;
 use handlebars::Handlebars;
 use miette::IntoDiagnostic;
 
@@ -10,40 +9,16 @@ use crate::{config::Configuration, error::Error, fragment::Fragment};
 #[derive(Debug, typed_builder::TypedBuilder)]
 pub struct ReleaseCommand {}
 
-handlebars_helper!(sort_versions: |args: Vec<VersionData>| {
-    let mut args = args.clone();
-    args.sort_by(|a, b| a.version.cmp(&b.version));
-    serde_json::to_value(args).unwrap() // handlebars deserializes this for us, so we can serialize
-                                        // it back without issue
-                                        // TODO: Make this helper nice
-});
-
-handlebars_helper!(reverse: |args: Vec<VersionData>| {
-    let args: Vec<VersionData> = args.clone().into_iter().rev().collect();
-    serde_json::to_value(args).unwrap() // handlebars deserializes this for us, so we can serialize
-                                        // it back without issue
-                                        // TODO: Make this helper nice
-});
-
 impl crate::command::Command for ReleaseCommand {
     fn execute(self, workdir: &Path, config: &Configuration) -> miette::Result<()> {
-        let template = {
-            let template_path = workdir
-                .join(config.fragment_dir())
-                .join(config.template_path());
-            let template_source = std::fs::read_to_string(template_path)
-                .map_err(Error::from)
-                .into_diagnostic()?;
+        let template_path = workdir
+            .join(config.fragment_dir())
+            .join(config.template_path());
+        let template_source = std::fs::read_to_string(template_path)
+            .map_err(Error::from)
+            .into_diagnostic()?;
 
-            let mut handlebars = Handlebars::new();
-            handlebars
-                .register_template_string(crate::consts::INTERNAL_TEMPLATE_NAME, template_source)
-                .map_err(Error::from)
-                .into_diagnostic()?;
-            handlebars.register_helper("sort_versions", Box::new(sort_versions));
-            handlebars.register_helper("reverse", Box::new(reverse));
-            handlebars
-        };
+        let template = crate::template::new_handlebars(&template_source)?;
 
         let template_data = compute_template_data(load_release_files(workdir, config))?;
 
@@ -125,9 +100,11 @@ fn load_release_files(
 /// Helper type for storing version associated with Fragments
 ///
 /// only used for handlebars templating
-#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
-struct VersionData {
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, getset::Getters)]
+pub struct VersionData {
+    #[getset(get = "pub")]
     version: String,
+    #[getset(get = "pub")]
     entries: Vec<Fragment>,
 }
 
@@ -200,13 +177,9 @@ mod tests {
 
     #[test]
     fn default_template_renders_with_empty_data() {
-        let mut hb = Handlebars::new();
+        let hb = crate::template::new_handlebars(crate::consts::DEFAULT_TEMPLATE).unwrap();
         let data: HashMap<String, Vec<String>> = HashMap::new();
-        hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
-            .unwrap();
-        hb.register_helper("sort_versions", Box::new(sort_versions));
-        hb.register_helper("reverse", Box::new(reverse));
-        let template = hb.render("t", &data);
+        let template = hb.render(crate::consts::INTERNAL_TEMPLATE_NAME, &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
 
@@ -219,7 +192,7 @@ mod tests {
 
     #[test]
     fn default_template_renders_with_one_entry() {
-        let mut hb = Handlebars::new();
+        let hb = crate::template::new_handlebars(crate::consts::DEFAULT_TEMPLATE).unwrap();
         let mut data: HashMap<String, Vec<_>> = HashMap::new();
         data.insert(
             "versions".to_string(),
@@ -235,11 +208,7 @@ mod tests {
                 )],
             }],
         );
-        hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
-            .unwrap();
-        hb.register_helper("sort_versions", Box::new(sort_versions));
-        hb.register_helper("reverse", Box::new(reverse));
-        let template = hb.render("t", &data);
+        let template = hb.render(crate::consts::INTERNAL_TEMPLATE_NAME, &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
 
@@ -258,7 +227,7 @@ mod tests {
 
     #[test]
     fn default_template_renders_with_one_entry_with_header() {
-        let mut hb = Handlebars::new();
+        let hb = crate::template::new_handlebars(crate::consts::DEFAULT_TEMPLATE).unwrap();
         let mut data: HashMap<String, Vec<_>> = HashMap::new();
         data.insert(
             "versions".to_string(),
@@ -274,11 +243,7 @@ mod tests {
                 )],
             }],
         );
-        hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
-            .unwrap();
-        hb.register_helper("sort_versions", Box::new(sort_versions));
-        hb.register_helper("reverse", Box::new(reverse));
-        let template = hb.render("t", &data);
+        let template = hb.render(crate::consts::INTERNAL_TEMPLATE_NAME, &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
 
@@ -291,7 +256,7 @@ mod tests {
 
     #[test]
     fn default_template_renders_versions_sorted() {
-        let mut hb = Handlebars::new();
+        let hb = crate::template::new_handlebars(crate::consts::DEFAULT_TEMPLATE).unwrap();
         let mut data: HashMap<String, Vec<_>> = HashMap::new();
         data.insert(
             "versions".to_string(),
@@ -320,11 +285,7 @@ mod tests {
                 },
             ],
         );
-        hb.register_template_string("t", crate::consts::DEFAULT_TEMPLATE)
-            .unwrap();
-        hb.register_helper("sort_versions", Box::new(sort_versions));
-        hb.register_helper("reverse", Box::new(reverse));
-        let template = hb.render("t", &data);
+        let template = hb.render(crate::consts::INTERNAL_TEMPLATE_NAME, &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
 
