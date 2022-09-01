@@ -26,12 +26,18 @@ impl crate::command::Command for ReleaseCommand {
             .render(crate::consts::INTERNAL_TEMPLATE_NAME, &template_data)
             .map_err(Error::from)
             .into_diagnostic()?;
+        log::debug!("Rendered successfully");
 
+        let changelog_file_path = workdir.join(config.changelog());
+        log::debug!(
+            "Writing changelog file now: {}",
+            changelog_file_path.display()
+        );
         let mut changelog_file = std::fs::OpenOptions::new()
             .create(true)
             .append(false)
             .truncate(true)
-            .open(workdir.join(config.template_path()))
+            .open(changelog_file_path)
             .map_err(Error::from)
             .into_diagnostic()?;
 
