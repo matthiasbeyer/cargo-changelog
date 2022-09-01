@@ -49,7 +49,10 @@ fn new_command_creates_default_header() {
     let fragment = std::fs::read_dir(&unreleased_dir)
         .unwrap()
         .into_iter()
-        .next()
+        .find(|rde| match rde {
+            Ok(de) => !de.path().ends_with(".gitkeep"),
+            Err(_) => true,
+        })
         .unwrap()
         .unwrap();
 

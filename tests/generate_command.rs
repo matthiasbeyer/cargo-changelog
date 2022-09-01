@@ -97,8 +97,8 @@ fn generate_command_moves_from_unreleased_dir() {
         let files = files_in_dir(&unreleased_dir);
         assert_eq!(
             files.len(),
-            1,
-            "Expected 1 entries in unreleased directory, found {}: {:?}",
+            2,
+            "Expected 2 entries in unreleased directory, found {}: {:?}",
             files.len(),
             files
         );
@@ -121,8 +121,8 @@ fn generate_command_moves_from_unreleased_dir() {
         let files = files_in_dir(&unreleased_dir);
         assert_eq!(
             files.len(),
-            0,
-            "Expected 0 entries in unreleased directory, found {}: {:?}",
+            1,
+            "Expected 1 entries (gitkeep) in unreleased directory, found {}: {:?}",
             files.len(),
             files
         );

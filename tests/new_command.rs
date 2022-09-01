@@ -39,13 +39,20 @@ fn new_command_creates_yaml_file() {
         .collect::<Vec<_>>();
     assert_eq!(
         files.len(),
-        1,
-        "Expected 1 entries in unreleased directory, found {}: {:?}",
+        2,
+        "Expected 2 entries in unreleased directory, found {}: {:?}",
         files.len(),
         files
     );
 
-    let new_fragment_file = files[0].as_ref().unwrap();
+    let new_fragment_file = files
+        .into_iter()
+        .find(|rde| match rde {
+            Ok(de) => !de.path().ends_with(".gitkeep"),
+            Err(_) => true,
+        })
+        .unwrap()
+        .unwrap();
     {
         let ft = new_fragment_file.file_type().unwrap();
         assert!(
@@ -142,7 +149,10 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
     let fragment_file = std::fs::read_dir(&temp_dir.path().join(".changelogs").join("unreleased"))
         .unwrap()
         .into_iter()
-        .next()
+        .find(|rde| match rde {
+            Ok(de) => !de.path().ends_with(".gitkeep"),
+            Err(_) => true,
+        })
         .unwrap()
         .unwrap();
 
@@ -205,7 +215,10 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
     let fragment_file = std::fs::read_dir(&temp_dir.path().join(".changelogs").join("unreleased"))
         .unwrap()
         .into_iter()
-        .next()
+        .find(|rde| match rde {
+            Ok(de) => !de.path().ends_with(".gitkeep"),
+            Err(_) => true,
+        })
         .unwrap()
         .unwrap();
 
@@ -246,12 +259,15 @@ fn new_command_creates_toml_header() {
 
     let unreleased_dir = temp_dir.path().join(".changelogs").join("unreleased");
 
-    let files = std::fs::read_dir(&unreleased_dir)
+    let new_fragment_file = std::fs::read_dir(&unreleased_dir)
         .unwrap()
         .into_iter()
-        .collect::<Vec<_>>();
-
-    let new_fragment_file = files[0].as_ref().unwrap();
+        .find(|rde| match rde {
+            Ok(de) => !de.path().ends_with(".gitkeep"),
+            Err(_) => true,
+        })
+        .unwrap()
+        .unwrap();
 
     let new_fragment_file_contents = std::fs::read_to_string(new_fragment_file.path()).unwrap();
     let toml_header = new_fragment_file_contents
