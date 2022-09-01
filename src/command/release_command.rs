@@ -37,6 +37,7 @@ impl crate::command::Command for ReleaseCommand {
             .create(true)
             .append(false)
             .truncate(true)
+            .write(true)
             .open(changelog_file_path)
             .map_err(Error::from)
             .into_diagnostic()?;
