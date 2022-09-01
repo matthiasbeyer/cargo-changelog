@@ -12,7 +12,6 @@ use crate::format::Format;
 
 #[derive(Debug, typed_builder::TypedBuilder)]
 pub struct NewCommand {
-    interactive: bool,
     edit: bool,
     format: Format,
     text: Option<TextProvider>,
