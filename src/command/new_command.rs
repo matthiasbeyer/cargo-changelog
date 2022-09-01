@@ -1,4 +1,3 @@
-use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
@@ -12,7 +11,6 @@ use crate::format::Format;
 
 #[derive(Debug, typed_builder::TypedBuilder)]
 pub struct NewCommand {
-    interactive: bool,
     edit: bool,
     format: Format,
     text: Option<TextProvider>,
