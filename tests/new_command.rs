@@ -194,3 +194,51 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
 
     assert_eq!(contents, test_text);
 }
+
+#[test]
+fn new_command_creates_toml_header() {
+    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    self::common::init_git(temp_dir.path());
+
+    Command::cargo_bin("cargo-changelog")
+        .unwrap()
+        .args(&["init"])
+        .current_dir(&temp_dir)
+        .assert()
+        .success();
+
+    Command::cargo_bin("cargo-changelog")
+        .unwrap()
+        .args(&[
+            "new",
+            "--interactive=false",
+            "--edit=false",
+            "--format=toml",
+        ])
+        .current_dir(&temp_dir)
+        .assert()
+        .success();
+
+    let unreleased_dir = temp_dir.path().join(".changelogs").join("unreleased");
+
+    let files = std::fs::read_dir(&unreleased_dir)
+        .unwrap()
+        .into_iter()
+        .collect::<Vec<_>>();
+
+    let new_fragment_file = files[0].as_ref().unwrap();
+
+    let new_fragment_file_contents = std::fs::read_to_string(new_fragment_file.path()).unwrap();
+    let toml_header = new_fragment_file_contents
+        .lines()
+        .skip(1)
+        .take_while(|line| *line != "+++")
+        .collect::<String>();
+
+    let toml = toml::from_str::<serde_yaml::Value>(&toml_header);
+    assert!(
+        toml.is_ok(),
+        "Failed to parse fragment file: {:?}",
+        toml.unwrap_err()
+    );
+}
