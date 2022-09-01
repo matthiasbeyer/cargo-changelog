@@ -70,46 +70,45 @@ fn load_release_files(
             }
         })
         .map(|rde| {
-            rde.map_err(Error::from).into_diagnostic().and_then(|de| {
-                let version: semver::Version = de
-                    .path()
-                    .components()
-                    .find_map(|comp| match comp {
-                        std::path::Component::Normal(comp) => {
-                            let s = comp
-                                .to_str()
-                                .ok_or_else(|| miette::miette!("UTF8 Error in path: {:?}", comp));
+            let de = rde.map_err(Error::from).into_diagnostic()?;
+            let version: semver::Version = de
+                .path()
+                .components()
+                .find_map(|comp| match comp {
+                    std::path::Component::Normal(comp) => {
+                        let s = comp
+                            .to_str()
+                            .ok_or_else(|| miette::miette!("UTF8 Error in path: {:?}", comp));
 
-                            match s {
-                                Err(e) => Some(Err(e)),
-                                Ok(s) => {
-                                    log::debug!("Parsing '{}' as semver", s);
-                                    match semver::Version::parse(s) {
-                                        Err(_) => None,
-                                        Ok(semver) => Some(Ok(semver)),
-                                    }
+                        match s {
+                            Err(e) => Some(Err(e)),
+                            Ok(s) => {
+                                log::debug!("Parsing '{}' as semver", s);
+                                match semver::Version::parse(s) {
+                                    Err(_) => None,
+                                    Ok(semver) => Some(Ok(semver)),
                                 }
                             }
                         }
-                        _ => None,
-                    })
-                    .transpose()?
-                    .ok_or_else(|| {
-                        miette::miette!("Did not find version for path: {}", de.path().display())
-                    })?;
+                    }
+                    _ => None,
+                })
+                .transpose()?
+                .ok_or_else(|| {
+                    miette::miette!("Did not find version for path: {}", de.path().display())
+                })?;
 
-                let fragment = std::fs::OpenOptions::new()
-                    .read(true)
-                    .create(false)
-                    .write(false)
-                    .open(de.path())
-                    .map_err(Error::from)
-                    .into_diagnostic()
-                    .map(BufReader::new)
-                    .and_then(|mut reader| Fragment::from_reader(&mut reader))?;
+            let fragment = std::fs::OpenOptions::new()
+                .read(true)
+                .create(false)
+                .write(false)
+                .open(de.path())
+                .map_err(Error::from)
+                .into_diagnostic()
+                .map(BufReader::new)
+                .and_then(|mut reader| Fragment::from_reader(&mut reader))?;
 
-                Ok((version, fragment))
-            })
+            Ok((version, fragment))
         })
 }
 
