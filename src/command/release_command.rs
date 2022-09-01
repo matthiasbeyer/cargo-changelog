@@ -69,11 +69,17 @@ fn load_release_files(
                 }
             }
         })
-        .map(|rde| {
-            let de = rde.map_err(Error::from).into_diagnostic()?;
-            let version: semver::Version = get_version_from_path(de.path()).ok_or_else(|| {
-                miette::miette!("Did not find version for path: {}", de.path().display())
-            })?;
+        .filter_map(|rde| {
+            let de = match rde.map_err(Error::from).into_diagnostic() {
+                Err(e) => return Some(Err(e)),
+                Ok(de) => de,
+            };
+
+            let version = match get_version_from_path(de.path()) {
+                Err(e) => return Some(Err(e)),
+                Ok(None) => return None,
+                Ok(Some(version)) => version,
+            };
 
             let fragment = std::fs::OpenOptions::new()
                 .read(true)
@@ -83,9 +89,12 @@ fn load_release_files(
                 .map_err(Error::from)
                 .into_diagnostic()
                 .map(BufReader::new)
-                .and_then(|mut reader| Fragment::from_reader(&mut reader))?;
+                .and_then(|mut reader| Fragment::from_reader(&mut reader));
 
-            Ok((version, fragment))
+            match fragment {
+                Err(e) => Some(Err(e)),
+                Ok(fragment) => Some(Ok((version, fragment))),
+            }
         })
 }
 
