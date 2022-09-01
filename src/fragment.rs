@@ -54,6 +54,7 @@ impl Fragment {
     }
 
     pub fn from_reader<R: Read>(reader: &mut R) -> miette::Result<Self> {
+        let mut format = Format::Yaml;
         let mut buf = String::new();
         reader
             .read_to_string(&mut buf)
@@ -62,8 +63,15 @@ impl Fragment {
 
         let mut lines = buf.lines();
         if let Some(header_sep) = lines.next() {
-            if header_sep != "---" {
-                miette::bail!("Expected header seperator: '---', found: '{}'", header_sep)
+            format = if header_sep == "---" {
+                Format::Yaml
+            } else if header_sep == "+++" {
+                Format::Toml
+            } else {
+                miette::bail!(
+                    "Expected header seperator: '---' or '+++', found: '{}'",
+                    header_sep
+                )
             }
         } else {
             miette::bail!("Header seperator '---' missing")
@@ -72,14 +80,22 @@ impl Fragment {
         let header = {
             let mut header = Vec::new();
             while let Some(line) = lines.next() {
-                if line == "---" {
+                if line == "---" || line == "+++" {
                     break;
                 }
                 header.push(line);
             }
-            serde_yaml::from_str::<HashMap<String, FragmentData>>(&header.join("\n"))
-                .map_err(Error::from)
-                .into_diagnostic()?
+
+            match format {
+                Format::Yaml => {
+                    serde_yaml::from_str::<HashMap<String, FragmentData>>(&header.join("\n"))
+                        .map_err(Error::from)
+                        .into_diagnostic()?
+                }
+                Format::Toml => toml::from_str::<HashMap<String, FragmentData>>(&header.join("\n"))
+                    .map_err(Error::from)
+                    .into_diagnostic()?,
+            }
         };
 
         let text = lines.collect::<String>();
