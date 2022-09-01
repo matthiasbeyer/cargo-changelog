@@ -83,13 +83,17 @@ fn main() -> miette::Result<()> {
 fn init(repo_workdir_path: PathBuf) -> miette::Result<()> {
     use std::io::Write;
 
-    std::fs::create_dir_all({
-        repo_workdir_path
-            .join(crate::config::fragment_dir_default())
-            .join("unreleased")
-    })
-    .map_err(Error::from)
-    .into_diagnostic()?;
+    let unreleased_dir_path = repo_workdir_path
+        .join(crate::config::fragment_dir_default())
+        .join("unreleased");
+
+    std::fs::create_dir_all(&unreleased_dir_path)
+        .map_err(Error::from)
+        .into_diagnostic()?;
+
+    std::fs::File::create(unreleased_dir_path.join(".gitkeep"))
+        .map_err(Error::from)
+        .into_diagnostic()?;
 
     let mut config_file = std::fs::OpenOptions::new()
         .create(true)
