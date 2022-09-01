@@ -31,6 +31,10 @@ impl crate::command::Command for GenerateCommand {
                     .map_err(Error::from)
                     .into_diagnostic()
             })
+            .filter(|rpb| match rpb {
+                Ok(pb) => !pb.ends_with(".gitkeep"),
+                Err(_) => true,
+            })
             .collect::<miette::Result<Vec<PathBuf>>>()?;
 
         for entry in to_be_moved {
