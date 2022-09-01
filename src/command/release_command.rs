@@ -58,7 +58,12 @@ fn load_release_files(
             Err(e) => Some(Err(e)),
             Ok(de) => {
                 if de.file_type().is_file() {
-                    Some(Ok(de))
+                    if de.path().ends_with("template.md") {
+                        None
+                    } else {
+                        log::debug!("Considering: {:?}", de);
+                        Some(Ok(de))
+                    }
                 } else {
                     None
                 }
