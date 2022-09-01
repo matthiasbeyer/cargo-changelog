@@ -8,6 +8,7 @@ mod sort_versions_helper;
 
 pub fn new_handlebars(template_source: &str) -> miette::Result<Handlebars> {
     let mut handlebars = Handlebars::new();
+    handlebars.register_escape_fn(handlebars::no_escape);
     handlebars
         .register_template_string(crate::consts::INTERNAL_TEMPLATE_NAME, template_source)
         .map_err(Error::from)
