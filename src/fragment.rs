@@ -263,4 +263,41 @@ mod tests {
             f.header()
         );
     }
+
+    #[test]
+    fn read_toml_header() {
+        let s = indoc::indoc!(
+            r#"+++
+        foo = "bar"
+        +++
+        "#
+        );
+
+        let f = Fragment::from_reader(&mut Cursor::new(s));
+        assert!(f.is_ok(), "Not ok: {:?}", f);
+        let f = f.unwrap();
+        assert!(f.text().is_empty());
+        assert!(
+            f.header().contains_key("foo"),
+            "'foo' key missing from header: {:?}",
+            f.header()
+        );
+        assert!(
+            std::matches!(f.header().get("foo").unwrap(), FragmentData::Str(_)),
+            "'foo' key does not point to String: {:?}",
+            f.header()
+        );
+
+        let foo = match f.header().get("foo").unwrap() {
+            FragmentData::Str(s) => s,
+            other => panic!("Expected String, found: {:?}", other),
+        };
+
+        assert_eq!(
+            foo,
+            "bar",
+            "'foo' key content is not 'bar': {:?}",
+            f.header()
+        );
+    }
 }
