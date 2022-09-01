@@ -37,7 +37,6 @@ jobs:
 
   deny:
     name: deny
-    needs: check
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -58,7 +57,6 @@ jobs:
 
   fmt:
     name: format
-    needs: check
     runs-on: ubuntu-latest
 
     steps:
@@ -75,7 +73,6 @@ jobs:
 
 
   test:
-    needs: check
     name: test
     runs-on: ubuntu-latest
     strategy:
@@ -102,7 +99,6 @@ jobs:
 
 
   clippy:
-    needs: check
     name: clippy
     runs-on: ubuntu-latest
     steps:
