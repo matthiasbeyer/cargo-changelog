@@ -71,32 +71,9 @@ fn load_release_files(
         })
         .map(|rde| {
             let de = rde.map_err(Error::from).into_diagnostic()?;
-            let version: semver::Version = de
-                .path()
-                .components()
-                .find_map(|comp| match comp {
-                    std::path::Component::Normal(comp) => {
-                        let s = comp
-                            .to_str()
-                            .ok_or_else(|| miette::miette!("UTF8 Error in path: {:?}", comp));
-
-                        match s {
-                            Err(e) => Some(Err(e)),
-                            Ok(s) => {
-                                log::debug!("Parsing '{}' as semver", s);
-                                match semver::Version::parse(s) {
-                                    Err(_) => None,
-                                    Ok(semver) => Some(Ok(semver)),
-                                }
-                            }
-                        }
-                    }
-                    _ => None,
-                })
-                .transpose()?
-                .ok_or_else(|| {
-                    miette::miette!("Did not find version for path: {}", de.path().display())
-                })?;
+            let version: semver::Version = get_version_from_path(de.path()).ok_or_else(|| {
+                miette::miette!("Did not find version for path: {}", de.path().display())
+            })?;
 
             let fragment = std::fs::OpenOptions::new()
                 .read(true)
@@ -143,6 +120,30 @@ fn compute_template_data(
     let mut hm: HashMap<String, Vec<VersionData>> = HashMap::new();
     hm.insert("versions".to_string(), versions.collect());
     Ok(hm)
+}
+
+fn get_version_from_path(path: &Path) -> miette::Result<Option<semver::Version>> {
+    path.components()
+        .find_map(|comp| match comp {
+            std::path::Component::Normal(comp) => {
+                let s = comp
+                    .to_str()
+                    .ok_or_else(|| miette::miette!("UTF8 Error in path: {:?}", comp));
+
+                match s {
+                    Err(e) => Some(Err(e)),
+                    Ok(s) => {
+                        log::debug!("Parsing '{}' as semver", s);
+                        match semver::Version::parse(s) {
+                            Err(_) => None,
+                            Ok(semver) => Some(Ok(semver)),
+                        }
+                    }
+                }
+            }
+            _ => None,
+        })
+        .transpose()
 }
 
 #[cfg(test)]
