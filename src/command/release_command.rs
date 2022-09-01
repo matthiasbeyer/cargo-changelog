@@ -79,13 +79,24 @@ fn load_release_files(
                             let s = comp
                                 .to_str()
                                 .ok_or_else(|| miette::miette!("UTF8 Error in path: {:?}", comp));
-                            Some(s.and_then(|s| semver::Version::parse(s).into_diagnostic()))
+
+                            match s {
+                                Err(e) => Some(Err(e)),
+                                Ok(s) => {
+                                    log::debug!("Parsing '{}' as semver", s);
+                                    match semver::Version::parse(s) {
+                                        Err(_) => None,
+                                        Ok(semver) => Some(Ok(semver)),
+                                    }
+                                }
+                            }
                         }
                         _ => None,
                     })
+                    .transpose()?
                     .ok_or_else(|| {
                         miette::miette!("Did not find version for path: {}", de.path().display())
-                    })??;
+                    })?;
 
                 let fragment = std::fs::OpenOptions::new()
                     .read(true)
