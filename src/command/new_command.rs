@@ -52,7 +52,7 @@ impl crate::command::Command for NewCommand {
 
         fragment.fill_header_from(config.header_fields())?;
 
-        fragment.write_to(&mut file)?;
+        fragment.write_to(&mut file, self.format)?;
         file.sync_all().map_err(Error::from).into_diagnostic()?;
         drop(file);
 

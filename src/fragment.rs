@@ -5,6 +5,7 @@ use std::io::Write;
 use miette::IntoDiagnostic;
 
 use crate::error::Error;
+use crate::format::Format;
 
 #[derive(Clone, Debug, getset::Getters, serde::Deserialize, serde::Serialize)]
 pub struct Fragment {
@@ -86,14 +87,27 @@ impl Fragment {
         Ok(Fragment { header, text })
     }
 
-    pub fn write_to<W: Write>(&self, writer: &mut W) -> miette::Result<()> {
-        let header = serde_yaml::to_string(&self.header)
-            .map_err(Error::from)
-            .into_diagnostic()?;
+    pub fn write_to<W: Write>(&self, writer: &mut W, format: Format) -> miette::Result<()> {
+        let (seperator, header) = match format {
+            Format::Yaml => {
+                let header = serde_yaml::to_string(&self.header)
+                    .map_err(Error::from)
+                    .into_diagnostic()?;
 
-        writeln!(writer, "---").into_diagnostic()?;
+                ("---", header)
+            }
+            Format::Toml => {
+                let header = toml::to_string(&self.header)
+                    .map_err(Error::from)
+                    .into_diagnostic()?;
+
+                ("+++", header)
+            }
+        };
+
+        writeln!(writer, "{}", seperator).into_diagnostic()?;
         writeln!(writer, "{}", header).into_diagnostic()?;
-        writeln!(writer, "---").into_diagnostic()?;
+        writeln!(writer, "{}", seperator).into_diagnostic()?;
         writeln!(writer, "{}", self.text).into_diagnostic()?;
         Ok(())
     }
