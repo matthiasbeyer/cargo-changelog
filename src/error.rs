@@ -14,6 +14,9 @@ pub enum Error {
     #[error("TOML deserialization error")]
     Toml(#[from] toml::de::Error),
 
+    #[error("TOML serialization error")]
+    TomlSer(#[from] toml::ser::Error),
+
     #[error("YAML error")]
     Yaml(#[from] serde_yaml::Error),
 

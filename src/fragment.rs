@@ -5,6 +5,7 @@ use std::io::Write;
 use miette::IntoDiagnostic;
 
 use crate::error::Error;
+use crate::format::Format;
 
 #[derive(Clone, Debug, getset::Getters, serde::Deserialize, serde::Serialize)]
 pub struct Fragment {
@@ -53,6 +54,7 @@ impl Fragment {
     }
 
     pub fn from_reader<R: Read>(reader: &mut R) -> miette::Result<Self> {
+        let mut format = Format::Yaml;
         let mut buf = String::new();
         reader
             .read_to_string(&mut buf)
@@ -61,8 +63,15 @@ impl Fragment {
 
         let mut lines = buf.lines();
         if let Some(header_sep) = lines.next() {
-            if header_sep != "---" {
-                miette::bail!("Expected header seperator: '---', found: '{}'", header_sep)
+            format = if header_sep == "---" {
+                Format::Yaml
+            } else if header_sep == "+++" {
+                Format::Toml
+            } else {
+                miette::bail!(
+                    "Expected header seperator: '---' or '+++', found: '{}'",
+                    header_sep
+                )
             }
         } else {
             miette::bail!("Header seperator '---' missing")
@@ -71,14 +80,22 @@ impl Fragment {
         let header = {
             let mut header = Vec::new();
             while let Some(line) = lines.next() {
-                if line == "---" {
+                if line == "---" || line == "+++" {
                     break;
                 }
                 header.push(line);
             }
-            serde_yaml::from_str::<HashMap<String, FragmentData>>(&header.join("\n"))
-                .map_err(Error::from)
-                .into_diagnostic()?
+
+            match format {
+                Format::Yaml => {
+                    serde_yaml::from_str::<HashMap<String, FragmentData>>(&header.join("\n"))
+                        .map_err(Error::from)
+                        .into_diagnostic()?
+                }
+                Format::Toml => toml::from_str::<HashMap<String, FragmentData>>(&header.join("\n"))
+                    .map_err(Error::from)
+                    .into_diagnostic()?,
+            }
         };
 
         let text = lines.collect::<String>();
@@ -86,14 +103,27 @@ impl Fragment {
         Ok(Fragment { header, text })
     }
 
-    pub fn write_to<W: Write>(&self, writer: &mut W) -> miette::Result<()> {
-        let header = serde_yaml::to_string(&self.header)
-            .map_err(Error::from)
-            .into_diagnostic()?;
+    pub fn write_to<W: Write>(&self, writer: &mut W, format: Format) -> miette::Result<()> {
+        let (seperator, header) = match format {
+            Format::Yaml => {
+                let header = serde_yaml::to_string(&self.header)
+                    .map_err(Error::from)
+                    .into_diagnostic()?;
 
-        writeln!(writer, "---").into_diagnostic()?;
+                ("---", header)
+            }
+            Format::Toml => {
+                let header = toml::to_string(&self.header)
+                    .map_err(Error::from)
+                    .into_diagnostic()?;
+
+                ("+++", header)
+            }
+        };
+
+        writeln!(writer, "{}", seperator).into_diagnostic()?;
         writeln!(writer, "{}", header).into_diagnostic()?;
-        writeln!(writer, "---").into_diagnostic()?;
+        writeln!(writer, "{}", seperator).into_diagnostic()?;
         writeln!(writer, "{}", self.text).into_diagnostic()?;
         Ok(())
     }
@@ -219,6 +249,43 @@ mod tests {
             r#"---
         foo: bar
         ---
+        "#
+        );
+
+        let f = Fragment::from_reader(&mut Cursor::new(s));
+        assert!(f.is_ok(), "Not ok: {:?}", f);
+        let f = f.unwrap();
+        assert!(f.text().is_empty());
+        assert!(
+            f.header().contains_key("foo"),
+            "'foo' key missing from header: {:?}",
+            f.header()
+        );
+        assert!(
+            std::matches!(f.header().get("foo").unwrap(), FragmentData::Str(_)),
+            "'foo' key does not point to String: {:?}",
+            f.header()
+        );
+
+        let foo = match f.header().get("foo").unwrap() {
+            FragmentData::Str(s) => s,
+            other => panic!("Expected String, found: {:?}", other),
+        };
+
+        assert_eq!(
+            foo,
+            "bar",
+            "'foo' key content is not 'bar': {:?}",
+            f.header()
+        );
+    }
+
+    #[test]
+    fn read_toml_header() {
+        let s = indoc::indoc!(
+            r#"+++
+        foo = "bar"
+        +++
         "#
         );
 
