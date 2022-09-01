@@ -12,7 +12,6 @@ mod fragment;
 mod template;
 
 use crate::cli::Command;
-use crate::cli::VersionSpec;
 use crate::command::Command as _;
 use crate::error::Error;
 
