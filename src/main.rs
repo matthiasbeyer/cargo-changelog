@@ -67,6 +67,10 @@ fn main() -> miette::Result<()> {
             .build()
             .execute(&repo_workdir_path, &config)?,
 
+        Command::VerifyMetadata => crate::command::VerifyMetadataCommand::builder()
+            .build()
+            .execute(&repo_workdir_path, &config)?,
+
         Command::Generate(version) => crate::command::GenerateCommand::builder()
             .version(version)
             .build()

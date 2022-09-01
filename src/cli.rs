@@ -42,6 +42,8 @@ pub enum Command {
         read: Option<TextProvider>,
     },
 
+    VerifyMetadata,
+
     #[clap(subcommand)]
     Generate(VersionSpec),
 

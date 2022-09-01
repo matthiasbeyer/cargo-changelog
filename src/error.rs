@@ -60,6 +60,9 @@ pub enum Error {
 
     #[error("Text provider error")]
     TextProvider(#[from] TextProviderError),
+
+    #[error("Verification failed")]
+    Verification(#[related] Vec<VerificationError>),
 }
 
 #[derive(Debug, thiserror::Error, miette::Diagnostic)]
@@ -99,4 +102,16 @@ pub enum TextProviderError {
 
     #[error("UTF8 Error")]
     Utf8(#[from] std::string::FromUtf8Error),
+}
+
+#[derive(Debug, thiserror::Error, miette::Diagnostic)]
+pub enum VerificationError {
+    #[error("Version error")]
+    Version(#[from] VersionError),
+
+    #[error("Error while parsing fragment {0}")]
+    FragmentParsing(PathBuf, #[source] FragmentError),
+
+    #[error("Error while walking directory")]
+    WalkDir(#[from] walkdir::Error),
 }
