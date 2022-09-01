@@ -72,6 +72,31 @@ fn new_command_creates_yaml_file() {
 }
 
 #[test]
+fn new_command_creates_unreleased_gitkeep() {
+    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    self::common::init_git(temp_dir.path());
+
+    Command::cargo_bin("cargo-changelog")
+        .unwrap()
+        .args(&["init"])
+        .current_dir(&temp_dir)
+        .assert()
+        .success();
+
+    let unreleased_gitkeep_path = temp_dir
+        .path()
+        .join(".changelogs")
+        .join("unreleased")
+        .join(".gitkeep");
+    if !unreleased_gitkeep_path.exists() {
+        panic!("unreleased gitkeep file does not exist");
+    }
+    if !unreleased_gitkeep_path.is_file() {
+        panic!("unreleased gitkeep file is not a file");
+    }
+}
+
+#[test]
 fn new_command_with_text_creates_yaml_with_text_from_stdin() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
     self::common::init_git(temp_dir.path());
