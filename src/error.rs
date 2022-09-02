@@ -87,20 +87,9 @@ pub enum FragmentError {
 }
 
 #[derive(Debug, thiserror::Error, miette::Diagnostic)]
-#[error("UTF8 Error with path: {}", .0.display())]
-pub struct PathUtf8Error(pub PathBuf);
-
-#[derive(Debug, thiserror::Error, miette::Diagnostic)]
-#[error("Semver handling error")]
-pub struct SemverError(#[from] semver::Error);
-
-#[derive(Debug, thiserror::Error, miette::Diagnostic)]
 pub enum VersionError {
-    #[error("Path UTF8 Error")]
-    Utf8(#[from] PathUtf8Error),
-
-    #[error("Error handling semver")]
-    Semver(#[from] SemverError),
+    #[error("UTF8 Error with path: {}", .0.display())]
+    Utf8(PathBuf),
 }
 
 #[derive(Debug, thiserror::Error, miette::Diagnostic)]
