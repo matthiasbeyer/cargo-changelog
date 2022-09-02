@@ -1,7 +1,5 @@
 use std::path::{Path, PathBuf};
 
-use miette::IntoDiagnostic;
-
 use crate::{cli::VersionSpec, config::Configuration, error::Error};
 
 #[derive(Debug, typed_builder::TypedBuilder)]
@@ -10,7 +8,7 @@ pub struct GenerateCommand {
 }
 
 impl crate::command::Command for GenerateCommand {
-    fn execute(self, workdir: &Path, config: &Configuration) -> miette::Result<()> {
+    fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), Error> {
         let version_string = find_version_string(workdir, &self.version)?;
         log::debug!("Creating new directory for version '{}'", version_string);
         let release_dir = ensure_release_dir(workdir, config, &version_string)?;
@@ -21,38 +19,29 @@ impl crate::command::Command for GenerateCommand {
         log::info!("Computed unrelease dir: {}", unreleased_dir.display());
         log::info!("Computed release dir: {}", release_dir.display());
 
-        let to_be_moved = std::fs::read_dir(&unreleased_dir)
-            .map_err(Error::from)
-            .into_diagnostic()?
+        let to_be_moved = std::fs::read_dir(&unreleased_dir)?
             .into_iter()
-            .map(|rdirentry| {
-                rdirentry
-                    .map(|de| de.path())
-                    .map_err(Error::from)
-                    .into_diagnostic()
-            })
+            .map(|rdirentry| rdirentry.map(|de| de.path()).map_err(Error::from))
             .filter(|rpb| match rpb {
                 Ok(pb) => !pb.ends_with(".gitkeep"),
                 Err(_) => true,
             })
-            .collect::<miette::Result<Vec<PathBuf>>>()?;
+            .collect::<Result<Vec<PathBuf>, _>>()?;
 
         for entry in to_be_moved {
             let entry_file_name = entry
                 .file_name()
-                .ok_or_else(|| miette::miette!("Apparently no file: {}", entry.display()))?;
+                .ok_or_else(|| Error::NotAFile(entry.to_path_buf()))?;
             let destination = release_dir.join(entry_file_name);
             log::info!("Moving: {} -> {}", entry.display(), destination.display());
-            std::fs::rename(entry, destination)
-                .map_err(Error::from)
-                .into_diagnostic()?;
+            std::fs::rename(entry, destination)?;
         }
 
         Ok(())
     }
 }
 
-fn find_version_string(workdir: &Path, version: &VersionSpec) -> miette::Result<String> {
+fn find_version_string(workdir: &Path, version: &VersionSpec) -> Result<String, Error> {
     use cargo_metadata::MetadataCommand;
 
     if let VersionSpec::Custom { custom } = version {
@@ -60,9 +49,7 @@ fn find_version_string(workdir: &Path, version: &VersionSpec) -> miette::Result<
     } else {
         let metadata = MetadataCommand::new()
             .manifest_path(workdir.join("./Cargo.toml"))
-            .exec()
-            .map_err(Error::from)
-            .into_diagnostic()?;
+            .exec()?;
 
         let workspace_member_ids = &metadata.workspace_members;
 
@@ -74,13 +61,13 @@ fn find_version_string(workdir: &Path, version: &VersionSpec) -> miette::Result<
             .collect::<Vec<_>>();
 
         if versions.is_empty() {
-            miette::bail!("No version found in Cargo.toml, that should never happen...")
+            return Err(Error::NoVersionInCargoToml);
         }
 
         let first = versions[0];
         let all_versions_same = versions.iter().all(|v| *v == first);
         if !all_versions_same {
-            miette::bail!("Versions are not all the same in the workspace, cannot decide what you want to release!")
+            return Err(Error::WorkspaceVersionsNotEqual);
         }
         Ok(first.to_string())
     }
@@ -90,10 +77,8 @@ fn ensure_release_dir(
     workdir: &Path,
     config: &Configuration,
     version_string: &str,
-) -> miette::Result<PathBuf> {
+) -> Result<PathBuf, Error> {
     let release_dir = workdir.join(config.fragment_dir()).join(version_string);
-    std::fs::create_dir_all(&release_dir)
-        .map_err(Error::from)
-        .into_diagnostic()?;
+    std::fs::create_dir_all(&release_dir)?;
     Ok(release_dir)
 }

@@ -65,17 +65,19 @@ fn main() -> miette::Result<()> {
             .format(format)
             .text(read)
             .build()
-            .execute(&repo_workdir_path, &config),
+            .execute(&repo_workdir_path, &config)?,
 
         Command::Generate(version) => crate::command::GenerateCommand::builder()
             .version(version)
             .build()
-            .execute(&repo_workdir_path, &config),
+            .execute(&repo_workdir_path, &config)?,
 
         Command::Release => crate::command::ReleaseCommand::builder()
             .build()
-            .execute(&repo_workdir_path, &config),
+            .execute(&repo_workdir_path, &config)?,
     }
+
+    Ok(())
 }
 
 fn init(repo_workdir_path: PathBuf) -> miette::Result<()> {

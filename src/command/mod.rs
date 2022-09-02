@@ -15,5 +15,5 @@ pub use self::release_command::ReleaseCommand;
 pub use self::release_command::VersionData;
 
 pub trait Command {
-    fn execute(self, workdir: &Path, config: &Configuration) -> miette::Result<()>;
+    fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), crate::error::Error>;
 }

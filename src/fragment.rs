@@ -2,9 +2,7 @@ use std::collections::HashMap;
 use std::io::Read;
 use std::io::Write;
 
-use miette::IntoDiagnostic;
-
-use crate::error::Error;
+use crate::error::FragmentError;
 use crate::format::Format;
 
 #[derive(Clone, Debug, getset::Getters, serde::Deserialize, serde::Serialize)]
@@ -30,7 +28,7 @@ impl Fragment {
     pub fn fill_header_from(
         &mut self,
         header: &HashMap<String, FragmentDataDesc>,
-    ) -> miette::Result<()> {
+    ) -> Result<(), FragmentError> {
         let new_header = header
             .iter()
             .filter_map(|(key, data_desc)| {
@@ -38,28 +36,25 @@ impl Fragment {
                     if data_desc.fragment_type().matches(&default) {
                         Some(Ok((key.clone(), default.clone())))
                     } else {
-                        Some(Err(miette::miette!(
-                            "Required data type: {}, but default value is {}",
-                            data_desc.fragment_type().type_name(),
-                            default.type_name()
-                        )))
+                        Some(Err(FragmentError::DataType {
+                            exp: data_desc.fragment_type().type_name().to_string(),
+                            recv: default.type_name().to_string(),
+                        }))
                     }
                 } else {
                     None
                 }
             })
-            .collect::<miette::Result<HashMap<String, FragmentData>>>()?;
+            .collect::<Result<HashMap<String, FragmentData>, _>>()?;
         self.header = new_header;
         Ok(())
     }
 
-    pub fn from_reader<R: Read>(reader: &mut R) -> miette::Result<Self> {
+    pub fn from_reader<R: Read>(reader: &mut R) -> Result<Self, FragmentError> {
         let mut format = Format::Yaml;
         let mut buf = String::new();
-        reader
-            .read_to_string(&mut buf)
-            .map_err(Error::from)
-            .into_diagnostic()?;
+
+        reader.read_to_string(&mut buf)?;
 
         let mut lines = buf.lines();
         if let Some(header_sep) = lines.next() {
@@ -68,13 +63,10 @@ impl Fragment {
             } else if header_sep == "+++" {
                 Format::Toml
             } else {
-                miette::bail!(
-                    "Expected header seperator: '---' or '+++', found: '{}'",
-                    header_sep
-                )
+                return Err(FragmentError::ExpectedSeperator(header_sep.to_string()));
             }
         } else {
-            miette::bail!("Header seperator '---' missing")
+            return Err(FragmentError::HeaderSeperatorMissing);
         }
 
         let header = {
@@ -88,13 +80,11 @@ impl Fragment {
 
             match format {
                 Format::Yaml => {
-                    serde_yaml::from_str::<HashMap<String, FragmentData>>(&header.join("\n"))
-                        .map_err(Error::from)
-                        .into_diagnostic()?
+                    serde_yaml::from_str::<HashMap<String, FragmentData>>(&header.join("\n"))?
                 }
-                Format::Toml => toml::from_str::<HashMap<String, FragmentData>>(&header.join("\n"))
-                    .map_err(Error::from)
-                    .into_diagnostic()?,
+                Format::Toml => {
+                    toml::from_str::<HashMap<String, FragmentData>>(&header.join("\n"))?
+                }
             }
         };
 
@@ -103,28 +93,23 @@ impl Fragment {
         Ok(Fragment { header, text })
     }
 
-    pub fn write_to<W: Write>(&self, writer: &mut W, format: Format) -> miette::Result<()> {
+    pub fn write_to<W: Write>(&self, writer: &mut W, format: Format) -> Result<(), FragmentError> {
         let (seperator, header) = match format {
             Format::Yaml => {
-                let header = serde_yaml::to_string(&self.header)
-                    .map_err(Error::from)
-                    .into_diagnostic()?;
+                let header = serde_yaml::to_string(&self.header)?;
 
                 ("---", header)
             }
             Format::Toml => {
-                let header = toml::to_string(&self.header)
-                    .map_err(Error::from)
-                    .into_diagnostic()?;
-
+                let header = toml::to_string(&self.header)?;
                 ("+++", header)
             }
         };
 
-        writeln!(writer, "{}", seperator).into_diagnostic()?;
-        writeln!(writer, "{}", header).into_diagnostic()?;
-        writeln!(writer, "{}", seperator).into_diagnostic()?;
-        writeln!(writer, "{}", self.text).into_diagnostic()?;
+        writeln!(writer, "{}", seperator)?;
+        writeln!(writer, "{}", header)?;
+        writeln!(writer, "{}", seperator)?;
+        writeln!(writer, "{}", self.text)?;
         Ok(())
     }
 

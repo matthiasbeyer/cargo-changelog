@@ -2,9 +2,8 @@ use std::path::PathBuf;
 
 use clap::Parser;
 use clap::Subcommand;
-use miette::IntoDiagnostic;
 
-use crate::error::Error;
+use crate::error::TextProviderError;
 use crate::format::Format;
 
 /// Get CLI args via `clap` while also handling when we are invoked as a cargo
@@ -73,25 +72,20 @@ pub enum TextProvider {
 }
 
 impl TextProvider {
-    pub fn read(&self) -> miette::Result<String> {
+    pub fn read(&self) -> Result<String, TextProviderError> {
         use std::io::Read;
 
         match self {
             TextProvider::Stdin => {
                 let mut buf = Vec::new();
 
-                std::io::stdin()
-                    .read_to_end(&mut buf)
-                    .map_err(Error::from)
-                    .into_diagnostic()?;
+                std::io::stdin().read_to_end(&mut buf)?;
 
-                String::from_utf8(buf)
-                    .map_err(Error::from)
-                    .into_diagnostic()
+                String::from_utf8(buf).map_err(TextProviderError::from)
             }
-            TextProvider::Path(path) => std::fs::read_to_string(path)
-                .map_err(Error::from)
-                .into_diagnostic(),
+            TextProvider::Path(path) => {
+                std::fs::read_to_string(path).map_err(TextProviderError::from)
+            }
         }
     }
 }

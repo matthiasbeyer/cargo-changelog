@@ -1,12 +1,14 @@
 use std::path::Path;
 
-pub fn get_version_from_path(path: &Path) -> miette::Result<Option<semver::Version>> {
+use crate::error::VersionError;
+
+pub fn get_version_from_path(path: &Path) -> Result<Option<semver::Version>, VersionError> {
     path.components()
         .find_map(|comp| match comp {
             std::path::Component::Normal(comp) => {
                 let s = comp
                     .to_str()
-                    .ok_or_else(|| miette::miette!("UTF8 Error in path: {:?}", comp));
+                    .ok_or_else(|| VersionError::Utf8(path.to_path_buf()));
 
                 match s {
                     Err(e) => Some(Err(e)),
