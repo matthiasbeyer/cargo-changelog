@@ -45,6 +45,12 @@ pub enum Error {
         "Versions are not all the same in the workspace, cannot decide what you want to release!"
     )]
     WorkspaceVersionsNotEqual,
+
+    #[error("EDITOR and VISUAL are not set, cannot find editor")]
+    EditorEnvNotSet,
+
+    #[error("Environment variable '{0}' is not unicode")]
+    EnvNotUnicode(String),
 }
 
 #[derive(Debug, thiserror::Error, miette::Diagnostic)]
