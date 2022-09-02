@@ -2,9 +2,7 @@ use std::path::PathBuf;
 
 use clap::Parser;
 use clap::Subcommand;
-use miette::IntoDiagnostic;
 
-use crate::error::Error;
 use crate::error::TextProviderError;
 use crate::format::Format;
 

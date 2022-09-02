@@ -1,7 +1,5 @@
 use std::path::{Path, PathBuf};
 
-use miette::IntoDiagnostic;
-
 use crate::{cli::VersionSpec, config::Configuration, error::Error};
 
 #[derive(Debug, typed_builder::TypedBuilder)]

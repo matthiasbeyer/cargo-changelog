@@ -2,8 +2,6 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
 
-use miette::IntoDiagnostic;
-
 use crate::cli::TextProvider;
 use crate::config::Configuration;
 use crate::error::Error;

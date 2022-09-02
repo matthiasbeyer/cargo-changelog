@@ -1,8 +1,6 @@
 use std::io::Write;
 use std::{collections::HashMap, io::BufReader, path::Path};
 
-use miette::IntoDiagnostic;
-
 use crate::{config::Configuration, error::Error, fragment::Fragment};
 
 #[derive(Debug, typed_builder::TypedBuilder)]
