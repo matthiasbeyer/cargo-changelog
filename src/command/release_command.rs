@@ -82,7 +82,7 @@ fn load_release_files(
                 Ok(de) => de,
             };
 
-            let version = match get_version_from_path(de.path()) {
+            let version = match crate::command::common::get_version_from_path(de.path()) {
                 Err(e) => return Some(Err(e)),
                 Ok(None) => return None,
                 Ok(Some(version)) => version,
@@ -136,30 +136,6 @@ fn compute_template_data(
     let mut hm: HashMap<String, Vec<VersionData>> = HashMap::new();
     hm.insert("versions".to_string(), versions.collect());
     Ok(hm)
-}
-
-fn get_version_from_path(path: &Path) -> miette::Result<Option<semver::Version>> {
-    path.components()
-        .find_map(|comp| match comp {
-            std::path::Component::Normal(comp) => {
-                let s = comp
-                    .to_str()
-                    .ok_or_else(|| miette::miette!("UTF8 Error in path: {:?}", comp));
-
-                match s {
-                    Err(e) => Some(Err(e)),
-                    Ok(s) => {
-                        log::debug!("Parsing '{}' as semver", s);
-                        match semver::Version::parse(s) {
-                            Err(_) => None,
-                            Ok(semver) => Some(Ok(semver)),
-                        }
-                    }
-                }
-            }
-            _ => None,
-        })
-        .transpose()
 }
 
 #[cfg(test)]
