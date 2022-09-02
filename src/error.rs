@@ -99,3 +99,12 @@ pub enum VersionError {
     #[error("Error handling semver")]
     Semver(#[from] SemverError),
 }
+
+#[derive(Debug, thiserror::Error, miette::Diagnostic)]
+pub enum TextProviderError {
+    #[error("IO Error")]
+    Io(#[from] std::io::Error),
+
+    #[error("UTF8 Error")]
+    Utf8(#[from] std::string::FromUtf8Error),
+}
