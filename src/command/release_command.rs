@@ -9,22 +9,16 @@ use crate::{config::Configuration, error::Error, fragment::Fragment};
 pub struct ReleaseCommand {}
 
 impl crate::command::Command for ReleaseCommand {
-    fn execute(self, workdir: &Path, config: &Configuration) -> miette::Result<()> {
+    fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), Error> {
         let template_path = workdir
             .join(config.fragment_dir())
             .join(config.template_path());
-        let template_source = std::fs::read_to_string(template_path)
-            .map_err(Error::from)
-            .into_diagnostic()?;
-
+        let template_source = std::fs::read_to_string(template_path)?;
         let template = crate::template::new_handlebars(&template_source)?;
-
         let template_data = compute_template_data(load_release_files(workdir, config))?;
 
-        let changelog_contents = template
-            .render(crate::consts::INTERNAL_TEMPLATE_NAME, &template_data)
-            .map_err(Error::from)
-            .into_diagnostic()?;
+        let changelog_contents =
+            template.render(crate::consts::INTERNAL_TEMPLATE_NAME, &template_data)?;
         log::debug!("Rendered successfully");
 
         let changelog_file_path = workdir.join(config.changelog());
@@ -37,24 +31,18 @@ impl crate::command::Command for ReleaseCommand {
             .append(false)
             .truncate(true)
             .write(true)
-            .open(changelog_file_path)
-            .map_err(Error::from)
-            .into_diagnostic()?;
+            .open(changelog_file_path)?;
 
-        write!(changelog_file, "{}", changelog_contents)
-            .map_err(Error::from)
-            .into_diagnostic()?;
-        changelog_file
-            .sync_all()
-            .map_err(Error::from)
-            .into_diagnostic()
+        write!(changelog_file, "{}", changelog_contents)?;
+        changelog_file.sync_all()?;
+        Ok(())
     }
 }
 
 fn load_release_files(
     workdir: &Path,
     config: &Configuration,
-) -> impl Iterator<Item = miette::Result<(semver::Version, Fragment)>> {
+) -> impl Iterator<Item = Result<(semver::Version, Fragment), Error>> {
     walkdir::WalkDir::new(workdir.join(config.fragment_dir()))
         .follow_links(false)
         .max_open(100)
@@ -76,13 +64,13 @@ fn load_release_files(
             }
         })
         .filter_map(|rde| {
-            let de = match rde.map_err(Error::from).into_diagnostic() {
-                Err(e) => return Some(Err(e)),
+            let de = match rde {
+                Err(e) => return Some(Err(Error::from(e))),
                 Ok(de) => de,
             };
 
             let version = match crate::command::common::get_version_from_path(de.path()) {
-                Err(e) => return Some(Err(e)),
+                Err(e) => return Some(Err(Error::from(e))),
                 Ok(None) => return None,
                 Ok(Some(version)) => version,
             };
@@ -93,9 +81,8 @@ fn load_release_files(
                 .write(false)
                 .open(de.path())
                 .map_err(Error::from)
-                .into_diagnostic()
                 .map(BufReader::new)
-                .and_then(|mut reader| Fragment::from_reader(&mut reader));
+                .and_then(|mut reader| Fragment::from_reader(&mut reader).map_err(Error::from));
 
             match fragment {
                 Err(e) => Some(Err(e)),
@@ -116,8 +103,8 @@ pub struct VersionData {
 }
 
 fn compute_template_data(
-    release_files: impl Iterator<Item = miette::Result<(semver::Version, Fragment)>>,
-) -> miette::Result<HashMap<String, Vec<VersionData>>> {
+    release_files: impl Iterator<Item = Result<(semver::Version, Fragment), Error>>,
+) -> Result<HashMap<String, Vec<VersionData>>, Error> {
     let versions = {
         use itertools::Itertools;
         let mut hm = HashMap::new();
