@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-#[derive(Debug, thiserror::Error)]
+#[derive(Debug, thiserror::Error, miette::Diagnostic)]
 pub enum Error {
     #[error("IO")]
     Io(#[from] std::io::Error),
