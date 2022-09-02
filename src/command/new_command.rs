@@ -17,7 +17,7 @@ pub struct NewCommand {
 }
 
 impl crate::command::Command for NewCommand {
-    fn execute(self, workdir: &Path, config: &Configuration) -> miette::Result<()> {
+    fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), Error> {
         let unreleased_dir_path = ensure_fragment_dir(workdir, config)?;
 
         let new_file_path = {
@@ -25,9 +25,7 @@ impl crate::command::Command for NewCommand {
                 "{ts}.md",
                 ts = {
                     time::OffsetDateTime::now_utc()
-                        .format(&time::format_description::well_known::Iso8601::DEFAULT)
-                        .map_err(Error::from)
-                        .into_diagnostic()?
+                        .format(&time::format_description::well_known::Iso8601::DEFAULT)?
                 },
             );
             unreleased_dir_path.join(new_file_name)
@@ -37,9 +35,7 @@ impl crate::command::Command for NewCommand {
             .create(true)
             .write(true)
             .append(false)
-            .open(&new_file_path)
-            .map_err(Error::from)
-            .into_diagnostic()?;
+            .open(&new_file_path)?;
 
         let mut fragment = crate::fragment::Fragment::empty();
 
@@ -51,7 +47,7 @@ impl crate::command::Command for NewCommand {
         fragment.fill_header_from(config.header_fields())?;
 
         fragment.write_to(&mut file, self.format)?;
-        file.sync_all().map_err(Error::from).into_diagnostic()?;
+        file.sync_all()?;
         drop(file);
 
         if self.edit {
@@ -60,9 +56,7 @@ impl crate::command::Command for NewCommand {
                 .arg(&new_file_path)
                 .stderr(std::process::Stdio::inherit())
                 .stdout(std::process::Stdio::inherit())
-                .output()
-                .map_err(Error::from)
-                .into_diagnostic()?;
+                .output()?;
 
             if status.success() {
                 log::info!("Successfully edited");
@@ -75,28 +69,27 @@ impl crate::command::Command for NewCommand {
     }
 }
 
-fn ensure_fragment_dir(workdir: &Path, config: &Configuration) -> miette::Result<PathBuf> {
+fn ensure_fragment_dir(workdir: &Path, config: &Configuration) -> Result<PathBuf, Error> {
     let unreleased_dir_path = workdir
         .join(config.fragment_dir())
         .join(crate::consts::UNRELEASED_DIR_NAME);
-    std::fs::create_dir_all(&unreleased_dir_path)
-        .map_err(Error::from)
-        .into_diagnostic()?;
-
+    std::fs::create_dir_all(&unreleased_dir_path)?;
     Ok(unreleased_dir_path)
 }
 
-fn get_editor_command() -> miette::Result<Command> {
+fn get_editor_command() -> Result<Command, Error> {
     let editor = match std::env::var("EDITOR") {
         Ok(editor) => editor,
         Err(std::env::VarError::NotPresent) => match std::env::var("VISUAL") {
             Ok(editor) => editor,
-            Err(std::env::VarError::NotPresent) => {
-                miette::bail!("EDITOR and VISUAL are not set, cannot find editor")
+            Err(std::env::VarError::NotPresent) => return Err(Error::EditorEnvNotSet),
+            Err(std::env::VarError::NotUnicode(_)) => {
+                return Err(Error::EnvNotUnicode("VISUAL".to_string()))
             }
-            Err(std::env::VarError::NotUnicode(_)) => miette::bail!("VISUAL is not unicode"),
         },
-        Err(std::env::VarError::NotUnicode(_)) => miette::bail!("EDITOR is not unicode"),
+        Err(std::env::VarError::NotUnicode(_)) => {
+            return Err(Error::EnvNotUnicode("EDITOR".to_string()))
+        }
     };
 
     Ok(Command::new(editor))
