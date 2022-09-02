@@ -34,6 +34,17 @@ pub enum Error {
 
     #[error("Configuration file does not exist: {0}")]
     ConfigDoesNotExist(PathBuf),
+
+    #[error("Not a file: {0}")]
+    NotAFile(PathBuf),
+
+    #[error("No version found in Cargo.toml, that should never happen...")]
+    NoVersionInCargoToml,
+
+    #[error(
+        "Versions are not all the same in the workspace, cannot decide what you want to release!"
+    )]
+    WorkspaceVersionsNotEqual,
 }
 
 #[derive(Debug, thiserror::Error, miette::Diagnostic)]
