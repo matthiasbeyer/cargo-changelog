@@ -57,6 +57,9 @@ pub enum Error {
 
     #[error("Version error")]
     Version(#[from] VersionError),
+
+    #[error("Text provider error")]
+    TextProvider(#[from] TextProviderError),
 }
 
 #[derive(Debug, thiserror::Error, miette::Diagnostic)]
