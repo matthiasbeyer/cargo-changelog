@@ -51,7 +51,7 @@ impl Fragment {
     }
 
     pub fn from_reader<R: Read>(reader: &mut R) -> Result<Self, FragmentError> {
-        let mut format = Format::Yaml;
+        let format;
         let mut buf = String::new();
 
         reader.read_to_string(&mut buf)?;
