@@ -51,6 +51,12 @@ pub enum Error {
 
     #[error("Environment variable '{0}' is not unicode")]
     EnvNotUnicode(String),
+
+    #[error("Fragment Error")]
+    FragmentError(#[from] FragmentError),
+
+    #[error("Version error")]
+    Version(#[from] VersionError),
 }
 
 #[derive(Debug, thiserror::Error, miette::Diagnostic)]
