@@ -87,6 +87,9 @@ pub enum FragmentError {
 
     #[error("Type Error: Expected {exp}, got {recv}")]
     DataType { exp: String, recv: String },
+
+    #[error("Error during interactive session")]
+    Interactive(#[from] InteractiveError),
 }
 
 #[derive(Debug, thiserror::Error, miette::Diagnostic)]
@@ -114,4 +117,25 @@ pub enum VerificationError {
 
     #[error("Error while walking directory")]
     WalkDir(#[from] walkdir::Error),
+}
+
+#[derive(Debug, thiserror::Error, miette::Diagnostic)]
+pub enum InteractiveError {
+    #[error("User interrupted interactive session")]
+    Interrupted,
+
+    #[error("IO Error")]
+    Io(#[from] std::io::Error),
+
+    #[error("Type Error: Expected {}, got {}", .0.type_name(), .1.type_name())]
+    TypeError(
+        crate::fragment::FragmentDataType,
+        crate::fragment::FragmentData,
+    ),
+
+    #[error("Required value '{}' not provided", .0)]
+    RequiredValueNotProvided(String),
+
+    #[error("Failed to parse intefer")]
+    ParseInt(#[from] std::num::ParseIntError),
 }
