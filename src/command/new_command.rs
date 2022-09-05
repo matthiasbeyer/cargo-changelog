@@ -59,9 +59,13 @@ impl crate::command::Command for NewCommand {
             .filter_map(|(key, data_desc)| {
                 if let Some(default) = data_desc.default_value() {
                     if data_desc.fragment_type().matches(&default) {
-                        interactive_edit(key, default, data_desc)
-                            .map_err(FragmentError::from)
-                            .transpose()
+                        if self.interactive {
+                            interactive_edit(key, default, data_desc)
+                                .map_err(FragmentError::from)
+                                .transpose()
+                        } else {
+                            Some(Ok((key.to_string(), default.clone())))
+                        }
                     } else {
                         Some(Err(FragmentError::DataType {
                             exp: data_desc.fragment_type().type_name().to_string(),
@@ -69,9 +73,13 @@ impl crate::command::Command for NewCommand {
                         }))
                     }
                 } else {
-                    interactive_provide(key, data_desc)
-                        .map_err(FragmentError::from)
-                        .transpose()
+                    if self.interactive {
+                        interactive_provide(key, data_desc)
+                            .map_err(FragmentError::from)
+                            .transpose()
+                    } else {
+                        None
+                    }
                 }
             })
             .collect::<Result<HashMap<String, FragmentData>, _>>()
