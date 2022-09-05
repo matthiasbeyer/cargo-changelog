@@ -119,13 +119,16 @@ impl FragmentData {
 }
 
 /// Something that describes a FragmentData
-#[derive(Clone, Debug, serde::Deserialize, serde::Serialize, getset::Getters)]
+#[derive(
+    Clone, Debug, serde::Deserialize, serde::Serialize, getset::Getters, getset::CopyGetters,
+)]
 pub struct FragmentDataDesc {
     #[serde(rename = "type")]
     #[getset(get = "pub")]
     fragment_type: FragmentDataType,
     #[getset(get = "pub")]
     default_value: Option<FragmentData>,
+    #[getset(get_copy = "pub")]
     required: bool,
 }
 
