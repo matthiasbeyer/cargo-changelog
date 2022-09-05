@@ -27,10 +27,9 @@ impl Fragment {
 
     pub fn fill_header_from(
         &mut self,
-        header: &HashMap<String, FragmentDataDesc>,
+        filler: impl Iterator<Item = (String, FragmentDataDesc)>,
     ) -> Result<(), FragmentError> {
-        let new_header = header
-            .iter()
+        self.header = filler
             .filter_map(|(key, data_desc)| {
                 if let Some(default) = data_desc.default_value() {
                     if data_desc.fragment_type().matches(&default) {
@@ -46,7 +45,6 @@ impl Fragment {
                 }
             })
             .collect::<Result<HashMap<String, FragmentData>, _>>()?;
-        self.header = new_header;
         Ok(())
     }
 
@@ -142,7 +140,7 @@ impl FragmentData {
 }
 
 /// Something that describes a FragmentData
-#[derive(Debug, serde::Deserialize, serde::Serialize, getset::Getters)]
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize, getset::Getters)]
 pub struct FragmentDataDesc {
     #[serde(rename = "type")]
     #[getset(get = "pub")]
@@ -152,7 +150,7 @@ pub struct FragmentDataDesc {
     required: bool,
 }
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 pub enum FragmentDataType {
     #[serde(rename = "bool")]
     Bool,

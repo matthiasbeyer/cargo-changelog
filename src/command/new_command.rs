@@ -43,7 +43,12 @@ impl crate::command::Command for NewCommand {
         }
 
         fragment
-            .fill_header_from(config.header_fields())
+            .fill_header_from(
+                config
+                    .header_fields()
+                    .into_iter()
+                    .map(|(key, value)| (key.clone(), value.clone())),
+            )
             .map_err(|e| Error::FragmentError(e, new_file_path.to_path_buf()))?;
 
         fragment
