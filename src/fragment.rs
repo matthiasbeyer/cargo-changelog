@@ -107,6 +107,10 @@ pub enum FragmentData {
 }
 
 impl FragmentData {
+    pub fn display(&self) -> FragmentDataDisplay<'_> {
+        FragmentDataDisplay(self)
+    }
+
     pub fn type_name(&self) -> &'static str {
         match self {
             FragmentData::Bool(_) => "bool",
@@ -114,6 +118,34 @@ impl FragmentData {
             FragmentData::Str(_) => "string",
             FragmentData::List(_) => "list",
             FragmentData::Map(_) => "map",
+        }
+    }
+}
+
+pub struct FragmentDataDisplay<'a>(&'a FragmentData);
+
+impl<'a> std::fmt::Display for FragmentDataDisplay<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self.0 {
+            FragmentData::Bool(b) => write!(f, "{}", b),
+            FragmentData::Int(i) => write!(f, "{}", i),
+            FragmentData::Str(s) => write!(f, "{}", s),
+            FragmentData::List(list) => write!(
+                f,
+                "{}",
+                list.iter()
+                    .map(|el| el.display().to_string())
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ),
+            FragmentData::Map(map) => write!(
+                f,
+                "{}",
+                map.iter()
+                    .map(|(key, val)| format!("{} => {}", key, val.display()))
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            ),
         }
     }
 }
