@@ -174,12 +174,13 @@ fn interactive_provide(
             }
 
             let value = if desc.required() {
-                dialoguer
-                    .interact_opt()
-                    .map_err(InteractiveError::from)?
-                    .ok_or_else(|| InteractiveError::RequiredValueNotProvided(key.to_string()))?
-            } else {
                 dialoguer.interact().map_err(InteractiveError::from)?
+            } else {
+                let value = dialoguer.interact_opt().map_err(InteractiveError::from)?;
+                match value {
+                    None => return Ok(None),
+                    Some(val) => val,
+                }
             };
 
             Ok(Some((key.to_string(), FragmentData::Bool(value))))
