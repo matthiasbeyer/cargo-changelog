@@ -89,7 +89,10 @@ fn load_release_files(
                 .open(de.path())
                 .map_err(Error::from)
                 .map(BufReader::new)
-                .and_then(|mut reader| Fragment::from_reader(&mut reader).map_err(Error::from));
+                .and_then(|mut reader| {
+                    Fragment::from_reader(&mut reader)
+                        .map_err(|e| Error::FragmentError(e, de.path().to_path_buf()))
+                });
 
             match fragment {
                 Err(e) => Some(Err(e)),

@@ -52,8 +52,8 @@ pub enum Error {
     #[error("Environment variable '{0}' is not unicode")]
     EnvNotUnicode(String),
 
-    #[error("Fragment Error")]
-    FragmentError(#[from] FragmentError),
+    #[error("Fragment Error: {}", .1.display())]
+    FragmentError(#[source] FragmentError, PathBuf),
 
     #[error("Version error")]
     Version(#[from] VersionError),
