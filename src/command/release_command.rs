@@ -4,7 +4,9 @@ use std::{collections::HashMap, io::BufReader, path::Path};
 use crate::{config::Configuration, error::Error, fragment::Fragment};
 
 #[derive(Debug, typed_builder::TypedBuilder)]
-pub struct ReleaseCommand {}
+pub struct ReleaseCommand {
+    all: bool,
+}
 
 impl crate::command::Command for ReleaseCommand {
     fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), Error> {
@@ -13,7 +15,7 @@ impl crate::command::Command for ReleaseCommand {
             .join(config.template_path());
         let template_source = std::fs::read_to_string(template_path)?;
         let template = crate::template::new_handlebars(&template_source)?;
-        let template_data = compute_template_data(load_release_files(workdir, config))?;
+        let template_data = compute_template_data(load_release_files(workdir, config, self.all))?;
 
         let changelog_contents =
             template.render(crate::consts::INTERNAL_TEMPLATE_NAME, &template_data)?;
@@ -40,7 +42,8 @@ impl crate::command::Command for ReleaseCommand {
 fn load_release_files(
     workdir: &Path,
     config: &Configuration,
-) -> impl Iterator<Item = Result<(semver::Version, Fragment), Error>> {
+    all: bool,
+) -> impl Iterator<Item = Result<(Option<semver::Version>, Fragment), Error>> {
     walkdir::WalkDir::new(workdir.join(config.fragment_dir()))
         .follow_links(false)
         .max_open(100)
@@ -61,7 +64,7 @@ fn load_release_files(
                 }
             }
         })
-        .filter_map(|rde| {
+        .filter_map(move |rde| {
             let de = match rde {
                 Err(e) => return Some(Err(Error::from(e))),
                 Ok(de) => de,
@@ -69,8 +72,14 @@ fn load_release_files(
 
             let version = match crate::command::common::get_version_from_path(de.path()) {
                 Err(e) => return Some(Err(Error::from(e))),
-                Ok(None) => return None,
-                Ok(Some(version)) => version,
+                Ok(None) => {
+                    if all {
+                        None
+                    } else {
+                        return None;
+                    }
+                }
+                Ok(Some(version)) => Some(version),
             };
 
             let fragment = std::fs::OpenOptions::new()
@@ -101,16 +110,21 @@ pub struct VersionData {
 }
 
 fn compute_template_data(
-    release_files: impl Iterator<Item = Result<(semver::Version, Fragment), Error>>,
+    release_files: impl Iterator<Item = Result<(Option<semver::Version>, Fragment), Error>>,
 ) -> Result<HashMap<String, Vec<VersionData>>, Error> {
     let versions = {
         use itertools::Itertools;
         let mut hm = HashMap::new();
         for r in release_files {
             let (version, fragment) = r?;
-            hm.entry(version.to_string())
-                .or_insert_with(Vec::new)
-                .push(fragment);
+
+            if let Some(version) = version {
+                hm.entry(version.to_string())
+            } else {
+                hm.entry("unreleased".to_string())
+            }
+            .or_insert_with(Vec::new)
+            .push(fragment);
         }
         hm.into_iter()
             .map(|(version, entries)| VersionData { version, entries })
@@ -134,7 +148,7 @@ mod tests {
         let result = compute_template_data(
             [
                 Ok((
-                    semver::Version::new(0, 2, 0),
+                    Some(semver::Version::new(0, 2, 0)),
                     Fragment::new(
                         {
                             let mut hm = HashMap::new();
@@ -145,7 +159,7 @@ mod tests {
                     ),
                 )),
                 Ok((
-                    semver::Version::new(0, 1, 0),
+                    Some(semver::Version::new(0, 1, 0)),
                     Fragment::new(
                         {
                             let mut hm = HashMap::new();

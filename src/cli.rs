@@ -47,7 +47,11 @@ pub enum Command {
     #[clap(subcommand)]
     Generate(VersionSpec),
 
-    Release,
+    Release {
+        /// Also write "unreleased" stuff to the CHANGELOG.md file
+        #[clap(long)]
+        all: bool,
+    },
 }
 
 fn text_provider_parser(s: &str) -> Result<TextProvider, String> {
