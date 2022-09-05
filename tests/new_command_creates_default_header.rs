@@ -25,11 +25,12 @@ fn new_command_creates_default_header() {
             .open(config_file_path)
             .unwrap();
 
-        write!(
+        writeln!(
             file,
             r#"field = {{ type = "bool", default_value = true, required = true }}"#
         )
         .unwrap();
+        writeln!(file, r#"number = {{ type = "int", required = true }}"#).unwrap();
         file.sync_all().unwrap()
     }
 
@@ -40,6 +41,8 @@ fn new_command_creates_default_header() {
             "--interactive=false",
             "--edit=false",
             "--format=yaml",
+            "--set",
+            "number=123",
         ])
         .current_dir(&temp_dir)
         .assert()
@@ -74,4 +77,8 @@ fn new_command_creates_default_header() {
     let field = yaml.get("field").unwrap();
     assert!(field.is_bool());
     assert!(std::matches!(field, serde_yaml::Value::Bool(true)));
+
+    let number = yaml.get("number").unwrap();
+    assert!(number.is_i64());
+    assert_eq!(number.as_i64().unwrap(), 123);
 }
