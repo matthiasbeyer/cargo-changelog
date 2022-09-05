@@ -78,7 +78,13 @@ impl crate::command::Command for NewCommand {
                             .map_err(FragmentError::from)
                             .transpose()
                     } else {
-                        None
+                        if data_desc.required() {
+                            Some(Err(FragmentError::RequiredValueNotInteractive(
+                                key.to_string(),
+                            )))
+                        } else {
+                            None
+                        }
                     }
                 }
             })
