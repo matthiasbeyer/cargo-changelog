@@ -42,9 +42,13 @@ impl crate::command::Command for NewCommand {
             fragment.set_text(text);
         }
 
-        fragment.fill_header_from(config.header_fields())?;
+        fragment
+            .fill_header_from(config.header_fields())
+            .map_err(|e| Error::FragmentError(e, new_file_path.to_path_buf()))?;
 
-        fragment.write_to(&mut file, self.format)?;
+        fragment
+            .write_to(&mut file, self.format)
+            .map_err(|e| Error::FragmentError(e, new_file_path.to_path_buf()))?;
         file.sync_all()?;
         drop(file);
 

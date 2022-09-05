@@ -53,7 +53,7 @@ fn load_release_files(
             Err(e) => Some(Err(e)),
             Ok(de) => {
                 if de.file_type().is_file() {
-                    if de.path().ends_with("template.md") {
+                    if de.path().ends_with("template.md") || de.path().ends_with(".gitkeep") {
                         None
                     } else {
                         log::debug!("Considering: {:?}", de);
@@ -89,7 +89,10 @@ fn load_release_files(
                 .open(de.path())
                 .map_err(Error::from)
                 .map(BufReader::new)
-                .and_then(|mut reader| Fragment::from_reader(&mut reader).map_err(Error::from));
+                .and_then(|mut reader| {
+                    Fragment::from_reader(&mut reader)
+                        .map_err(|e| Error::FragmentError(e, de.path().to_path_buf()))
+                });
 
             match fragment {
                 Err(e) => Some(Err(e)),
