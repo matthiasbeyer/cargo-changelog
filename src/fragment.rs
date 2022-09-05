@@ -5,9 +5,11 @@ use std::io::Write;
 use crate::error::FragmentError;
 use crate::format::Format;
 
-#[derive(Clone, Debug, getset::Getters, serde::Deserialize, serde::Serialize)]
+#[derive(
+    Clone, Debug, getset::Getters, getset::MutGetters, serde::Deserialize, serde::Serialize,
+)]
 pub struct Fragment {
-    #[getset(get = "pub")]
+    #[getset(get = "pub", get_mut = "pub")]
     header: HashMap<String, FragmentData>,
     #[getset(get = "pub")]
     text: String,
@@ -23,29 +25,6 @@ impl Fragment {
 
     pub fn set_text(&mut self, text: String) {
         self.text = text;
-    }
-
-    pub fn fill_header_from(
-        &mut self,
-        filler: impl Iterator<Item = (String, FragmentDataDesc)>,
-    ) -> Result<(), FragmentError> {
-        self.header = filler
-            .filter_map(|(key, data_desc)| {
-                if let Some(default) = data_desc.default_value() {
-                    if data_desc.fragment_type().matches(&default) {
-                        Some(Ok((key.clone(), default.clone())))
-                    } else {
-                        Some(Err(FragmentError::DataType {
-                            exp: data_desc.fragment_type().type_name().to_string(),
-                            recv: default.type_name().to_string(),
-                        }))
-                    }
-                } else {
-                    None
-                }
-            })
-            .collect::<Result<HashMap<String, FragmentData>, _>>()?;
-        Ok(())
     }
 
     pub fn from_reader<R: Read>(reader: &mut R) -> Result<Self, FragmentError> {

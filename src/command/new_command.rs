@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
@@ -5,7 +6,9 @@ use std::process::Command;
 use crate::cli::TextProvider;
 use crate::config::Configuration;
 use crate::error::Error;
+use crate::error::FragmentError;
 use crate::format::Format;
+use crate::fragment::FragmentData;
 
 #[derive(Debug, typed_builder::TypedBuilder)]
 pub struct NewCommand {
@@ -42,14 +45,14 @@ impl crate::command::Command for NewCommand {
             fragment.set_text(text);
         }
 
-        fragment
-            .fill_header_from(
-                config
-                    .header_fields()
-                    .into_iter()
-                    .map(|(key, value)| (key.clone(), value.clone())),
-            )
-            .map_err(|e| Error::FragmentError(e, new_file_path.to_path_buf()))?;
+        fill_fragment_header(
+            &mut fragment,
+            config
+                .header_fields()
+                .into_iter()
+                .map(|(key, value)| (key.clone(), value.clone())),
+        )
+        .map_err(|e| Error::FragmentError(e, new_file_path.to_path_buf()))?;
 
         fragment
             .write_to(&mut file, self.format)
@@ -100,4 +103,27 @@ fn get_editor_command() -> Result<Command, Error> {
     };
 
     Ok(Command::new(editor))
+}
+
+fn fill_fragment_header(
+    fragment: &mut crate::fragment::Fragment,
+    filler: impl Iterator<Item = (String, crate::fragment::FragmentDataDesc)>,
+) -> Result<(), crate::error::FragmentError> {
+    *fragment.header_mut() = filler
+        .filter_map(|(key, data_desc)| {
+            if let Some(default) = data_desc.default_value() {
+                if data_desc.fragment_type().matches(&default) {
+                    Some(Ok((key.clone(), default.clone())))
+                } else {
+                    Some(Err(FragmentError::DataType {
+                        exp: data_desc.fragment_type().type_name().to_string(),
+                        recv: default.type_name().to_string(),
+                    }))
+                }
+            } else {
+                None
+            }
+        })
+        .collect::<Result<HashMap<String, FragmentData>, _>>()?;
+    Ok(())
 }
