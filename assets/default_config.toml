@@ -30,6 +30,26 @@ edit_data = true
 #
 edit_format = "Yaml"
 
+# Set whether and how to use git after creating a new entry
+#
+# Possible values are "add" or "commit" (or none, which is default).
+#
+# "add" means only git-add the newly created file
+# "commit" means commit the newly created file as well, with a default message
+#
+# Not enabling this setting means that no action will be taken
+#git = "commit"
+
+# The commit message to use if `git = "commit"` is set.
+#
+# Can also be set if `git = "add"` is configured, because the CLI might override this
+# setting.
+#git_commit_message = "Create new changelog entry"
+
+# Use the --signoff flag when calling "git-commit"
+# Defaults to false, because we cannot decide whether you want to signoff
+git_commit_signoff = false
+
 #
 # The header fields that each fragment can have
 #
