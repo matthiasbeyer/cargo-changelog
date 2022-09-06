@@ -3,6 +3,7 @@ use std::path::PathBuf;
 use clap::Parser;
 use clap::Subcommand;
 
+use crate::config::GitSetting;
 use crate::error::TextProviderError;
 use crate::format::Format;
 
@@ -43,6 +44,18 @@ pub enum Command {
 
         #[clap(long, value_parser = kv_value_parser)]
         set: Vec<KV>,
+
+        /// Whether to execute a git command after creating the new entry.
+        ///
+        /// # Note
+        ///
+        /// If "commit" is given, and the "git_commit_message" setting in the configuration is NOT
+        /// set, then the normal $GIT_EDITOR or $EDITOR will be spawned for the commit message.
+        ///
+        /// If "commit" is given and the "git_commit_message" setting is set, this message will be
+        /// used.
+        #[clap(long, arg_enum, value_parser)]
+        git: Option<GitSetting>,
     },
 
     VerifyMetadata,

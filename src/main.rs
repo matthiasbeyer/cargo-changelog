@@ -61,12 +61,14 @@ fn main() -> miette::Result<()> {
             format,
             read,
             set,
+            git,
         } => crate::command::NewCommand::builder()
             .interactive(interactive)
             .edit(edit)
             .format(format)
             .text(read)
             .set(set)
+            .git(git)
             .build()
             .execute(&repo_workdir_path, &config)?,
 

@@ -10,7 +10,7 @@ use crate::fragment::FragmentDataDesc;
 pub const CONFIG_FILE_NAME: &'static str = ".changelog.toml";
 pub const DEFAULT_CONFIG: &'static str = include_str!("../assets/default_config.toml");
 
-#[derive(Debug, getset::Getters, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, getset::Getters, getset::CopyGetters, serde::Deserialize, serde::Serialize)]
 pub struct Configuration {
     add_version_date: bool,
 
@@ -51,6 +51,28 @@ pub struct Configuration {
     edit_data: bool,
     /// Format to edit data in
     edit_format: EditFormat,
+
+    /// Set whether and how to use git after creating a new entry
+    ///
+    /// Possible values are "add" or "commit" (or none, which is default).
+    ///
+    /// "add" means only git-add the newly created file
+    /// "commit" means commit the newly created file as well, with a default message
+    ///
+    #[getset(get = "pub")]
+    git: Option<GitSetting>,
+
+    /// The commit message to use if `git = "commit"` is set.
+    ///
+    /// Can also be set if `git = "add"` is configured, because the CLI might override this
+    /// setting.
+    #[getset(get = "pub")]
+    git_commit_message: Option<String>,
+
+    /// Use the --signoff flag in case of `git = "commit"`
+    #[getset(get_copy = "pub")]
+    git_commit_signoff: bool,
+
     #[getset(get = "pub")]
     header_fields: HashMap<String, FragmentDataDesc>,
 }
@@ -104,6 +126,14 @@ pub fn load(repo_workdir_path: &Path) -> miette::Result<Configuration> {
     toml::from_str(&config)
         .map_err(Error::from)
         .into_diagnostic()
+}
+
+#[derive(
+    Copy, Clone, Debug, Eq, PartialEq, clap::ValueEnum, serde::Deserialize, serde::Serialize,
+)]
+pub enum GitSetting {
+    Add,
+    Commit,
 }
 
 #[cfg(test)]

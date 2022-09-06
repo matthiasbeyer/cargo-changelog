@@ -9,6 +9,7 @@ use dialoguer::Input;
 use crate::cli::TextProvider;
 use crate::cli::KV;
 use crate::config::Configuration;
+use crate::config::GitSetting;
 use crate::error::Error;
 use crate::error::FragmentError;
 use crate::error::InteractiveError;
@@ -24,6 +25,7 @@ pub struct NewCommand {
     format: Format,
     set: Vec<KV>,
     text: Option<TextProvider>,
+    git: Option<GitSetting>,
 }
 
 impl crate::command::Command for NewCommand {
@@ -114,6 +116,43 @@ impl crate::command::Command for NewCommand {
             } else {
                 log::error!("Failure editing {}", new_file_path.display());
             }
+        }
+
+        match self.git.as_ref().or_else(|| config.git().as_ref()) {
+            Some(GitSetting::Add) => {
+                // We use the simple approach here and use std::command::Command for calling git
+                std::process::Command::new("git")
+                    .arg("add")
+                    .arg(&new_file_path)
+                    .stderr(std::process::Stdio::inherit())
+                    .stdout(std::process::Stdio::inherit())
+                    .output()?;
+            }
+            Some(GitSetting::Commit) => {
+                std::process::Command::new("git")
+                    .arg("add")
+                    .arg(&new_file_path)
+                    .stderr(std::process::Stdio::inherit())
+                    .stdout(std::process::Stdio::inherit())
+                    .output()?;
+
+                let mut commit_cmd = std::process::Command::new("git");
+                commit_cmd.arg("commit").arg(&new_file_path);
+
+                if let Some(message) = config.git_commit_message().as_ref() {
+                    commit_cmd.arg("--message").arg(message);
+                }
+
+                if config.git_commit_signoff() {
+                    commit_cmd.arg("--signoff");
+                }
+
+                commit_cmd
+                    .stderr(std::process::Stdio::inherit())
+                    .stdout(std::process::Stdio::inherit())
+                    .output()?;
+            }
+            None => {}
         }
 
         Ok(())
