@@ -60,11 +60,13 @@ fn main() -> miette::Result<()> {
             edit,
             format,
             read,
+            set,
         } => crate::command::NewCommand::builder()
             .interactive(interactive)
             .edit(edit)
             .format(format)
             .text(read)
+            .set(set)
             .build()
             .execute(&repo_workdir_path, &config)?,
 

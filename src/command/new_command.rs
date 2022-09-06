@@ -7,6 +7,7 @@ use dialoguer::Confirm;
 use dialoguer::Input;
 
 use crate::cli::TextProvider;
+use crate::cli::KV;
 use crate::config::Configuration;
 use crate::error::Error;
 use crate::error::FragmentError;
@@ -21,6 +22,7 @@ pub struct NewCommand {
     interactive: bool,
     edit: bool,
     format: Format,
+    set: Vec<KV>,
     text: Option<TextProvider>,
 }
 
@@ -83,7 +85,9 @@ impl crate::command::Command for NewCommand {
                                 key.to_string(),
                             )))
                         } else {
-                            None
+                            self.set.iter().find(|kv| kv.key() == key).map(|kv| {
+                                FragmentData::parse(kv.value()).map(|data| (key.to_string(), data))
+                            })
                         }
                     }
                 }

@@ -40,6 +40,9 @@ pub enum Command {
 
         #[clap(long, value_parser = text_provider_parser)]
         read: Option<TextProvider>,
+
+        #[clap(long, value_parser = kv_value_parser)]
+        set: Vec<KV>,
     },
 
     VerifyMetadata,
@@ -69,6 +72,26 @@ fn text_provider_parser(s: &str) -> Result<TextProvider, String> {
     }
 
     Ok(TextProvider::Path(path))
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, getset::Getters)]
+pub struct KV {
+    #[getset(get = "pub")]
+    key: String,
+    #[getset(get = "pub")]
+    value: String,
+}
+
+fn kv_value_parser(s: &str) -> Result<KV, String> {
+    if s.chars().filter(|c| *c == '=').count() != 1 {
+        Err(format!("Cannot parse as key-value: '{}'", s))
+    } else {
+        let (key, value) = s.split_once('=').unwrap(); // safe because above check
+        Ok(KV {
+            key: key.to_string(),
+            value: value.to_string(),
+        })
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
