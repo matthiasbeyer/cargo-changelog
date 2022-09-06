@@ -80,14 +80,14 @@ impl crate::command::Command for NewCommand {
                             .map_err(FragmentError::from)
                             .transpose()
                     } else {
-                        if data_desc.required() {
-                            Some(Err(FragmentError::RequiredValueNotInteractive(
-                                key.to_string(),
-                            )))
-                        } else {
-                            self.set.iter().find(|kv| kv.key() == key).map(|kv| {
-                                FragmentData::parse(kv.value()).map(|data| (key.to_string(), data))
-                            })
+                        match self.set.iter().find(|kv| kv.key() == key) {
+                            None if data_desc.required() => Some(Err(
+                                FragmentError::RequiredValueNotInteractive(key.to_string()),
+                            )),
+                            None => None,
+                            Some(kv) => Some(
+                                FragmentData::parse(kv.value()).map(|data| (key.to_string(), data)),
+                            ),
                         }
                     }
                 }
