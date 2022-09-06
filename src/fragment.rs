@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::io::Read;
 use std::io::Write;
+use std::path::PathBuf;
 
 use crate::error::FragmentError;
 use crate::format::Format;
@@ -187,6 +188,8 @@ pub struct FragmentDataDesc {
     default_value: Option<FragmentData>,
     #[getset(get_copy = "pub")]
     required: bool,
+    #[getset(get = "pub")]
+    crawler: Option<Crawler>,
 }
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
@@ -226,6 +229,13 @@ impl FragmentDataType {
             (_, _) => false,
         }
     }
+}
+
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+#[serde(tag = "type", content = "value")]
+pub enum Crawler {
+    Path(PathBuf),
+    Command(String),
 }
 
 #[cfg(test)]
