@@ -80,6 +80,8 @@ fn generate_command_moves_from_unreleased_dir() {
             "--interactive=false",
             "--edit=false",
             "--format=yaml",
+            "--set",
+            "issue=123",
         ])
         .current_dir(&temp_dir)
         .assert()

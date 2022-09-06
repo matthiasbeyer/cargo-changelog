@@ -42,7 +42,9 @@ fn new_command_creates_default_header() {
             "--edit=false",
             "--format=yaml",
             "--set",
-            "number=123",
+            "issue=123",
+            "--set",
+            "number=345",
         ])
         .current_dir(&temp_dir)
         .assert()
@@ -80,6 +82,10 @@ fn new_command_creates_default_header() {
     assert!(std::matches!(field, serde_yaml::Value::Bool(true)));
 
     let number = yaml.get("number").unwrap();
+    assert!(number.is_i64());
+    assert_eq!(number.as_i64().unwrap(), 345);
+
+    let number = yaml.get("issue").unwrap();
     assert!(number.is_i64());
     assert_eq!(number.as_i64().unwrap(), 123);
 }
