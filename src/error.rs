@@ -90,6 +90,9 @@ pub enum FragmentError {
 
     #[error("Error during interactive session")]
     Interactive(#[from] InteractiveError),
+
+    #[error("Required value '{}', but --interactive=false given", .0)]
+    RequiredValueNotInteractive(String),
 }
 
 #[derive(Debug, thiserror::Error, miette::Diagnostic)]

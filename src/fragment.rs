@@ -120,6 +120,31 @@ impl FragmentData {
             FragmentData::Map(_) => "map",
         }
     }
+
+    pub fn parse(s: &str) -> Result<Self, FragmentError> {
+        use std::str::FromStr;
+
+        let s_lower = s.to_lowercase();
+
+        if s_lower == "true" {
+            Ok(FragmentData::Bool(true))
+        } else if s == "false" {
+            Ok(FragmentData::Bool(false))
+        } else if let Ok(u) = u64::from_str(s) {
+            Ok(FragmentData::Int(u))
+        } else {
+            let s_split = s.split(',').collect::<Vec<_>>();
+            if s_split.len() == 1 {
+                Ok(FragmentData::Str(s.to_string()))
+            } else {
+                let data = s_split
+                    .into_iter()
+                    .map(FragmentData::parse)
+                    .collect::<Result<Vec<FragmentData>, _>>()?;
+                Ok(FragmentData::List(data))
+            }
+        }
+    }
 }
 
 pub struct FragmentDataDisplay<'a>(&'a FragmentData);

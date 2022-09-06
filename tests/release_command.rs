@@ -24,6 +24,8 @@ fn release_command_works() {
             "--interactive=false",
             "--edit=false",
             "--format=yaml",
+            "--set",
+            "issue=123",
         ])
         .current_dir(&temp_dir)
         .assert()
@@ -74,6 +76,8 @@ fn release_command_works_for_alpha_release() {
             "--interactive=false",
             "--edit=false",
             "--format=yaml",
+            "--set",
+            "issue=123",
         ])
         .current_dir(&temp_dir)
         .assert()

@@ -70,7 +70,13 @@ fn new_command_opens_editor() {
             ]
             .into_iter(),
         )
-        .args(&["new", "--interactive=false", "--format=yaml"])
+        .args(&[
+            "new",
+            "--interactive=false",
+            "--format=yaml",
+            "--set",
+            "issue=123",
+        ])
         .current_dir(&temp_dir)
         .assert()
         .success();

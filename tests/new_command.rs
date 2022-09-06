@@ -23,6 +23,8 @@ fn new_command_creates_yaml_file() {
             "--interactive=false",
             "--edit=false",
             "--format=yaml",
+            "--set",
+            "issue=123",
         ])
         .current_dir(&temp_dir)
         .assert()
@@ -137,6 +139,8 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
                 "--interactive=false",
                 "--edit=false",
                 "--format=yaml",
+                "--set",
+                "issue=123",
                 "--read=-", // read text from STDIN
             ])
             .current_dir(&temp_dir)
@@ -201,6 +205,8 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
                 "--interactive=false",
                 "--edit=false",
                 "--format=yaml",
+                "--set",
+                "issue=123",
                 // read text from PATH
                 "--read",
                 &path.display().to_string(),
@@ -252,6 +258,8 @@ fn new_command_creates_toml_header() {
             "--interactive=false",
             "--edit=false",
             "--format=toml",
+            "--set",
+            "issue=123",
         ])
         .current_dir(&temp_dir)
         .assert()
