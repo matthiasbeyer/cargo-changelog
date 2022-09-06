@@ -64,7 +64,8 @@ fn new_command_creates_default_header() {
         .lines()
         .skip(1)
         .take_while(|line| *line != "---")
-        .collect::<String>();
+        .collect::<Vec<_>>()
+        .join("\n");
 
     let yaml = serde_yaml::from_str::<serde_yaml::Value>(&yaml_header);
     assert!(
