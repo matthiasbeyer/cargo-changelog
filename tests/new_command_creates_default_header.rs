@@ -25,12 +25,14 @@ fn new_command_creates_default_header() {
             .open(config_file_path)
             .unwrap();
 
-        writeln!(
-            file,
-            r#"field = {{ type = "bool", default_value = true, required = true }}"#
-        )
-        .unwrap();
-        writeln!(file, r#"number = {{ type = "int", required = true }}"#).unwrap();
+        writeln!(file, "[header_fields.field]").unwrap();
+        writeln!(file, r#"type = "bool""#).unwrap();
+        writeln!(file, "default_value = true").unwrap();
+        writeln!(file, "required = true").unwrap();
+
+        writeln!(file, "[header_fields.number]").unwrap();
+        writeln!(file, r#"type = "int""#).unwrap();
+        writeln!(file, "required = true").unwrap();
         file.sync_all().unwrap()
     }
 

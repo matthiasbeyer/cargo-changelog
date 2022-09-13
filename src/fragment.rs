@@ -233,6 +233,7 @@ impl FragmentDataType {
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
 #[serde(tag = "type", content = "value")]
+#[serde(rename_all = "lowercase")]
 pub enum Crawler {
     Path(PathBuf),
     Command(String),

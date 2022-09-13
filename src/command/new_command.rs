@@ -14,6 +14,7 @@ use crate::error::Error;
 use crate::error::FragmentError;
 use crate::error::InteractiveError;
 use crate::format::Format;
+use crate::fragment::Crawler;
 use crate::fragment::FragmentData;
 use crate::fragment::FragmentDataDesc;
 use crate::fragment::FragmentDataType;
@@ -77,19 +78,27 @@ impl crate::command::Command for NewCommand {
                         }))
                     }
                 } else {
-                    if self.interactive {
-                        interactive_provide(key, data_desc)
-                            .map_err(FragmentError::from)
+                    if let Some(crawler) = data_desc.crawler() {
+                        crawl_with_crawler(crawler, key, workdir, data_desc.fragment_type())
+                            .map(|data| (key.to_string(), data))
+                            .map(Some)
                             .transpose()
                     } else {
-                        match self.set.iter().find(|kv| kv.key() == key) {
-                            None if data_desc.required() => Some(Err(
-                                FragmentError::RequiredValueNotInteractive(key.to_string()),
-                            )),
-                            None => None,
-                            Some(kv) => Some(
-                                FragmentData::parse(kv.value()).map(|data| (key.to_string(), data)),
-                            ),
+                        if self.interactive {
+                            interactive_provide(key, data_desc)
+                                .map_err(FragmentError::from)
+                                .transpose()
+                        } else {
+                            match self.set.iter().find(|kv| kv.key() == key) {
+                                None if data_desc.required() => Some(Err(
+                                    FragmentError::RequiredValueNotInteractive(key.to_string()),
+                                )),
+                                None => None,
+                                Some(kv) => Some(
+                                    FragmentData::parse(kv.value())
+                                        .map(|data| (key.to_string(), data)),
+                                ),
+                            }
                         }
                     }
                 }
@@ -121,7 +130,7 @@ impl crate::command::Command for NewCommand {
         match self.git.as_ref().or_else(|| config.git().as_ref()) {
             Some(GitSetting::Add) => {
                 // We use the simple approach here and use std::command::Command for calling git
-                std::process::Command::new("git")
+                Command::new("git")
                     .arg("add")
                     .arg(&new_file_path)
                     .stderr(std::process::Stdio::inherit())
@@ -129,14 +138,14 @@ impl crate::command::Command for NewCommand {
                     .output()?;
             }
             Some(GitSetting::Commit) => {
-                std::process::Command::new("git")
+                Command::new("git")
                     .arg("add")
                     .arg(&new_file_path)
                     .stderr(std::process::Stdio::inherit())
                     .stdout(std::process::Stdio::inherit())
                     .output()?;
 
-                let mut commit_cmd = std::process::Command::new("git");
+                let mut commit_cmd = Command::new("git");
                 commit_cmd.arg("commit").arg(&new_file_path);
 
                 if let Some(message) = config.git_commit_message().as_ref() {
@@ -280,5 +289,56 @@ fn interactive_provide(
         }
         FragmentDataType::List(_) => todo!(),
         FragmentDataType::Map(_) => todo!(),
+    }
+}
+
+fn crawl_with_crawler(
+    crawler: &Crawler,
+    field_name: &str,
+    workdir: &Path,
+    expected_type: &FragmentDataType,
+) -> Result<FragmentData, FragmentError> {
+    let (command_str, mut command) = match crawler {
+        Crawler::Path(path) => (path.display().to_string(), Command::new(workdir.join(path))),
+        Crawler::Command(s) => {
+            let mut cmd = comma::parse_command(s)
+                .ok_or_else(|| FragmentError::NoValidCommand(s.to_string()))?;
+            let binary = cmd.remove(0);
+            let mut command = Command::new(binary);
+            command.args(cmd);
+            (s.to_string(), command)
+        }
+    };
+
+    let std::process::Output { status, stdout, .. } = command
+        .stderr(std::process::Stdio::inherit())
+        .env("CARGO_CHANGELOG_CRAWLER_FIELD_NAME", field_name.to_string())
+        .env(
+            "CARGO_CHANGELOG_CRAWLER_FIELD_TYPE",
+            expected_type.type_name().to_string(),
+        )
+        .output()
+        .map_err(FragmentError::from)?;
+
+    if status.success() {
+        log::info!("Executed crawl successfully");
+        let out = String::from_utf8(stdout)
+            .map_err(|e| FragmentError::NoUtf8Output(command_str, e))?
+            .trim()
+            .to_string();
+        log::info!("crawled = '{}'", out);
+        let data = FragmentData::parse(&out)?;
+        if expected_type.matches(&data) {
+            Ok(data)
+        } else {
+            Err(FragmentError::DataType {
+                exp: expected_type.type_name(),
+                recv: data.type_name().to_string(),
+            })
+        }
+    } else {
+        Err(FragmentError::from(FragmentError::CommandNoSuccess(
+            command_str,
+        )))
     }
 }

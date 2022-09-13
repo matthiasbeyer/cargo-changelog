@@ -93,6 +93,15 @@ pub enum FragmentError {
 
     #[error("Required value '{}', but --interactive=false given", .0)]
     RequiredValueNotInteractive(String),
+
+    #[error("Not a valid command: '{}'", .0)]
+    NoValidCommand(String),
+
+    #[error("Exited unsuccessful: '{}'", .0)]
+    CommandNoSuccess(String),
+
+    #[error("No UTF8 output from Command: '{}'", .0)]
+    NoUtf8Output(String, #[source] std::string::FromUtf8Error),
 }
 
 #[derive(Debug, thiserror::Error, miette::Diagnostic)]
