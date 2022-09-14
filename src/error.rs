@@ -91,6 +91,9 @@ pub enum FragmentError {
     #[error("Error during interactive session")]
     Interactive(#[from] InteractiveError),
 
+    #[error("Required value '{}', but value is missing", .0)]
+    RequiredValueMissing(String),
+
     #[error("Required value '{}', but --interactive=false given", .0)]
     RequiredValueNotInteractive(String),
 

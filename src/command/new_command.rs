@@ -62,8 +62,42 @@ impl crate::command::Command for NewCommand {
             .header_fields()
             .into_iter()
             .filter_map(|(key, data_desc)| {
-                if let Some(default) = data_desc.default_value() {
-                    if data_desc.fragment_type().matches(&default) {
+                let cli_set: Option<FragmentData> = match self
+                    .set
+                    .iter()
+                    .find(|kv| kv.key() == key)
+                    .map(KV::value)
+                    .map(|val| FragmentData::parse(val))
+                {
+                    Some(Ok(val)) => Some(val),
+                    Some(Err(e)) => return Some(Err(e)),
+                    None => None,
+                };
+                let crawler = data_desc.crawler();
+                let default_value = data_desc.default_value();
+
+                // if there is a default value, but its type is not correct, fail
+                if let Some(default) = default_value.as_ref() {
+                    if !data_desc.fragment_type().matches(&default) {
+                        return Some(Err(FragmentError::DataType {
+                            exp: data_desc.fragment_type().type_name().to_string(),
+                            recv: default.type_name().to_string(),
+                        }));
+                    }
+                }
+
+                // if there is a CLI provided value, but its type is not correct, fail
+                if let Some(clival) = cli_set.as_ref() {
+                    if !data_desc.fragment_type().matches(clival) {
+                        return Some(Err(FragmentError::DataType {
+                            exp: data_desc.fragment_type().type_name().to_string(),
+                            recv: clival.type_name().to_string(),
+                        }));
+                    }
+                }
+
+                match (default_value, cli_set, crawler) {
+                    (Some(default), None, None) => {
                         if self.interactive {
                             interactive_edit(key, default, data_desc)
                                 .map_err(FragmentError::from)
@@ -71,34 +105,44 @@ impl crate::command::Command for NewCommand {
                         } else {
                             Some(Ok((key.to_string(), default.clone())))
                         }
-                    } else {
-                        Some(Err(FragmentError::DataType {
-                            exp: data_desc.fragment_type().type_name().to_string(),
-                            recv: default.type_name().to_string(),
-                        }))
                     }
-                } else {
-                    if let Some(crawler) = data_desc.crawler() {
-                        crawl_with_crawler(crawler, key, workdir, data_desc.fragment_type())
-                            .map(|data| (key.to_string(), data))
-                            .map(Some)
-                            .transpose()
-                    } else {
+
+                    (_, Some(clival), _) => {
                         if self.interactive {
-                            interactive_provide(key, data_desc)
+                            interactive_edit(key, &clival, data_desc)
                                 .map_err(FragmentError::from)
                                 .transpose()
                         } else {
-                            match self.set.iter().find(|kv| kv.key() == key) {
-                                None if data_desc.required() => Some(Err(
-                                    FragmentError::RequiredValueNotInteractive(key.to_string()),
-                                )),
-                                None => None,
-                                Some(kv) => Some(
-                                    FragmentData::parse(kv.value())
-                                        .map(|data| (key.to_string(), data)),
-                                ),
-                            }
+                            Some(Ok((key.to_string(), clival.clone())))
+                        }
+                    }
+
+                    (_, _, Some(crawler)) => {
+                        let crawled_value = match crawl_with_crawler(
+                            crawler,
+                            key,
+                            workdir,
+                            data_desc.fragment_type(),
+                        ) {
+                            Err(e) => return Some(Err(e)),
+                            Ok(val) => val,
+                        };
+
+                        if !data_desc.fragment_type().matches(&crawled_value) {
+                            return Some(Err(FragmentError::DataType {
+                                exp: data_desc.fragment_type().type_name().to_string(),
+                                recv: crawled_value.type_name().to_string(),
+                            }));
+                        }
+
+                        Some(Ok((key.to_string(), crawled_value)))
+                    }
+
+                    (None, None, None) => {
+                        if data_desc.required() {
+                            Some(Err(FragmentError::RequiredValueMissing(key.to_string())))
+                        } else {
+                            None
                         }
                     }
                 }
