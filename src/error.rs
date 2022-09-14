@@ -136,9 +136,6 @@ pub enum InteractiveError {
         crate::fragment::FragmentData,
     ),
 
-    #[error("Required value '{}' not provided", .0)]
-    RequiredValueNotProvided(String),
-
     #[error("Failed to parse intefer")]
     ParseInt(#[from] std::num::ParseIntError),
 }
