@@ -62,7 +62,7 @@ impl crate::command::Command for NewCommand {
         // Fill the fragment header with data
         *fragment.header_mut() = config
             .header_fields()
-            .into_iter()
+            .iter()
             .filter_map(|(key, data_desc)| {
                 let cli_set: Option<FragmentData> = match self
                     .set
