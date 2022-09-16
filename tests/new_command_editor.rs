@@ -21,13 +21,7 @@ touch "${1}.edited"
 fn new_command_opens_editor() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
     self::common::init_git(temp_dir.path());
-
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .assert()
-        .success();
+    self::common::init_cargo_changelog(temp_dir.path());
 
     let (script_temp_dir, editor_script_path) = {
         let temp = tempdir::TempDir::new("cargo-changelog-new-editor-script-helper").unwrap();

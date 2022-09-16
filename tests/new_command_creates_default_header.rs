@@ -8,13 +8,7 @@ mod common;
 fn new_command_creates_default_header() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
     self::common::init_git(temp_dir.path());
-
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .assert()
-        .success();
+    self::common::init_cargo_changelog(temp_dir.path());
 
     {
         // Write some header field to the config file

@@ -6,13 +6,7 @@ mod common;
 fn verify_metadata_command_succeeds_with_no_changelogs() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
     self::common::init_git(temp_dir.path());
-
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .assert()
-        .success();
+    self::common::init_cargo_changelog(temp_dir.path());
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
@@ -26,13 +20,7 @@ fn verify_metadata_command_succeeds_with_no_changelogs() {
 fn verify_metadata_command_succeeds_with_empty_changelog() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
     self::common::init_git(temp_dir.path());
-
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .assert()
-        .success();
+    self::common::init_cargo_changelog(temp_dir.path());
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
