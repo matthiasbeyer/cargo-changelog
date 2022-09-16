@@ -253,3 +253,39 @@ fn new_command_creates_toml_header() {
         toml.unwrap_err()
     );
 }
+
+#[test]
+fn new_command_cannot_create_nonexistent_oneof() {
+    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    self::common::init_git(temp_dir.path());
+    self::common::init_cargo_changelog(temp_dir.path());
+
+    {
+        // Write some header field to the config file
+        let config_file_path = temp_dir.path().join(".changelog.toml");
+        let mut file = std::fs::OpenOptions::new()
+            .append(true)
+            .write(true)
+            .open(config_file_path)
+            .unwrap();
+
+        writeln!(file, "[header_fields.field]").unwrap();
+        writeln!(file, r#"type = ["foo", "bar"]"#).unwrap();
+        writeln!(file, "default_value = true").unwrap();
+        writeln!(file, "required = true").unwrap();
+        file.sync_all().unwrap()
+    }
+
+    self::common::cargo_changelog_new(temp_dir.path())
+        .args(&[
+            "--format=toml",
+            "--set",
+            "issue=123",
+            "--set",
+            "subject='This is some text'",
+            "--set",
+            "field=baz",
+        ])
+        .assert()
+        .failure();
+}

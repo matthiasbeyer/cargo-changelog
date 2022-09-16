@@ -154,4 +154,7 @@ pub enum InteractiveError {
 
     #[error("Failed to parse intefer")]
     ParseInt(#[from] std::num::ParseIntError),
+
+    #[error("Index error: Tried to select entry {}, but list has only {}", .0, .1)]
+    IndexError(usize, usize),
 }

@@ -5,6 +5,7 @@ use std::process::Command;
 
 use dialoguer::Confirm;
 use dialoguer::Input;
+use dialoguer::Select;
 
 use crate::cli::TextProvider;
 use crate::cli::KV;
@@ -18,6 +19,7 @@ use crate::fragment::Crawler;
 use crate::fragment::FragmentData;
 use crate::fragment::FragmentDataDesc;
 use crate::fragment::FragmentDataType;
+use crate::fragment::FragmentDataTypeDefinite;
 
 #[derive(Debug, typed_builder::TypedBuilder)]
 pub struct NewCommand {
@@ -272,7 +274,7 @@ fn interactive_provide(
     desc: &FragmentDataDesc,
 ) -> Result<Option<(String, FragmentData)>, InteractiveError> {
     match desc.fragment_type() {
-        FragmentDataType::Bool => {
+        FragmentDataType::Ty(FragmentDataTypeDefinite::Bool) => {
             let mut dialoguer = Confirm::new();
             dialoguer.with_prompt(format!("'{}'?", key));
             if let Some(data) = desc.default_value() {
@@ -298,7 +300,7 @@ fn interactive_provide(
 
             Ok(Some((key.to_string(), FragmentData::Bool(value))))
         }
-        FragmentDataType::Int => {
+        FragmentDataType::Ty(FragmentDataTypeDefinite::Int) => {
             let mut dialoguer = Input::<u64>::new();
             dialoguer.with_prompt(format!("Enter a number for '{}'", key));
 
@@ -316,7 +318,7 @@ fn interactive_provide(
             let value = dialoguer.interact_text().map_err(InteractiveError::from)?;
             Ok(Some((key.to_string(), FragmentData::Int(value))))
         }
-        FragmentDataType::Str => {
+        FragmentDataType::Ty(FragmentDataTypeDefinite::Str) => {
             let mut dialoguer = Input::<String>::new();
             dialoguer.with_prompt(format!("Enter a text for '{}'", key));
 
@@ -333,6 +335,38 @@ fn interactive_provide(
 
             let value = dialoguer.interact_text().map_err(InteractiveError::from)?;
             Ok(Some((key.to_string(), FragmentData::Str(value))))
+        }
+        FragmentDataType::OneOf(possible_values) => {
+            let mut dialoguer = Select::new();
+            dialoguer.items(possible_values);
+            dialoguer.with_prompt("Select one");
+
+            if let Some(default_value) = desc.default_value() {
+                if let FragmentData::Str(default_value) = default_value {
+                    if let Some(default_idx) = possible_values
+                        .iter()
+                        .enumerate()
+                        .find(|(_, elmt)| *elmt == default_value)
+                        .map(|(i, _)| i)
+                    {
+                        dialoguer.default(default_idx);
+                    }
+                } else {
+                    return Err(InteractiveError::TypeError(
+                        desc.fragment_type().clone(),
+                        default_value.clone(),
+                    ));
+                }
+            }
+
+            let value_idx = dialoguer.interact().map_err(InteractiveError::from)?;
+            let value = possible_values
+                .get(value_idx)
+                .ok_or_else(|| InteractiveError::IndexError(value_idx, possible_values.len()))?;
+            Ok(Some((
+                key.to_string(),
+                FragmentData::Str(value.to_string()),
+            )))
         }
     }
 }
