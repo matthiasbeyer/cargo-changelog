@@ -110,7 +110,7 @@ jobs:
       - uses: swatinem/rust-cache@v1
       - run: rustup component add clippy
       - name: cargo-clippy
-        run: cargo clippy --all --all-targets --all-features
+        run: cargo clippy --all --all-targets --all-features -- -D warnings
 
 
   # We need some "accummulation" job here because bors fails (timeouts) to
