@@ -426,8 +426,6 @@ fn crawl_with_crawler(
             })
         }
     } else {
-        Err(FragmentError::from(FragmentError::CommandNoSuccess(
-            command_str,
-        )))
+        Err(FragmentError::CommandNoSuccess(command_str))
     }
 }
