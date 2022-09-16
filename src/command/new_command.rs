@@ -82,7 +82,7 @@ impl crate::command::Command for NewCommand {
                 if let Some(default) = default_value.as_ref() {
                     if !data_desc.fragment_type().matches(&default) {
                         return Some(Err(FragmentError::DataType {
-                            exp: data_desc.fragment_type().type_name().to_string(),
+                            exp: data_desc.fragment_type().type_name(),
                             recv: default.type_name().to_string(),
                             field_name: key.to_string(),
                         }));
@@ -93,7 +93,7 @@ impl crate::command::Command for NewCommand {
                 if let Some(clival) = cli_set.as_ref() {
                     if !data_desc.fragment_type().matches(clival) {
                         return Some(Err(FragmentError::DataType {
-                            exp: data_desc.fragment_type().type_name().to_string(),
+                            exp: data_desc.fragment_type().type_name(),
                             recv: clival.type_name().to_string(),
                             field_name: key.to_string(),
                         }));
@@ -117,7 +117,7 @@ impl crate::command::Command for NewCommand {
                                 .map_err(FragmentError::from)
                                 .transpose()
                         } else {
-                            Some(Ok((key.to_string(), clival.clone())))
+                            Some(Ok((key.to_string(), clival)))
                         }
                     }
 
@@ -134,7 +134,7 @@ impl crate::command::Command for NewCommand {
 
                         if !data_desc.fragment_type().matches(&crawled_value) {
                             return Some(Err(FragmentError::DataType {
-                                exp: data_desc.fragment_type().type_name().to_string(),
+                                exp: data_desc.fragment_type().type_name(),
                                 recv: crawled_value.type_name().to_string(),
                                 field_name: key.to_string(),
                             }));
@@ -397,10 +397,10 @@ fn crawl_with_crawler(
 
     let std::process::Output { status, stdout, .. } = command
         .stderr(std::process::Stdio::inherit())
-        .env("CARGO_CHANGELOG_CRAWLER_FIELD_NAME", field_name.to_string())
+        .env("CARGO_CHANGELOG_CRAWLER_FIELD_NAME", field_name)
         .env(
             "CARGO_CHANGELOG_CRAWLER_FIELD_TYPE",
-            expected_type.type_name().to_string(),
+            expected_type.type_name(),
         )
         .output()
         .map_err(FragmentError::from)?;
