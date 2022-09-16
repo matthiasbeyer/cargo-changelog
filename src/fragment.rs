@@ -349,4 +349,22 @@ mod tests {
             f.header()
         );
     }
+
+    #[test]
+    fn test_write_to_yaml() {
+        let mut buffer = std::io::Cursor::new(Vec::with_capacity(1024));
+        let mut header = HashMap::new();
+        header.insert("foo".to_string(), FragmentData::Bool(true));
+        header.insert("bar".to_string(), FragmentData::Str(String::from("baz")));
+
+        let frag = Fragment::new(header, String::from("testtext"));
+        let res = frag.write_to(&mut buffer, Format::Yaml);
+        assert!(res.is_ok(), "Error writing: {}", res.unwrap_err());
+
+        let buffer = String::from_utf8(buffer.into_inner()).unwrap();
+        assert!(buffer.contains("---\n"));
+        assert!(buffer.contains("foo: true\n"));
+        assert!(buffer.contains("bar: baz\n"));
+        assert!(buffer.contains("\n---\ntesttext\n"));
+    }
 }
