@@ -164,7 +164,14 @@ pub struct FragmentDataDesc {
 }
 
 #[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+#[serde(untagged)]
 pub enum FragmentDataType {
+    Ty(FragmentDataTypeDefinite),
+    OneOf(Vec<String>),
+}
+
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+pub enum FragmentDataTypeDefinite {
     #[serde(rename = "bool")]
     Bool,
     #[serde(rename = "int")]
@@ -176,17 +183,21 @@ pub enum FragmentDataType {
 impl FragmentDataType {
     pub fn type_name(&self) -> String {
         match self {
-            FragmentDataType::Bool => "bool".to_string(),
-            FragmentDataType::Int => "int".to_string(),
-            FragmentDataType::Str => "string".to_string(),
+            FragmentDataType::Ty(FragmentDataTypeDefinite::Bool) => "bool".to_string(),
+            FragmentDataType::Ty(FragmentDataTypeDefinite::Int) => "int".to_string(),
+            FragmentDataType::Ty(FragmentDataTypeDefinite::Str) => "string".to_string(),
+            FragmentDataType::OneOf { .. } => "oneof".to_string(),
         }
     }
 
     pub fn matches(&self, data: &FragmentData) -> bool {
         match (self, data) {
-            (FragmentDataType::Bool, FragmentData::Bool(_)) => true,
-            (FragmentDataType::Int, FragmentData::Int(_)) => true,
-            (FragmentDataType::Str, FragmentData::Str(_)) => true,
+            (FragmentDataType::Ty(FragmentDataTypeDefinite::Bool), FragmentData::Bool(_)) => true,
+            (FragmentDataType::Ty(FragmentDataTypeDefinite::Int), FragmentData::Int(_)) => true,
+            (FragmentDataType::Ty(FragmentDataTypeDefinite::Str), FragmentData::Str(_)) => true,
+            (FragmentDataType::OneOf(possible_values), FragmentData::Str(s)) => {
+                possible_values.contains(s)
+            }
             (_, _) => false,
         }
     }
@@ -327,5 +338,32 @@ mod tests {
         assert!(buffer.contains("foo: true\n"));
         assert!(buffer.contains("bar: baz\n"));
         assert!(buffer.contains("\n---\ntesttext\n"));
+    }
+
+    #[test]
+    fn test_deserializing_data_desc_with_one_of() {
+        let s = r#"
+            required = false
+            type = ["foo", "bar"]
+        "#;
+
+        let f: Result<FragmentDataDesc, _> = toml::from_str(s);
+        assert!(
+            f.is_ok(),
+            "Not ok: {}, should look like: {}",
+            f.unwrap_err(),
+            {
+                let fdd = FragmentDataDesc {
+                    fragment_type: FragmentDataType::OneOf(vec![
+                        "foo".to_string(),
+                        "bar".to_string(),
+                    ]),
+                    required: false,
+                    default_value: None,
+                    crawler: None,
+                };
+                toml::to_string(&fdd).unwrap()
+            }
+        );
     }
 }
