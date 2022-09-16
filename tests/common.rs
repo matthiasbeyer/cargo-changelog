@@ -1,3 +1,5 @@
+#[allow(dead_code)]
+
 pub fn init_git(temp_dir: &std::path::Path) {
     if !std::process::Command::new("git")
         .args(&["init"])
