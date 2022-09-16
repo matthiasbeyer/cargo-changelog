@@ -9,14 +9,7 @@ fn generate_command_creates_new_directory() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo(temp_dir.path(), "cargo-changelog-testpkg-generatecommand");
-
-    // initialize changelog
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .assert()
-        .success();
+    self::common::init_cargo_changelog(temp_dir.path());
 
     let unreleased_dir = temp_dir.path().join(".changelogs").join("unreleased");
     if !unreleased_dir.exists() {
@@ -42,14 +35,7 @@ fn generate_command_moves_from_unreleased_dir() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo(temp_dir.path(), "cargo-changelog-testpkg-generatecommand");
-
-    // initialize changelog
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .assert()
-        .success();
+    self::common::init_cargo_changelog(temp_dir.path());
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()

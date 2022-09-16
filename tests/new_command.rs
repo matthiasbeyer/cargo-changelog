@@ -8,13 +8,7 @@ mod common;
 fn new_command_creates_yaml_file() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
     self::common::init_git(temp_dir.path());
-
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .assert()
-        .success();
+    self::common::init_cargo_changelog(temp_dir.path());
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
@@ -84,13 +78,7 @@ fn new_command_creates_yaml_file() {
 fn new_command_creates_unreleased_gitkeep() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
     self::common::init_git(temp_dir.path());
-
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .assert()
-        .success();
+    self::common::init_cargo_changelog(temp_dir.path());
 
     let unreleased_gitkeep_path = temp_dir
         .path()
@@ -109,13 +97,7 @@ fn new_command_creates_unreleased_gitkeep() {
 fn new_command_with_text_creates_yaml_with_text_from_stdin() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
     self::common::init_git(temp_dir.path());
-
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .assert()
-        .success();
+    self::common::init_cargo_changelog(temp_dir.path());
 
     let test_text = "This is a test text";
     {
@@ -175,13 +157,7 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
 fn new_command_with_text_creates_yaml_with_text_from_file() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
     self::common::init_git(temp_dir.path());
-
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .assert()
-        .success();
+    self::common::init_cargo_changelog(temp_dir.path());
 
     let test_text = "This is a test text";
     {
@@ -243,13 +219,7 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
 fn new_command_creates_toml_header() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
     self::common::init_git(temp_dir.path());
-
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .assert()
-        .success();
+    self::common::init_cargo_changelog(temp_dir.path());
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()

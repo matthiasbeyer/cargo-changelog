@@ -9,13 +9,7 @@ fn release_command_works() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo(temp_dir.path(), "release_command_works");
-
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .assert()
-        .success();
+    self::common::init_cargo_changelog(temp_dir.path());
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
@@ -61,13 +55,7 @@ fn release_command_works_for_alpha_release() {
     let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo(temp_dir.path(), "release_command_works_for_alpha_release");
-
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
-        .args(&["init"])
-        .current_dir(&temp_dir)
-        .assert()
-        .success();
+    self::common::init_cargo_changelog(temp_dir.path());
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
