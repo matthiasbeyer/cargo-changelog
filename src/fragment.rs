@@ -103,8 +103,6 @@ pub enum FragmentData {
     Bool(bool),
     Int(u64),
     Str(String),
-    List(Vec<FragmentData>),
-    Map(HashMap<String, FragmentData>),
 }
 
 impl FragmentData {
@@ -117,8 +115,6 @@ impl FragmentData {
             FragmentData::Bool(_) => "bool",
             FragmentData::Int(_) => "int",
             FragmentData::Str(_) => "string",
-            FragmentData::List(_) => "list",
-            FragmentData::Map(_) => "map",
         }
     }
 
@@ -134,16 +130,7 @@ impl FragmentData {
         } else if let Ok(u) = u64::from_str(s) {
             Ok(FragmentData::Int(u))
         } else {
-            let s_split = s.split(',').collect::<Vec<_>>();
-            if s_split.len() == 1 {
-                Ok(FragmentData::Str(s.to_string()))
-            } else {
-                let data = s_split
-                    .into_iter()
-                    .map(FragmentData::parse)
-                    .collect::<Result<Vec<FragmentData>, _>>()?;
-                Ok(FragmentData::List(data))
-            }
+            Ok(FragmentData::Str(s.to_string()))
         }
     }
 }
@@ -156,22 +143,6 @@ impl<'a> std::fmt::Display for FragmentDataDisplay<'a> {
             FragmentData::Bool(b) => write!(f, "{}", b),
             FragmentData::Int(i) => write!(f, "{}", i),
             FragmentData::Str(s) => write!(f, "{}", s),
-            FragmentData::List(list) => write!(
-                f,
-                "{}",
-                list.iter()
-                    .map(|el| el.display().to_string())
-                    .collect::<Vec<_>>()
-                    .join(", ")
-            ),
-            FragmentData::Map(map) => write!(
-                f,
-                "{}",
-                map.iter()
-                    .map(|(key, val)| format!("{} => {}", key, val.display()))
-                    .collect::<Vec<_>>()
-                    .join(", ")
-            ),
         }
     }
 }
@@ -200,8 +171,6 @@ pub enum FragmentDataType {
     Int,
     #[serde(rename = "string")]
     Str,
-    List(Box<FragmentDataType>),
-    Map(HashMap<String, FragmentDataType>),
 }
 
 impl FragmentDataType {
@@ -210,8 +179,6 @@ impl FragmentDataType {
             FragmentDataType::Bool => "bool".to_string(),
             FragmentDataType::Int => "int".to_string(),
             FragmentDataType::Str => "string".to_string(),
-            FragmentDataType::List(inner) => format!("list<{}>", inner.type_name()),
-            FragmentDataType::Map(_) => "map".to_string(),
         }
     }
 
@@ -220,12 +187,6 @@ impl FragmentDataType {
             (FragmentDataType::Bool, FragmentData::Bool(_)) => true,
             (FragmentDataType::Int, FragmentData::Int(_)) => true,
             (FragmentDataType::Str, FragmentData::Str(_)) => true,
-            (FragmentDataType::List(_t_inner), FragmentData::List(_d_inner)) => {
-                unimplemented!()
-            }
-            (FragmentDataType::Map(_t_inner), FragmentData::Map(_d_inner)) => {
-                unimplemented!()
-            }
             (_, _) => false,
         }
     }
