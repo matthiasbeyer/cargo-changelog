@@ -42,6 +42,12 @@ pub enum Command {
         #[clap(long, value_parser = text_provider_parser)]
         read: Option<TextProvider>,
 
+        /// Set a header field to a specific value, non-interactively
+        ///
+        /// This expected a "key=value" argument, whereas the "key" part refers to a header field
+        /// (e.g. "issue") and the "value" part is the value of that header field.
+        ///
+        /// E.G.: --set issue=123
         #[clap(long, value_parser = kv_value_parser)]
         set: Vec<KV>,
 
