@@ -145,7 +145,13 @@ impl crate::command::Command for NewCommand {
 
                     (None, None, None) => {
                         if data_desc.required() {
-                            Some(Err(FragmentError::RequiredValueMissing(key.to_string())))
+                            if self.interactive {
+                                interactive_provide(key, &data_desc)
+                                    .map_err(FragmentError::from)
+                                    .transpose()
+                            } else {
+                                Some(Err(FragmentError::RequiredValueMissing(key.to_string())))
+                            }
                         } else {
                             None
                         }
