@@ -30,19 +30,14 @@ fn new_command_creates_default_header() {
         file.sync_all().unwrap()
     }
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    self::common::cargo_changelog_new(temp_dir.path())
         .args(&[
-            "new",
-            "--interactive=false",
-            "--edit=false",
             "--format=yaml",
             "--set",
             "issue=123",
             "--set",
             "number=345",
         ])
-        .current_dir(&temp_dir)
         .assert()
         .success();
 
