@@ -7,8 +7,8 @@ use miette::IntoDiagnostic;
 use crate::error::Error;
 use crate::fragment::FragmentDataDesc;
 
-pub const CONFIG_FILE_NAME: &'static str = ".changelog.toml";
-pub const DEFAULT_CONFIG: &'static str = include_str!("../assets/default_config.toml");
+pub const CONFIG_FILE_NAME: &str = ".changelog.toml";
+pub const DEFAULT_CONFIG: &str = include_str!("../assets/default_config.toml");
 
 #[derive(Debug, getset::Getters, getset::CopyGetters, serde::Deserialize, serde::Serialize)]
 pub struct Configuration {
