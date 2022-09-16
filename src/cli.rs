@@ -30,7 +30,7 @@ pub struct Args {
 pub enum Command {
     Init,
     New {
-        #[clap(short, long, action = clap::ArgAction::Set)]
+        #[clap(short, long, action = clap::ArgAction::Set, default_value_t = true)]
         interactive: bool,
 
         #[clap(short, long, action = clap::ArgAction::Set, default_value_t = true)]
@@ -39,9 +39,16 @@ pub enum Command {
         #[clap(short, long, arg_enum, value_parser, default_value_t = Format::Yaml)]
         format: Format,
 
+        /// Read the changelog entry text from some path or stdin (via "-")
         #[clap(long, value_parser = text_provider_parser)]
         read: Option<TextProvider>,
 
+        /// Set a header field to a specific value, non-interactively
+        ///
+        /// This expected a "key=value" argument, whereas the "key" part refers to a header field
+        /// (e.g. "issue") and the "value" part is the value of that header field.
+        ///
+        /// E.G.: --set issue=123
         #[clap(long, value_parser = kv_value_parser)]
         set: Vec<KV>,
 
