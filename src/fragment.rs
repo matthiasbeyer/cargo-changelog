@@ -29,14 +29,13 @@ impl Fragment {
     }
 
     pub fn from_reader<R: Read>(reader: &mut R) -> Result<Self, FragmentError> {
-        let format;
         let mut buf = String::new();
 
         reader.read_to_string(&mut buf)?;
 
         let mut lines = buf.lines();
-        if let Some(header_sep) = lines.next() {
-            format = if header_sep == "---" {
+        let format = if let Some(header_sep) = lines.next() {
+            if header_sep == "---" {
                 Format::Yaml
             } else if header_sep == "+++" {
                 Format::Toml
@@ -45,7 +44,7 @@ impl Fragment {
             }
         } else {
             return Err(FragmentError::HeaderSeperatorMissing);
-        }
+        };
 
         let header = {
             let header = lines
