@@ -48,13 +48,10 @@ impl Fragment {
         }
 
         let header = {
-            let mut header = Vec::new();
-            while let Some(line) = lines.next() {
-                if line == "---" || line == "+++" {
-                    break;
-                }
-                header.push(line);
-            }
+            let header = lines
+                .by_ref()
+                .take_while(|line| *line != "---" && *line != "+++")
+                .collect::<Vec<_>>();
 
             match format {
                 Format::Yaml => {
