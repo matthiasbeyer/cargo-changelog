@@ -39,6 +39,7 @@ pub enum Command {
         #[clap(short, long, arg_enum, value_parser, default_value_t = Format::Yaml)]
         format: Format,
 
+        /// Read the changelog entry text from some path or stdin (via "-")
         #[clap(long, value_parser = text_provider_parser)]
         read: Option<TextProvider>,
 
