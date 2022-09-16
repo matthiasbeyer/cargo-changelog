@@ -53,7 +53,7 @@ fn generate_command_moves_from_unreleased_dir() {
     let unreleased_dir = temp_dir.path().join(".changelogs").join("unreleased");
     let files_in_dir = |path: &Path| -> Vec<_> {
         std::fs::read_dir(path)
-            .expect(&format!("Should exist: {}", path.display()))
+            .unwrap_or_else(|e| panic!("Should exist: {} -> {e}", path.display()))
             .into_iter()
             .collect::<Vec<_>>()
     };
