@@ -42,7 +42,7 @@ impl HelperDef for GroupByHelper {
                         }
                         other => Err(RenderError::new(format!(
                             "At least one of the elements is not an object, but a {}",
-                            crate::template::common::json_type_name(&other)
+                            crate::template::common::json_type_name(other)
                         ))),
                     })
                     .collect::<Result<Vec<serde_json::Value>, RenderError>>()?;
