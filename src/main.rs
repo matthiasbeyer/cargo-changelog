@@ -30,7 +30,7 @@ fn main() -> miette::Result<()> {
 
     let repo_workdir_path = repository
         .workdir()
-        .ok_or_else(|| Error::NoWorkTree)
+        .ok_or(Error::NoWorkTree)
         .into_diagnostic()?
         .to_path_buf();
 
