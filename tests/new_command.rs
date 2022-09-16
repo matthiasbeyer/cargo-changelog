@@ -64,7 +64,8 @@ fn new_command_creates_yaml_file() {
         .lines()
         .skip(1)
         .take_while(|line| *line != "---")
-        .collect::<String>();
+        .collect::<Vec<_>>()
+        .join("\n");
 
     let yaml = serde_yaml::from_str::<serde_yaml::Value>(&yaml_header);
     assert!(
@@ -148,7 +149,8 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
         .skip(1)
         .skip_while(|line| *line != "---")
         .skip(1)
-        .collect::<String>();
+        .collect::<Vec<_>>()
+        .join("\n");
 
     assert_eq!(contents, test_text);
 }
@@ -210,7 +212,8 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
         .skip(1)
         .skip_while(|line| *line != "---")
         .skip(1)
-        .collect::<String>();
+        .collect::<Vec<_>>()
+        .join("\n");
 
     assert_eq!(contents, test_text);
 }
@@ -252,7 +255,8 @@ fn new_command_creates_toml_header() {
         .lines()
         .skip(1)
         .take_while(|line| *line != "+++")
-        .collect::<String>();
+        .collect::<Vec<_>>()
+        .join("\n");
 
     let toml = toml::from_str::<serde_yaml::Value>(&toml_header);
     assert!(
