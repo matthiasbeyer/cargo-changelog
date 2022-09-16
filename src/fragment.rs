@@ -63,7 +63,7 @@ impl Fragment {
             }
         };
 
-        let text = lines.collect::<String>();
+        let text = lines.collect::<Vec<_>>().join("\n");
 
         Ok(Fragment { header, text })
     }
