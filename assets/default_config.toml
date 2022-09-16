@@ -118,3 +118,10 @@ required = true
 #value = "scripts/fetch_issue_number.sh"
 #value = "some command to execute with arguments"
 
+# A header field named "type"
+# With three possible values: "Bugfix", "Feature" or "Misc"
+# which is required
+[header_fields.type]
+type = [ "Bugfix", "Feature", "Misc" ]
+required = true
+
