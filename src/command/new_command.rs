@@ -82,6 +82,7 @@ impl crate::command::Command for NewCommand {
                         return Some(Err(FragmentError::DataType {
                             exp: data_desc.fragment_type().type_name().to_string(),
                             recv: default.type_name().to_string(),
+                            field_name: key.to_string(),
                         }));
                     }
                 }
@@ -92,6 +93,7 @@ impl crate::command::Command for NewCommand {
                         return Some(Err(FragmentError::DataType {
                             exp: data_desc.fragment_type().type_name().to_string(),
                             recv: clival.type_name().to_string(),
+                            field_name: key.to_string(),
                         }));
                     }
                 }
@@ -132,6 +134,7 @@ impl crate::command::Command for NewCommand {
                             return Some(Err(FragmentError::DataType {
                                 exp: data_desc.fragment_type().type_name().to_string(),
                                 recv: crawled_value.type_name().to_string(),
+                                field_name: key.to_string(),
                             }));
                         }
 
@@ -376,6 +379,7 @@ fn crawl_with_crawler(
             Err(FragmentError::DataType {
                 exp: expected_type.type_name(),
                 recv: data.type_name().to_string(),
+                field_name: field_name.to_string(),
             })
         }
     } else {

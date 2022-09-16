@@ -85,8 +85,12 @@ pub enum FragmentError {
     #[error("YAML error")]
     Yaml(#[from] serde_yaml::Error),
 
-    #[error("Type Error: Expected {exp}, got {recv}")]
-    DataType { exp: String, recv: String },
+    #[error("Type Error: Expected {exp}, got {recv} for field {field_name}")]
+    DataType {
+        exp: String,
+        recv: String,
+        field_name: String,
+    },
 
     #[error("Error during interactive session")]
     Interactive(#[from] InteractiveError),
