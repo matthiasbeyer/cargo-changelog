@@ -24,7 +24,7 @@ impl HelperDef for GroupByHelper {
                 ))
             })?
             .as_str()
-            .ok_or_else(|| RenderError::new("Expected String as key to group by".to_string()))?;
+            .ok_or_else(|| RenderError::new("Expected String as key to group by"))?;
 
         match h.param(0).map(|p| p.value()) {
             None => Err(RenderError::new(format!(
