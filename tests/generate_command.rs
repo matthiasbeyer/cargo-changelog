@@ -37,19 +37,14 @@ fn generate_command_moves_from_unreleased_dir() {
     self::common::init_cargo(temp_dir.path(), "cargo-changelog-testpkg-generatecommand");
     self::common::init_cargo_changelog(temp_dir.path());
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    self::common::cargo_changelog_new(temp_dir.path())
         .args(&[
-            "new",
-            "--interactive=false",
-            "--edit=false",
             "--format=yaml",
             "--set",
             "issue=123",
             "--set",
             "subject='This is some text'",
         ])
-        .current_dir(&temp_dir)
         .assert()
         .success();
 

@@ -30,3 +30,19 @@ pub fn init_cargo_changelog(temp_dir: &std::path::Path) {
         .assert()
         .success();
 }
+
+pub fn cargo_changelog_cmd(dir: &std::path::Path) -> assert_cmd::Command {
+    let mut cmd = assert_cmd::Command::cargo_bin("cargo-changelog").unwrap();
+    cmd.current_dir(dir);
+    cmd
+}
+
+pub fn cargo_changelog_new(dir: &std::path::Path) -> assert_cmd::Command {
+    let mut cmd = cargo_changelog_cmd(dir);
+    cmd.arg("new");
+    cmd.arg("--interactive");
+    cmd.arg("false");
+    cmd.arg("--edit");
+    cmd.arg("false");
+    cmd
+}

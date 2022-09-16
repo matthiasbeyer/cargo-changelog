@@ -10,19 +10,14 @@ fn new_command_creates_yaml_file() {
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    self::common::cargo_changelog_new(temp_dir.path())
         .args(&[
-            "new",
-            "--interactive=false",
-            "--edit=false",
             "--format=yaml",
             "--set",
             "issue=123",
             "--set",
             "subject=This is some text",
         ])
-        .current_dir(&temp_dir)
         .assert()
         .success();
 
@@ -117,12 +112,8 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
         file.sync_all().unwrap();
         drop(file); // make sure we close the handle
 
-        Command::cargo_bin("cargo-changelog")
-            .unwrap()
+        self::common::cargo_changelog_new(temp_dir.path())
             .args(&[
-                "new",
-                "--interactive=false",
-                "--edit=false",
                 "--format=yaml",
                 "--set",
                 "issue=123",
@@ -130,7 +121,6 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
                 "subject='This is some text'",
                 "--read=-", // read text from STDIN
             ])
-            .current_dir(&temp_dir)
             .pipe_stdin(path)
             .unwrap()
             .assert()
@@ -180,12 +170,8 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
         file.sync_all().unwrap();
         drop(file); // make sure we close the handle
 
-        Command::cargo_bin("cargo-changelog")
-            .unwrap()
+        self::common::cargo_changelog_new(temp_dir.path())
             .args(&[
-                "new",
-                "--interactive=false",
-                "--edit=false",
                 "--format=yaml",
                 "--set",
                 "issue=123",
@@ -195,7 +181,6 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
                 "--read",
                 &path.display().to_string(),
             ])
-            .current_dir(&temp_dir)
             .pipe_stdin(path)
             .unwrap()
             .assert()
@@ -230,19 +215,14 @@ fn new_command_creates_toml_header() {
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    self::common::cargo_changelog_new(temp_dir.path())
         .args(&[
-            "new",
-            "--interactive=false",
-            "--edit=false",
             "--format=toml",
             "--set",
             "issue=123",
             "--set",
             "subject='This is some text'",
         ])
-        .current_dir(&temp_dir)
         .assert()
         .success();
 

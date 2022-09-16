@@ -30,12 +30,8 @@ fn new_command_creates_default_header() {
         file.sync_all().unwrap()
     }
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    self::common::cargo_changelog_new(temp_dir.path())
         .args(&[
-            "new",
-            "--interactive=false",
-            "--edit=false",
             "--format=yaml",
             "--set",
             "issue=123",
@@ -44,7 +40,6 @@ fn new_command_creates_default_header() {
             "--set",
             "subject='This is some text'",
         ])
-        .current_dir(&temp_dir)
         .assert()
         .success();
 

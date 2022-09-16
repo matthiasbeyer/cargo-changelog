@@ -11,19 +11,14 @@ fn release_command_works() {
     self::common::init_cargo(temp_dir.path(), "release_command_works");
     self::common::init_cargo_changelog(temp_dir.path());
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    self::common::cargo_changelog_new(temp_dir.path())
         .args(&[
-            "new",
-            "--interactive=false",
-            "--edit=false",
             "--format=yaml",
             "--set",
             "issue=123",
             "--set",
             "subject='Test subject'",
         ])
-        .current_dir(&temp_dir)
         .assert()
         .success();
 
@@ -59,19 +54,14 @@ fn release_command_works_for_alpha_release() {
     self::common::init_cargo(temp_dir.path(), "release_command_works_for_alpha_release");
     self::common::init_cargo_changelog(temp_dir.path());
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    self::common::cargo_changelog_new(temp_dir.path())
         .args(&[
-            "new",
-            "--interactive=false",
-            "--edit=false",
             "--format=yaml",
             "--set",
             "issue=123",
             "--set",
             "subject='Test subject'",
         ])
-        .current_dir(&temp_dir)
         .assert()
         .success();
 
