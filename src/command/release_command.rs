@@ -320,8 +320,7 @@ mod tests {
             template
                 .lines()
                 .enumerate()
-                .filter(|(_n, line)| *line == "## v0.1.0")
-                .next()
+                .find(|(_n, line)| *line == "## v0.1.0")
                 .map(|(n, _)| n)
                 .unwrap()
         };
@@ -330,8 +329,7 @@ mod tests {
             template
                 .lines()
                 .enumerate()
-                .filter(|(_n, line)| *line == "## v0.2.0")
-                .next()
+                .find(|(_n, line)| *line == "## v0.2.0")
                 .map(|(n, _)| n)
                 .unwrap()
         };
