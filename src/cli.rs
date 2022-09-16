@@ -28,7 +28,10 @@ pub struct Args {
 
 #[derive(Subcommand)]
 pub enum Command {
+    /// Initialize the repository for cargo-changelog
     Init,
+
+    /// Create a new changelog fragment
     New {
         #[clap(short, long, action = clap::ArgAction::Set, default_value_t = true)]
         interactive: bool,
@@ -65,11 +68,15 @@ pub enum Command {
         git: Option<GitSetting>,
     },
 
+    /// Verify the metadata in existing changelog fragments
     VerifyMetadata,
 
+    /// Use the current unreleased changelog fragments to generate the changelog for the next
+    /// release
     #[clap(subcommand)]
     Generate(VersionSpec),
 
+    /// Generate the changelog file from the fragments marked for release
     Release {
         /// Also write "unreleased" stuff to the CHANGELOG.md file
         #[clap(long)]
