@@ -27,7 +27,7 @@
           overlays = [ (import rust-overlay) ];
         };
 
-        rustTarget = pkgs.rust-bin.stable."1.60.0".default;
+        rustTarget = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain;
         craneLib = (crane.mkLib pkgs).overrideToolchain rustTarget;
 
         tomlInfo = craneLib.crateNameFromCargoToml { cargoToml = ./Cargo.toml; };
