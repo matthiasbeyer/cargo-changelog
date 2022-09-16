@@ -186,7 +186,14 @@ impl FragmentDataType {
             FragmentDataType::Ty(FragmentDataTypeDefinite::Bool) => "bool".to_string(),
             FragmentDataType::Ty(FragmentDataTypeDefinite::Int) => "int".to_string(),
             FragmentDataType::Ty(FragmentDataTypeDefinite::Str) => "string".to_string(),
-            FragmentDataType::OneOf { .. } => "oneof".to_string(),
+            FragmentDataType::OneOf(list) => {
+                let list = list
+                    .iter()
+                    .map(|el| format!("'{}'", el))
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                format!("one of: {}", list)
+            }
         }
     }
 
