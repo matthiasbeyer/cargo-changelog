@@ -267,7 +267,7 @@ mod tests {
         let f = Fragment::from_reader(&mut Cursor::new(s));
         assert!(f.is_ok(), "Not ok: {:?}", f);
         let f = f.unwrap();
-        assert!(f.text().is_empty());
+        assert!(f.text().is_empty(), "Not empty: '{}'", f.text());
         assert!(
             f.header().contains_key("foo"),
             "'foo' key missing from header: {:?}",
@@ -304,7 +304,7 @@ mod tests {
         let f = Fragment::from_reader(&mut Cursor::new(s));
         assert!(f.is_ok(), "Not ok: {:?}", f);
         let f = f.unwrap();
-        assert!(f.text().is_empty());
+        assert!(f.text().is_empty(), "Not empty: '{}'", f.text());
         assert!(
             f.header().contains_key("foo"),
             "'foo' key missing from header: {:?}",
