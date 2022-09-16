@@ -80,7 +80,7 @@ impl crate::command::Command for NewCommand {
 
                 // if there is a default value, but its type is not correct, fail
                 if let Some(default) = default_value.as_ref() {
-                    if !data_desc.fragment_type().matches(&default) {
+                    if !data_desc.fragment_type().matches(default) {
                         return Some(Err(FragmentError::DataType {
                             exp: data_desc.fragment_type().type_name(),
                             recv: default.type_name().to_string(),
@@ -146,7 +146,7 @@ impl crate::command::Command for NewCommand {
                     (None, None, None) => {
                         if data_desc.required() {
                             if self.interactive {
-                                interactive_provide(key, &data_desc)
+                                interactive_provide(key, data_desc)
                                     .map_err(FragmentError::from)
                                     .transpose()
                             } else {
