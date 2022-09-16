@@ -30,7 +30,7 @@ pub struct Args {
 pub enum Command {
     Init,
     New {
-        #[clap(short, long, action = clap::ArgAction::Set)]
+        #[clap(short, long, action = clap::ArgAction::Set, default_value_t = true)]
         interactive: bool,
 
         #[clap(short, long, action = clap::ArgAction::Set, default_value_t = true)]
