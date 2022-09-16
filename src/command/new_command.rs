@@ -331,8 +331,6 @@ fn interactive_provide(
             let value = dialoguer.interact_text().map_err(InteractiveError::from)?;
             Ok(Some((key.to_string(), FragmentData::Str(value))))
         }
-        FragmentDataType::List(_) => todo!(),
-        FragmentDataType::Map(_) => todo!(),
     }
 }
 
