@@ -17,6 +17,8 @@ fn new_command_creates_yaml_file() {
             "issue=123",
             "--set",
             "subject=This is some text",
+            "--set",
+            "type=Bugfix",
         ])
         .assert()
         .success();
@@ -119,6 +121,8 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
                 "issue=123",
                 "--set",
                 "subject='This is some text'",
+                "--set",
+                "type=Bugfix",
                 "--read=-", // read text from STDIN
             ])
             .pipe_stdin(path)
@@ -177,6 +181,8 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
                 "issue=123",
                 "--set",
                 "subject='This is some text'",
+                "--set",
+                "type=Bugfix",
                 // read text from PATH
                 "--read",
                 &path.display().to_string(),
@@ -222,6 +228,8 @@ fn new_command_creates_toml_header() {
             "issue=123",
             "--set",
             "subject='This is some text'",
+            "--set",
+            "type=Bugfix",
         ])
         .assert()
         .success();
@@ -285,6 +293,8 @@ fn new_command_cannot_create_nonexistent_oneof() {
             "subject='This is some text'",
             "--set",
             "field=baz",
+            "--set",
+            "type=Bugfix",
         ])
         .assert()
         .failure();

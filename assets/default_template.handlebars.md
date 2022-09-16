@@ -6,11 +6,14 @@
 {{#each (reverse (sort_versions this.versions))}}
 ## v{{this.version}}
 
-{{#each this.entries}}
-### (#{{this.header.issue}}) {{this.header.subject}}
+{{#each (group_by_header this.entries "type")}}
+### {{ @key }}
+
+{{#each this}}
+#### (#{{this.header.issue}}) {{this.header.subject}}
 
 {{this.text}}
-
+{{/each}}
 {{/each}}
 
 {{/each}}
