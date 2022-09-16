@@ -23,19 +23,8 @@ impl HelperDef for ReverseHelper {
             ))),
             Some(other) => Err(RenderError::new(format!(
                 "Expected array as argument, got {}",
-                json_type_name(other)
+                crate::template::common::json_type_name(other)
             ))),
         }
-    }
-}
-
-fn json_type_name(json: &Value) -> &'static str {
-    match json {
-        Value::Null => "null",
-        Value::Bool(_) => "bool",
-        Value::Number(_) => "number",
-        Value::String(_) => "string",
-        Value::Array(_) => "array",
-        Value::Object(_) => "object",
     }
 }

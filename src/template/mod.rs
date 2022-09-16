@@ -2,6 +2,7 @@ use handlebars::Handlebars;
 
 use crate::error::Error;
 
+mod common;
 mod reverse_helper;
 mod sort_versions_helper;
 
