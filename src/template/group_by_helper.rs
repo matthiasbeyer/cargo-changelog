@@ -35,7 +35,7 @@ impl HelperDef for GroupByHelper {
                 let mut res: serde_json::Map<String, _> = serde_json::Map::new();
 
                 let object_list = list
-                    .into_iter()
+                    .iter()
                     .map(|elt| match elt {
                         serde_json::Value::Object(map) => {
                             Ok(serde_json::Value::Object(map.clone()))

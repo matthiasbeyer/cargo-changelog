@@ -19,7 +19,7 @@ impl HelperDef for ReverseHelper {
                 h.params().len()
             ))),
             Some(Value::Array(list)) => Ok(ScopedJson::Derived(Value::Array(
-                list.into_iter().cloned().rev().collect(),
+                list.iter().cloned().rev().collect(),
             ))),
             Some(other) => Err(RenderError::new(format!(
                 "Expected array as argument, got {}",
