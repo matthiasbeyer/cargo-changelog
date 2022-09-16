@@ -1,4 +1,4 @@
-const DEFAULT_CONFIG: &'static str = include_str!("../assets/default_config.toml");
+const DEFAULT_CONFIG: &str = include_str!("../assets/default_config.toml");
 
 #[test]
 fn default_config_deserializes() {
