@@ -65,6 +65,10 @@ git_commit_signoff = false
 #
 [header_fields]
 
+# Require a "subject" in the header.
+# The text serves as a more detailed explanation
+subject = { type = "string", required = true }
+
 # A header field named "issue"
 [header_fields.issue]
 # which is of type "integer"

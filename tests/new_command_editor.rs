@@ -70,6 +70,8 @@ fn new_command_opens_editor() {
             "--format=yaml",
             "--set",
             "issue=123",
+            "--set",
+            "subject='This is some text'",
         ])
         .current_dir(&temp_dir)
         .assert()

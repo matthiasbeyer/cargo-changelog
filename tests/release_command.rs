@@ -20,6 +20,8 @@ fn release_command_works() {
             "--format=yaml",
             "--set",
             "issue=123",
+            "--set",
+            "subject='Test subject'",
         ])
         .current_dir(&temp_dir)
         .assert()
@@ -66,6 +68,8 @@ fn release_command_works_for_alpha_release() {
             "--format=yaml",
             "--set",
             "issue=123",
+            "--set",
+            "subject='Test subject'",
         ])
         .current_dir(&temp_dir)
         .assert()

@@ -46,6 +46,8 @@ fn generate_command_moves_from_unreleased_dir() {
             "--format=yaml",
             "--set",
             "issue=123",
+            "--set",
+            "subject='This is some text'",
         ])
         .current_dir(&temp_dir)
         .assert()

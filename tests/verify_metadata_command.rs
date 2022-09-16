@@ -31,6 +31,8 @@ fn verify_metadata_command_succeeds_with_empty_changelog() {
             "--format=yaml",
             "--set",
             "issue=123",
+            "--set",
+            "subject='test subject'",
         ])
         .current_dir(&temp_dir)
         .assert()
