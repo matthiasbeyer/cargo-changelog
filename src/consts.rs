@@ -1,5 +1,5 @@
-pub const UNRELEASED_DIR_NAME: &'static str = "unreleased";
+pub const UNRELEASED_DIR_NAME: &str = "unreleased";
 
-pub const INTERNAL_TEMPLATE_NAME: &'static str = "template";
+pub const INTERNAL_TEMPLATE_NAME: &str = "template";
 
-pub const DEFAULT_TEMPLATE: &'static str = include_str!("../assets/default_template.handlebars.md");
+pub const DEFAULT_TEMPLATE: &str = include_str!("../assets/default_template.handlebars.md");

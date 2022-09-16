@@ -88,7 +88,7 @@ fn release_command_works_for_alpha_release() {
         .open(new_fragment_file_path.path())
         .unwrap();
 
-    writeln!(new_fragment_file, "").unwrap();
+    writeln!(new_fragment_file).unwrap();
     writeln!(new_fragment_file, "test text").unwrap();
     new_fragment_file.sync_all().unwrap();
     drop(new_fragment_file);

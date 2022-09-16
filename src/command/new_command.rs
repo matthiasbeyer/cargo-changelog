@@ -62,7 +62,7 @@ impl crate::command::Command for NewCommand {
         // Fill the fragment header with data
         *fragment.header_mut() = config
             .header_fields()
-            .into_iter()
+            .iter()
             .filter_map(|(key, data_desc)| {
                 let cli_set: Option<FragmentData> = match self
                     .set
@@ -80,9 +80,9 @@ impl crate::command::Command for NewCommand {
 
                 // if there is a default value, but its type is not correct, fail
                 if let Some(default) = default_value.as_ref() {
-                    if !data_desc.fragment_type().matches(&default) {
+                    if !data_desc.fragment_type().matches(default) {
                         return Some(Err(FragmentError::DataType {
-                            exp: data_desc.fragment_type().type_name().to_string(),
+                            exp: data_desc.fragment_type().type_name(),
                             recv: default.type_name().to_string(),
                             field_name: key.to_string(),
                         }));
@@ -93,7 +93,7 @@ impl crate::command::Command for NewCommand {
                 if let Some(clival) = cli_set.as_ref() {
                     if !data_desc.fragment_type().matches(clival) {
                         return Some(Err(FragmentError::DataType {
-                            exp: data_desc.fragment_type().type_name().to_string(),
+                            exp: data_desc.fragment_type().type_name(),
                             recv: clival.type_name().to_string(),
                             field_name: key.to_string(),
                         }));
@@ -117,7 +117,7 @@ impl crate::command::Command for NewCommand {
                                 .map_err(FragmentError::from)
                                 .transpose()
                         } else {
-                            Some(Ok((key.to_string(), clival.clone())))
+                            Some(Ok((key.to_string(), clival)))
                         }
                     }
 
@@ -134,7 +134,7 @@ impl crate::command::Command for NewCommand {
 
                         if !data_desc.fragment_type().matches(&crawled_value) {
                             return Some(Err(FragmentError::DataType {
-                                exp: data_desc.fragment_type().type_name().to_string(),
+                                exp: data_desc.fragment_type().type_name(),
                                 recv: crawled_value.type_name().to_string(),
                                 field_name: key.to_string(),
                             }));
@@ -146,7 +146,7 @@ impl crate::command::Command for NewCommand {
                     (None, None, None) => {
                         if data_desc.required() {
                             if self.interactive {
-                                interactive_provide(key, &data_desc)
+                                interactive_provide(key, data_desc)
                                     .map_err(FragmentError::from)
                                     .transpose()
                             } else {
@@ -368,7 +368,10 @@ fn interactive_provide(
             let value_idx = dialoguer.interact().map_err(InteractiveError::from)?;
             let value = possible_values
                 .get(value_idx)
-                .ok_or_else(|| InteractiveError::IndexError(value_idx, possible_values.len()))?;
+                .ok_or(InteractiveError::IndexError(
+                    value_idx,
+                    possible_values.len(),
+                ))?;
             Ok(Some((
                 key.to_string(),
                 FragmentData::Str(value.to_string()),
@@ -397,10 +400,10 @@ fn crawl_with_crawler(
 
     let std::process::Output { status, stdout, .. } = command
         .stderr(std::process::Stdio::inherit())
-        .env("CARGO_CHANGELOG_CRAWLER_FIELD_NAME", field_name.to_string())
+        .env("CARGO_CHANGELOG_CRAWLER_FIELD_NAME", field_name)
         .env(
             "CARGO_CHANGELOG_CRAWLER_FIELD_TYPE",
-            expected_type.type_name().to_string(),
+            expected_type.type_name(),
         )
         .output()
         .map_err(FragmentError::from)?;
@@ -423,8 +426,6 @@ fn crawl_with_crawler(
             })
         }
     } else {
-        Err(FragmentError::from(FragmentError::CommandNoSuccess(
-            command_str,
-        )))
+        Err(FragmentError::CommandNoSuccess(command_str))
     }
 }

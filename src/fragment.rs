@@ -29,14 +29,13 @@ impl Fragment {
     }
 
     pub fn from_reader<R: Read>(reader: &mut R) -> Result<Self, FragmentError> {
-        let format;
         let mut buf = String::new();
 
         reader.read_to_string(&mut buf)?;
 
         let mut lines = buf.lines();
-        if let Some(header_sep) = lines.next() {
-            format = if header_sep == "---" {
+        let format = if let Some(header_sep) = lines.next() {
+            if header_sep == "---" {
                 Format::Yaml
             } else if header_sep == "+++" {
                 Format::Toml
@@ -45,16 +44,13 @@ impl Fragment {
             }
         } else {
             return Err(FragmentError::HeaderSeperatorMissing);
-        }
+        };
 
         let header = {
-            let mut header = Vec::new();
-            while let Some(line) = lines.next() {
-                if line == "---" || line == "+++" {
-                    break;
-                }
-                header.push(line);
-            }
+            let header = lines
+                .by_ref()
+                .take_while(|line| *line != "---" && *line != "+++")
+                .collect::<Vec<_>>();
 
             match format {
                 Format::Yaml => {
@@ -66,7 +62,7 @@ impl Fragment {
             }
         };
 
-        let text = lines.collect::<String>();
+        let text = lines.collect::<Vec<_>>().join("\n");
 
         Ok(Fragment { header, text })
     }
@@ -267,7 +263,7 @@ mod tests {
         let f = Fragment::from_reader(&mut Cursor::new(s));
         assert!(f.is_ok(), "Not ok: {:?}", f);
         let f = f.unwrap();
-        assert!(f.text().is_empty());
+        assert!(f.text().is_empty(), "Not empty: '{}'", f.text());
         assert!(
             f.header().contains_key("foo"),
             "'foo' key missing from header: {:?}",
@@ -304,7 +300,7 @@ mod tests {
         let f = Fragment::from_reader(&mut Cursor::new(s));
         assert!(f.is_ok(), "Not ok: {:?}", f);
         let f = f.unwrap();
-        assert!(f.text().is_empty());
+        assert!(f.text().is_empty(), "Not empty: '{}'", f.text());
         assert!(
             f.header().contains_key("foo"),
             "'foo' key missing from header: {:?}",

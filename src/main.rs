@@ -30,7 +30,7 @@ fn main() -> miette::Result<()> {
 
     let repo_workdir_path = repository
         .workdir()
-        .ok_or_else(|| Error::NoWorkTree)
+        .ok_or(Error::NoWorkTree)
         .into_diagnostic()?
         .to_path_buf();
 
@@ -42,7 +42,7 @@ fn main() -> miette::Result<()> {
 
     if !config.fragment_dir().exists() {
         let fragment_dir_path = {
-            let mut fragment_dir_path = repo_workdir_path.to_path_buf();
+            let mut fragment_dir_path = repo_workdir_path.clone();
             fragment_dir_path.push(config.fragment_dir());
             fragment_dir_path
         };

@@ -13,7 +13,7 @@ mod common;
 // "*.edited" file, it knows that the editor was called
 //
 
-const EDITOR_COMMAND_SCRIPT: &'static str = r#"#!/bin/sh
+const EDITOR_COMMAND_SCRIPT: &str = r#"#!/bin/sh
 touch "${1}.edited"
 "#;
 

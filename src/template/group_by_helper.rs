@@ -24,7 +24,7 @@ impl HelperDef for GroupByHelper {
                 ))
             })?
             .as_str()
-            .ok_or_else(|| RenderError::new("Expected String as key to group by".to_string()))?;
+            .ok_or_else(|| RenderError::new("Expected String as key to group by"))?;
 
         match h.param(0).map(|p| p.value()) {
             None => Err(RenderError::new(format!(
@@ -35,14 +35,14 @@ impl HelperDef for GroupByHelper {
                 let mut res: serde_json::Map<String, _> = serde_json::Map::new();
 
                 let object_list = list
-                    .into_iter()
+                    .iter()
                     .map(|elt| match elt {
                         serde_json::Value::Object(map) => {
                             Ok(serde_json::Value::Object(map.clone()))
                         }
                         other => Err(RenderError::new(format!(
                             "At least one of the elements is not an object, but a {}",
-                            crate::template::common::json_type_name(&other)
+                            crate::template::common::json_type_name(other)
                         ))),
                     })
                     .collect::<Result<Vec<serde_json::Value>, RenderError>>()?;
