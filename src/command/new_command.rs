@@ -368,7 +368,10 @@ fn interactive_provide(
             let value_idx = dialoguer.interact().map_err(InteractiveError::from)?;
             let value = possible_values
                 .get(value_idx)
-                .ok_or_else(|| InteractiveError::IndexError(value_idx, possible_values.len()))?;
+                .ok_or(InteractiveError::IndexError(
+                    value_idx,
+                    possible_values.len(),
+                ))?;
             Ok(Some((
                 key.to_string(),
                 FragmentData::Str(value.to_string()),
