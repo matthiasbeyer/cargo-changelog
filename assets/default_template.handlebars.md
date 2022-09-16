@@ -7,7 +7,10 @@
 ## v{{this.version}}
 
 {{#each this.entries}}
-- (#{{this.header.issue}}) {{this.text}}
+### (#{{this.header.issue}}) {{this.header.subject}}
+
+{{this.text}}
+
 {{/each}}
 
 {{/each}}
