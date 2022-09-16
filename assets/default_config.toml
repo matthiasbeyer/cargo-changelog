@@ -66,7 +66,51 @@ git_commit_signoff = false
 [header_fields]
 
 # A header field named "issue"
+[header_fields.issue]
 # which is of type "integer"
-# and is required, but does not have a default value
-issue = { type = "int", required = true }
+type = "int"
+
+# default value for the field, optional
+#default = 123
+
+# and is required
+required = true
+
+# crawler, which will be used to auto-fill the field
+# containing "type" of the "value", either "path" or "command"
+# and a "value" field which is either
+# - the path to the script (from the repository root)
+# - a commandline call
+#
+# The following environment variables are set for both types of crawler:
+# - "CARGO_CHANGELOG_CRAWLER_FIELD_NAME"
+#   The name of the field which gets crawled right now
+# - "CARGO_CHANGELOG_CRAWLER_FIELD_TYPE"
+#   Possible values: one of "bool", "int", "string", "list<{}>" where '{}' is
+#   again one of the former.
+#   The list is expected to be a comma seperated list
+#
+# Usecase:
+#
+#  This field could for example be used to fetch a git commit hash from the
+#  repository.
+#  If we have a header field named "relevant_commit", which is used in the
+#  template to refer to a commit in the repository that was created in relation
+#  to the changelog entry we're currently crafting, the script for fetching
+#  that metadata could be something like
+#
+#  ```bash
+#  #!/usr/bin/env bash
+#  fzfargs='--ansi --no-sort --reverse --preview'
+#  git log --format='%H - %s' | \
+#      fzf $fzfargs 'git show --color=always $(echo {} | cut -d " " -f 1)' | \
+#      sed 's/ -.*//'
+#  ```
+#
+#  to interactively fetch a git hash from the repository history.
+#
+#[header_fields.issue.crawler]
+#type = "path"
+#value = "scripts/fetch_issue_number.sh"
+#value = "some command to execute with arguments"
 
