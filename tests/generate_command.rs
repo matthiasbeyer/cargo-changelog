@@ -44,6 +44,8 @@ fn generate_command_moves_from_unreleased_dir() {
             "issue=123",
             "--set",
             "subject='This is some text'",
+            "--set",
+            "type=Bugfix",
         ])
         .assert()
         .success();

@@ -211,6 +211,7 @@ mod tests {
                     {
                         let mut hdr = HashMap::new();
                         hdr.insert("issue".to_string(), FragmentData::Int(123));
+                        hdr.insert("type".to_string(), FragmentData::Str("Bugfix".to_string()));
                         hdr
                     },
                     "test for 0.1.0".to_string(),
@@ -246,6 +247,7 @@ mod tests {
                     {
                         let mut hdr = HashMap::new();
                         hdr.insert("issue".to_string(), FragmentData::Int(123));
+                        hdr.insert("type".to_string(), FragmentData::Str("Bugfix".to_string()));
                         hdr
                     },
                     "test for 0.1.0".to_string(),
@@ -276,6 +278,7 @@ mod tests {
                         {
                             let mut hdr = HashMap::new();
                             hdr.insert("issue".to_string(), FragmentData::Int(123));
+                            hdr.insert("type".to_string(), FragmentData::Str("Bugfix".to_string()));
                             hdr
                         },
                         "test for 0.1.0".to_string(),
@@ -287,6 +290,10 @@ mod tests {
                         {
                             let mut hdr = HashMap::new();
                             hdr.insert("issue".to_string(), FragmentData::Int(234));
+                            hdr.insert(
+                                "type".to_string(),
+                                FragmentData::Str("Feature".to_string()),
+                            );
                             hdr
                         },
                         "test for 0.2.0".to_string(),

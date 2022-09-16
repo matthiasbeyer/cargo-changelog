@@ -39,6 +39,8 @@ fn new_command_creates_default_header() {
             "number=345",
             "--set",
             "subject='This is some text'",
+            "--set",
+            "type=Misc",
         ])
         .assert()
         .success();

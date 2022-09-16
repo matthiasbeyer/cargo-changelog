@@ -18,6 +18,8 @@ fn release_command_works() {
             "issue=123",
             "--set",
             "subject='Test subject'",
+            "--set",
+            "type=Misc",
         ])
         .assert()
         .success();
@@ -61,6 +63,8 @@ fn release_command_works_for_alpha_release() {
             "issue=123",
             "--set",
             "subject='Test subject'",
+            "--set",
+            "type=Misc",
         ])
         .assert()
         .success();

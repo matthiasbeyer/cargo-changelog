@@ -29,6 +29,8 @@ fn verify_metadata_command_succeeds_with_empty_changelog() {
             "issue=123",
             "--set",
             "subject='test subject'",
+            "--set",
+            "type=Feature",
         ])
         .assert()
         .success();

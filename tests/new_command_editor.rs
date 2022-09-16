@@ -72,6 +72,8 @@ fn new_command_opens_editor() {
             "issue=123",
             "--set",
             "subject='This is some text'",
+            "--set",
+            "type=Misc",
         ])
         .current_dir(&temp_dir)
         .assert()
