@@ -98,9 +98,6 @@ pub enum FragmentError {
     #[error("Required value '{}', but value is missing", .0)]
     RequiredValueMissing(String),
 
-    #[error("Required value '{}', but --interactive=false given", .0)]
-    RequiredValueNotInteractive(String),
-
     #[error("Not a valid command: '{}'", .0)]
     NoValidCommand(String),
 
