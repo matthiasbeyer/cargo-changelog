@@ -1,5 +1,3 @@
-use std::io::Write;
-
 use assert_cmd::Command;
 
 mod common;
