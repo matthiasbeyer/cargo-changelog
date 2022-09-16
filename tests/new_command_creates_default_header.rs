@@ -41,6 +41,8 @@ fn new_command_creates_default_header() {
             "issue=123",
             "--set",
             "number=345",
+            "--set",
+            "subject='This is some text'",
         ])
         .current_dir(&temp_dir)
         .assert()

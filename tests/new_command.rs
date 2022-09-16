@@ -19,6 +19,8 @@ fn new_command_creates_yaml_file() {
             "--format=yaml",
             "--set",
             "issue=123",
+            "--set",
+            "subject=This is some text",
         ])
         .current_dir(&temp_dir)
         .assert()
@@ -124,6 +126,8 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
                 "--format=yaml",
                 "--set",
                 "issue=123",
+                "--set",
+                "subject='This is some text'",
                 "--read=-", // read text from STDIN
             ])
             .current_dir(&temp_dir)
@@ -185,6 +189,8 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
                 "--format=yaml",
                 "--set",
                 "issue=123",
+                "--set",
+                "subject='This is some text'",
                 // read text from PATH
                 "--read",
                 &path.display().to_string(),
@@ -233,6 +239,8 @@ fn new_command_creates_toml_header() {
             "--format=toml",
             "--set",
             "issue=123",
+            "--set",
+            "subject='This is some text'",
         ])
         .current_dir(&temp_dir)
         .assert()
