@@ -69,6 +69,9 @@
         };
         apps.default = apps.changelog;
 
+        packages.changelog = changelog;
+        packages.default = packages.changelog;
+
         devShells.default = devShells.changelog;
         devShells.changelog = pkgs.mkShell {
           nativeBuildInputs = [
