@@ -3,13 +3,29 @@ use std::{collections::HashMap, io::BufReader, path::Path};
 
 use crate::{config::Configuration, error::Error, fragment::Fragment};
 
-#[derive(Debug, typed_builder::TypedBuilder)]
+#[derive(typed_builder::TypedBuilder)]
 pub struct ReleaseCommand {
+    repository: git2::Repository,
     all: bool,
+    allow_dirty: bool,
+}
+
+impl std::fmt::Debug for ReleaseCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ReleaseCommand")
+            .field("repository", &self.repository.workdir())
+            .field("all", &self.all)
+            .field("allow_dirty", &self.allow_dirty)
+            .finish_non_exhaustive()
+    }
 }
 
 impl crate::command::Command for ReleaseCommand {
     fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), Error> {
+        if crate::util::repo_is_dirty(&self.repository) && !self.allow_dirty {
+            return Err(Error::GitRepoDirty);
+        }
+
         let template_path = workdir
             .join(config.fragment_dir())
             .join(config.template_path());
