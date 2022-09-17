@@ -81,6 +81,9 @@ pub enum Command {
         /// Also write "unreleased" stuff to the CHANGELOG.md file
         #[clap(long)]
         all: bool,
+
+        #[clap(long, default_value_t = false)]
+        allow_dirty: bool,
     },
 }
 

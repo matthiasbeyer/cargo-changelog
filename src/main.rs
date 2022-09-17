@@ -10,6 +10,7 @@ mod error;
 mod format;
 mod fragment;
 mod template;
+mod util;
 
 use crate::cli::Command;
 use crate::command::Command as _;
@@ -81,8 +82,10 @@ fn main() -> miette::Result<()> {
             .build()
             .execute(&repo_workdir_path, &config)?,
 
-        Command::Release { all } => crate::command::ReleaseCommand::builder()
+        Command::Release { all, allow_dirty } => crate::command::ReleaseCommand::builder()
+            .repository(repository)
             .all(all)
+            .allow_dirty(allow_dirty)
             .build()
             .execute(&repo_workdir_path, &config)?,
     }
