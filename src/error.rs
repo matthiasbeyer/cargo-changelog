@@ -11,6 +11,9 @@ pub enum Error {
     #[error("git error")]
     Git(#[from] git2::Error),
 
+    #[error("Repository dirty")]
+    GitRepoDirty,
+
     #[error("TOML deserialization error")]
     Toml(#[from] toml::de::Error),
 
