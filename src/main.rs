@@ -10,6 +10,7 @@ mod error;
 mod format;
 mod fragment;
 mod template;
+mod util;
 
 use crate::cli::Command;
 use crate::command::Command as _;
