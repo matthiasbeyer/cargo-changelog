@@ -1,7 +1,19 @@
 [package]
 name = "cargo-changelog"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
+
+authors = [ "Matthias Beyer <mail@beyermatthias.de>" ]
+description = "Changelog management tool"
+homepage = "https://github.com/matthiasbeyer/cargo-changelog"
+repository = "https://github.com/matthiasbeyer/cargo-changelog"
+license = "GPL-2.0"
+readme = "./README.md"
+keywords = [ "cargo", "changelog", "cli", "utility", "tool" ]
+categories = [ "command-line-utilities", "development-tools", "development-tools::cargo-plugins" ]
+
+[badges]
+maintenance = { status = "actively-developed" }
 
 [dependencies]
 cargo_metadata = "0.15.0"
