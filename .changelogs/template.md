@@ -10,7 +10,7 @@
 ### {{ @key }}
 
 {{#each this ~}}
-#### {{~ #if this.header.issue ~}} (#{{this.header.issue}}){{/if}} {{this.header.subject}}
+#### {{~ #if this.header.issue ~}} ([#{{this.header.issue}}](https://github.com/matthiasbeyer/issues/{{this.header.issue}})){{/if}} {{this.header.subject}}
 {{this.text}}
 {{/each ~}}
 {{~ /each ~}}
