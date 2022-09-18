@@ -39,8 +39,13 @@ impl crate::command::Command for NewCommand {
             let new_file_name = format!(
                 "{ts}.md",
                 ts = {
-                    time::OffsetDateTime::now_utc()
-                        .format(&time::format_description::well_known::Iso8601::DEFAULT)?
+                    // We cannot use the well-known formats here, because cargo cannot package
+                    // filenames with ":" in it, but the well-known formats contain this character.
+                    // Hence we have to use our own.
+                    let fragment_file_timestamp_format = time::macros::format_description!(
+                        "[year]-[month]-[day]T[hour]_[minute]_[second]_[subsecond]"
+                    );
+                    time::OffsetDateTime::now_utc().format(&fragment_file_timestamp_format)?
                 },
             );
             unreleased_dir_path.join(new_file_name)
