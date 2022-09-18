@@ -3,6 +3,15 @@ name = "cargo-changelog"
 version = "0.1.0"
 edition = "2021"
 
+authors = [ "Matthias Beyer <mail@beyermatthias.de>" ]
+description = "Changelog management tool"
+homepage = "https://github.com/matthiasbeyer/cargo-changelog"
+repository = "https://github.com/matthiasbeyer/cargo-changelog"
+license = "GPL-2.0"
+readme = "./README.md"
+keywords = [ "cargo", "changelog", "cli", "utility", "tool" ]
+categories = [ "command-line-utilities", "development-tools", "development-tools::cargo-plugins" ]
+
 [dependencies]
 cargo_metadata = "0.15.0"
 clap = { version = "3", features = [ "cargo", "derive", "wrap_help" ] }
