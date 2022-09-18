@@ -1,0 +1,127 @@
+# Configuration for cargo-changelog
+
+#
+# unimplemented
+#
+add_version_date = true
+
+#
+# The directory where the changelog fragments and other data will be stored.
+# Relative to repository root.
+#
+fragment_dir = ".changelogs"
+
+#
+# The path to the template file, relative to `fragment_dir`
+#
+template_path = "template.md"
+
+#
+# Whether to edit the header data when opening $EDITOR for a new changelog
+# fragment
+#
+edit_data = true
+
+#
+# The format to edit the header with.
+# Possible values: "yaml", "toml"
+#
+# Right now, only "yaml" is supported
+#
+edit_format = "Yaml"
+
+# Set whether and how to use git after creating a new entry
+#
+# Possible values are "add" or "commit" (or none, which is default).
+#
+# "add" means only git-add the newly created file
+# "commit" means commit the newly created file as well, with a default message
+#
+# Not enabling this setting means that no action will be taken
+#git = "commit"
+
+# The commit message to use if `git = "commit"` is set.
+#
+# Can also be set if `git = "add"` is configured, because the CLI might override this
+# setting.
+#git_commit_message = "Create new changelog entry"
+
+# Use the --signoff flag when calling "git-commit"
+# Defaults to false, because we cannot decide whether you want to signoff
+git_commit_signoff = false
+
+#
+# The header fields that each fragment can have
+#
+# Format:
+#
+# ```
+# <header field name> = { type = "<type>", required = <bool>, default_value = <data> }
+# ```
+#
+# The `default_value` key is optional.
+# Possible values for `type` are "bool", "int", "string", "list", "map"
+# Possible values for `data` are "bool", "int", "string", "list", "map"
+#
+[header_fields]
+
+# Require a "subject" in the header.
+# The text serves as a more detailed explanation
+subject = { type = "string", required = true }
+
+# A header field named "issue"
+[header_fields.issue]
+# which is of type "integer"
+type = "int"
+
+# default value for the field, optional
+#default = 123
+
+# and is not required
+required = false
+
+# crawler, which will be used to auto-fill the field
+# containing "type" of the "value", either "path" or "command"
+# and a "value" field which is either
+# - the path to the script (from the repository root)
+# - a commandline call
+#
+# The following environment variables are set for both types of crawler:
+# - "CARGO_CHANGELOG_CRAWLER_FIELD_NAME"
+#   The name of the field which gets crawled right now
+# - "CARGO_CHANGELOG_CRAWLER_FIELD_TYPE"
+#   Possible values: one of "bool", "int", "string", "list<{}>" where '{}' is
+#   again one of the former.
+#   The list is expected to be a comma seperated list
+#
+# Usecase:
+#
+#  This field could for example be used to fetch a git commit hash from the
+#  repository.
+#  If we have a header field named "relevant_commit", which is used in the
+#  template to refer to a commit in the repository that was created in relation
+#  to the changelog entry we're currently crafting, the script for fetching
+#  that metadata could be something like
+#
+#  ```bash
+#  #!/usr/bin/env bash
+#  fzfargs='--ansi --no-sort --reverse --preview'
+#  git log --format='%H - %s' | \
+#      fzf $fzfargs 'git show --color=always $(echo {} | cut -d " " -f 1)' | \
+#      sed 's/ -.*//'
+#  ```
+#
+#  to interactively fetch a git hash from the repository history.
+#
+#[header_fields.issue.crawler]
+#type = "path"
+#value = "scripts/fetch_issue_number.sh"
+#value = "some command to execute with arguments"
+
+# A header field named "type"
+# With three possible values: "Bugfix", "Feature" or "Misc"
+# which is required
+[header_fields.type]
+type = [ "Bugfix", "Feature", "Misc" ]
+required = true
+
