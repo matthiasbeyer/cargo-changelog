@@ -9,12 +9,10 @@
 {{#each (group_by_header this.entries "type")}}
 ### {{ @key }}
 
-{{#each this}}
-#### (#{{this.header.issue}}) {{this.header.subject}}
-
+{{#each this ~}}
+#### {{~ #if this.header.issue ~}} (#{{this.header.issue}}){{/if}} {{this.header.subject}}
 {{this.text}}
-{{/each}}
-{{/each}}
-
-{{/each}}
+{{/each ~}}
+{{~ /each ~}}
+{{~ /each ~}}
 {{/if}}

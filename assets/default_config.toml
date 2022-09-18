@@ -77,8 +77,8 @@ type = "int"
 # default value for the field, optional
 #default = 123
 
-# and is required
-required = true
+# and is not required
+required = false
 
 # crawler, which will be used to auto-fill the field
 # containing "type" of the "value", either "path" or "command"
