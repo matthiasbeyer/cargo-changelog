@@ -39,7 +39,7 @@ pub enum Command {
         #[clap(short, long, action = clap::ArgAction::Set, default_value_t = true)]
         edit: bool,
 
-        #[clap(short, long, arg_enum, value_parser, default_value_t = Format::Yaml)]
+        #[clap(short, long, value_enum, value_parser, default_value_t = Format::Yaml)]
         format: Format,
 
         /// Read the changelog entry text from some path or stdin (via "-")
@@ -64,7 +64,7 @@ pub enum Command {
         ///
         /// If "commit" is given and the "git_commit_message" setting is set, this message will be
         /// used.
-        #[clap(long, arg_enum, value_parser)]
+        #[clap(long, value_enum, value_parser)]
         git: Option<GitSetting>,
     },
 
