@@ -38,7 +38,7 @@ typed-builder = "0.10.0"
 walkdir = "2.3.2"
 
 [dev-dependencies]
-assert_cmd = "2.0.4"
+assert_cmd = "2.0.5"
 indoc = "1.0.7"
 predicates = "2.1.1"
 tempdir = "0.3.7"
