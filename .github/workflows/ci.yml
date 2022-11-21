@@ -29,7 +29,7 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
           override: true
-      - uses: swatinem/rust-cache@v1
+      - uses: swatinem/rust-cache@v2
       - name: cargo-check
         uses: actions-rs/cargo@v1
         with:
@@ -90,7 +90,7 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
           override: true
-      - uses: swatinem/rust-cache@v1
+      - uses: swatinem/rust-cache@v2
       - name: cargo-test
         uses: actions-rs/cargo@v1
         with:
@@ -107,7 +107,7 @@ jobs:
         with:
           toolchain: 1.60.0
           override: true
-      - uses: swatinem/rust-cache@v1
+      - uses: swatinem/rust-cache@v2
       - run: rustup component add clippy
       - name: cargo-clippy
         run: cargo clippy --all --all-targets --all-features -- -D warnings
