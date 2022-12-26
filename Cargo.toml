@@ -23,7 +23,7 @@ dialoguer = "0.10.2"
 env_logger = "0.10.0"
 getset = "0.1.2"
 git2 = "0.15.0"
-handlebars = "4.3.5"
+handlebars = "4.3.6"
 itertools = "0.10.5"
 log = "0.4.17"
 miette = { version = "5.5.0", features = ["fancy"] }
@@ -33,7 +33,7 @@ serde_json = "1"
 serde_yaml = "0.9.16"
 thiserror = "1.0.38"
 time = { version = "0.3.17", features = [ "formatting", "macros" ] }
-toml = "0.5.9"
+toml = "0.5.10"
 typed-builder = "0.11.0"
 walkdir = "2.3.2"
 
