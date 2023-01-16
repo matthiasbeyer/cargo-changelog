@@ -19,7 +19,7 @@ maintenance = { status = "actively-developed" }
 cargo_metadata = "0.15.2"
 clap = { version = "4", features = [ "cargo", "derive", "wrap_help" ] }
 comma = "1.0.0"
-dialoguer = "0.10.2"
+dialoguer = "0.10.3"
 env_logger = "0.10.0"
 getset = "0.1.2"
 git2 = "0.15.0"
