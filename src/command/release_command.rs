@@ -49,7 +49,7 @@ impl crate::command::Command for ReleaseCommand {
             .write(true)
             .open(changelog_file_path)?;
 
-        write!(changelog_file, "{}", changelog_contents)?;
+        write!(changelog_file, "{changelog_contents}")?;
         changelog_file.sync_all()?;
         Ok(())
     }
@@ -210,8 +210,7 @@ mod tests {
 
         assert!(
             predicates::str::contains("CHANGELOG").eval(&template),
-            "Does not contain 'CHANGELOG': {}",
-            template
+            "Does not contain 'CHANGELOG': {template}"
         );
     }
 
@@ -240,14 +239,12 @@ mod tests {
 
         assert!(
             predicates::str::contains("## v0.1.0").eval(&template),
-            "Does not contain '## v0.1.0': {}",
-            template
+            "Does not contain '## v0.1.0': {template}"
         );
 
         assert!(
             predicates::str::contains("test for 0.1.0").eval(&template),
-            "Does not contain 'test text': {}",
-            template
+            "Does not contain 'test text': {template}"
         );
     }
 
@@ -276,8 +273,7 @@ mod tests {
 
         assert!(
             predicates::str::contains("(#123)").eval(&template),
-            "Does not contain '(#123)': {}",
-            template
+            "Does not contain '(#123)': {template}"
         );
     }
 
@@ -323,13 +319,11 @@ mod tests {
 
         assert!(
             predicates::str::contains("## v0.1.0").eval(&template),
-            "Does not contain '## v0.1.0': {}",
-            template
+            "Does not contain '## v0.1.0': {template}"
         );
         assert!(
             predicates::str::contains("## v0.2.0").eval(&template),
-            "Does not contain '## v0.2.0': {}",
-            template
+            "Does not contain '## v0.2.0': {template}"
         );
 
         let line_number_of_010 = {
@@ -352,8 +346,7 @@ mod tests {
 
         assert!(
             line_number_of_020 < line_number_of_010,
-            "line with v0.1.0 should come _after_ line with v0.2.0: {}",
-            template
+            "line with v0.1.0 should come _after_ line with v0.2.0: {template}"
         );
     }
 }

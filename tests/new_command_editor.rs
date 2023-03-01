@@ -32,7 +32,7 @@ fn new_command_opens_editor() {
             .write(true)
             .open(&script_path)
             .unwrap();
-        write!(script, "{}", EDITOR_COMMAND_SCRIPT).unwrap();
+        write!(script, "{EDITOR_COMMAND_SCRIPT}").unwrap();
         script.sync_all().unwrap();
         {
             use std::os::unix::fs::PermissionsExt;
@@ -94,14 +94,13 @@ fn new_command_opens_editor() {
                     None
                 }
             }
-            Err(e) => panic!("Error while iterating over directory: {:?}", e),
+            Err(e) => panic!("Error while iterating over directory: {e:?}"),
         })
         .collect::<Vec<_>>();
     assert_eq!(
         files.len(),
         1,
-        "Expected 1 file to be found, found: {}: {:?}",
-        files.len(),
-        files
+        "Expected 1 file to be found, found: {}: {files:?}",
+        files.len()
     );
 }

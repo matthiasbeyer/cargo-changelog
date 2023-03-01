@@ -108,7 +108,7 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
             .open(&path)
             .unwrap();
 
-        write!(file, "{}", test_text).unwrap();
+        write!(file, "{test_text}").unwrap();
         file.sync_all().unwrap();
         drop(file); // make sure we close the handle
 
@@ -168,7 +168,7 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
             .open(&path)
             .unwrap();
 
-        write!(file, "{}", test_text).unwrap();
+        write!(file, "{test_text}").unwrap();
         file.sync_all().unwrap();
         drop(file); // make sure we close the handle
 
