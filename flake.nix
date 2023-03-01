@@ -76,6 +76,9 @@
         devShells.changelog = pkgs.mkShell {
           nativeBuildInputs = [
             rustTarget
+
+            pkgs.openssl
+            pkgs.pkg-config
           ];
         };
       }
