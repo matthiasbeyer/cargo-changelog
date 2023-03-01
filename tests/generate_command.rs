@@ -19,7 +19,7 @@ fn generate_command_creates_new_directory() {
     // call `cargo-changelog generate`
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(&["generate", "minor"])
+        .args(["generate", "minor"])
         .current_dir(&temp_dir)
         .assert()
         .success();
@@ -38,7 +38,7 @@ fn generate_command_moves_from_unreleased_dir() {
     self::common::init_cargo_changelog(temp_dir.path());
 
     self::common::cargo_changelog_new(temp_dir.path())
-        .args(&[
+        .args([
             "--format=yaml",
             "--set",
             "issue=123",
@@ -77,7 +77,7 @@ fn generate_command_moves_from_unreleased_dir() {
     // call `cargo-changelog generate`
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(&["generate", "minor"])
+        .args(["generate", "minor"])
         .current_dir(&temp_dir)
         .assert()
         .success();

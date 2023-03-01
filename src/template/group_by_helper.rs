@@ -51,14 +51,14 @@ impl HelperDef for GroupByHelper {
                     .into_iter()
                     .group_by(|elt: &serde_json::Value| {
                         elt.get("header")
-                            .and_then(|hdr| hdr.get(&group_by_attr))
+                            .and_then(|hdr| hdr.get(group_by_attr))
                             .cloned()
                     })
                     .into_iter()
                 {
                     let list = list.into_iter().collect();
                     let group = group.ok_or_else(|| {
-                        RenderError::new(format!("Failed to group by '{}', not all elements in the list have that attribute! List: {:?}", group_by_attr, list))
+                        RenderError::new(format!("Failed to group by '{group_by_attr}', not all elements in the list have that attribute! List: {list:?}"))
                     })?;
 
                     res.insert(group.to_string(), serde_json::Value::Array(list));

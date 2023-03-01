@@ -9,7 +9,7 @@ fn new_command_creates_yaml_file() {
     self::common::init_cargo_changelog(temp_dir.path());
 
     self::common::cargo_changelog_new(temp_dir.path())
-        .args(&[
+        .args([
             "--format=yaml",
             "--set",
             "issue=123",
@@ -108,12 +108,12 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
             .open(&path)
             .unwrap();
 
-        write!(file, "{}", test_text).unwrap();
+        write!(file, "{test_text}").unwrap();
         file.sync_all().unwrap();
         drop(file); // make sure we close the handle
 
         self::common::cargo_changelog_new(temp_dir.path())
-            .args(&[
+            .args([
                 "--format=yaml",
                 "--set",
                 "issue=123",
@@ -129,7 +129,7 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
             .success();
     }
 
-    let fragment_file = std::fs::read_dir(&temp_dir.path().join(".changelogs").join("unreleased"))
+    let fragment_file = std::fs::read_dir(temp_dir.path().join(".changelogs").join("unreleased"))
         .unwrap()
         .into_iter()
         .find(|rde| match rde {
@@ -168,12 +168,12 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
             .open(&path)
             .unwrap();
 
-        write!(file, "{}", test_text).unwrap();
+        write!(file, "{test_text}").unwrap();
         file.sync_all().unwrap();
         drop(file); // make sure we close the handle
 
         self::common::cargo_changelog_new(temp_dir.path())
-            .args(&[
+            .args([
                 "--format=yaml",
                 "--set",
                 "issue=123",
@@ -191,7 +191,7 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
             .success();
     }
 
-    let fragment_file = std::fs::read_dir(&temp_dir.path().join(".changelogs").join("unreleased"))
+    let fragment_file = std::fs::read_dir(temp_dir.path().join(".changelogs").join("unreleased"))
         .unwrap()
         .into_iter()
         .find(|rde| match rde {
@@ -220,7 +220,7 @@ fn new_command_creates_toml_header() {
     self::common::init_cargo_changelog(temp_dir.path());
 
     self::common::cargo_changelog_new(temp_dir.path())
-        .args(&[
+        .args([
             "--format=toml",
             "--set",
             "issue=123",
@@ -234,7 +234,7 @@ fn new_command_creates_toml_header() {
 
     let unreleased_dir = temp_dir.path().join(".changelogs").join("unreleased");
 
-    let new_fragment_file = std::fs::read_dir(&unreleased_dir)
+    let new_fragment_file = std::fs::read_dir(unreleased_dir)
         .unwrap()
         .into_iter()
         .find(|rde| match rde {
@@ -283,7 +283,7 @@ fn new_command_cannot_create_nonexistent_oneof() {
     }
 
     self::common::cargo_changelog_new(temp_dir.path())
-        .args(&[
+        .args([
             "--format=toml",
             "--set",
             "issue=123",

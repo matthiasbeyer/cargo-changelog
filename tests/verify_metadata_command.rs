@@ -10,7 +10,7 @@ fn verify_metadata_command_succeeds_with_no_changelogs() {
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(&["verify-metadata"])
+        .args(["verify-metadata"])
         .current_dir(&temp_dir)
         .assert()
         .success();
@@ -23,7 +23,7 @@ fn verify_metadata_command_succeeds_with_empty_changelog() {
     self::common::init_cargo_changelog(temp_dir.path());
 
     self::common::cargo_changelog_new(temp_dir.path())
-        .args(&[
+        .args([
             "--format=yaml",
             "--set",
             "issue=123",
@@ -37,7 +37,7 @@ fn verify_metadata_command_succeeds_with_empty_changelog() {
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(&["verify-metadata"])
+        .args(["verify-metadata"])
         .current_dir(&temp_dir)
         .assert()
         .success();

@@ -114,7 +114,7 @@ pub struct KV {
 
 fn kv_value_parser(s: &str) -> Result<KV, String> {
     if s.chars().filter(|c| *c == '=').count() != 1 {
-        Err(format!("Cannot parse as key-value: '{}'", s))
+        Err(format!("Cannot parse as key-value: '{s}'"))
     } else {
         let (key, value) = s.split_once('=').unwrap(); // safe because above check
         Ok(KV {

@@ -24,7 +24,7 @@ pub enum Error {
     Cargo(#[from] cargo_metadata::Error),
 
     #[error("Error in handlebars template")]
-    HandlebarsTemplate(#[from] handlebars::TemplateError),
+    HandlebarsTemplate(#[from] Box<handlebars::TemplateError>),
 
     #[error("Error during template rendering")]
     HandlebarsRender(#[from] handlebars::RenderError),

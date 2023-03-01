@@ -287,7 +287,7 @@ fn interactive_provide(
     match desc.fragment_type() {
         FragmentDataType::Ty(FragmentDataTypeDefinite::Bool) => {
             let mut dialoguer = Confirm::new();
-            dialoguer.with_prompt(format!("'{}'?", key));
+            dialoguer.with_prompt(format!("'{key}'?"));
             if let Some(data) = desc.default_value() {
                 if let FragmentData::Bool(b) = data {
                     dialoguer.default(*b);
@@ -313,7 +313,7 @@ fn interactive_provide(
         }
         FragmentDataType::Ty(FragmentDataTypeDefinite::Int) => {
             let mut dialoguer = Input::<u64>::new();
-            dialoguer.with_prompt(format!("Enter a number for '{}'", key));
+            dialoguer.with_prompt(format!("Enter a number for '{key}'"));
 
             if let Some(data) = desc.default_value() {
                 if let FragmentData::Int(i) = data {
@@ -331,7 +331,7 @@ fn interactive_provide(
         }
         FragmentDataType::Ty(FragmentDataTypeDefinite::Str) => {
             let mut dialoguer = Input::<String>::new();
-            dialoguer.with_prompt(format!("Enter a text for '{}'", key));
+            dialoguer.with_prompt(format!("Enter a text for '{key}'"));
 
             if let Some(data) = desc.default_value() {
                 if let FragmentData::Str(s) = data {

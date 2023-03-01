@@ -80,9 +80,9 @@ impl Fragment {
             }
         };
 
-        writeln!(writer, "{}", seperator)?;
-        writeln!(writer, "{}", header)?;
-        writeln!(writer, "{}", seperator)?;
+        writeln!(writer, "{seperator}")?;
+        writeln!(writer, "{header}")?;
+        writeln!(writer, "{seperator}")?;
         writeln!(writer, "{}", self.text)?;
         Ok(())
     }
@@ -136,9 +136,9 @@ pub struct FragmentDataDisplay<'a>(&'a FragmentData);
 impl<'a> std::fmt::Display for FragmentDataDisplay<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self.0 {
-            FragmentData::Bool(b) => write!(f, "{}", b),
-            FragmentData::Int(i) => write!(f, "{}", i),
-            FragmentData::Str(s) => write!(f, "{}", s),
+            FragmentData::Bool(b) => write!(f, "{b}"),
+            FragmentData::Int(i) => write!(f, "{i}"),
+            FragmentData::Str(s) => write!(f, "{s}"),
         }
     }
 }
@@ -185,10 +185,10 @@ impl FragmentDataType {
             FragmentDataType::OneOf(list) => {
                 let list = list
                     .iter()
-                    .map(|el| format!("'{}'", el))
+                    .map(|el| format!("'{el}'"))
                     .collect::<Vec<_>>()
                     .join(", ");
-                format!("one of: {}", list)
+                format!("one of: {list}")
             }
         }
     }
@@ -229,7 +229,7 @@ mod tests {
         );
 
         let f = Fragment::from_reader(&mut Cursor::new(s));
-        assert!(f.is_ok(), "Not ok: {:?}", f);
+        assert!(f.is_ok(), "Not ok: {f:?}");
         let f = f.unwrap();
         assert!(f.text().is_empty());
         assert!(f.header().is_empty());
@@ -245,7 +245,7 @@ mod tests {
         );
 
         let f = Fragment::from_reader(&mut Cursor::new(s));
-        assert!(f.is_ok(), "Not ok: {:?}", f);
+        assert!(f.is_ok(), "Not ok: {f:?}");
         let f = f.unwrap();
         assert_eq!(f.text(), "This is some text");
         assert!(f.header().is_empty());
@@ -261,7 +261,7 @@ mod tests {
         );
 
         let f = Fragment::from_reader(&mut Cursor::new(s));
-        assert!(f.is_ok(), "Not ok: {:?}", f);
+        assert!(f.is_ok(), "Not ok: {f:?}");
         let f = f.unwrap();
         assert!(f.text().is_empty(), "Not empty: '{}'", f.text());
         assert!(
@@ -277,7 +277,7 @@ mod tests {
 
         let foo = match f.header().get("foo").unwrap() {
             FragmentData::Str(s) => s,
-            other => panic!("Expected String, found: {:?}", other),
+            other => panic!("Expected String, found: {other:?}"),
         };
 
         assert_eq!(
@@ -298,7 +298,7 @@ mod tests {
         );
 
         let f = Fragment::from_reader(&mut Cursor::new(s));
-        assert!(f.is_ok(), "Not ok: {:?}", f);
+        assert!(f.is_ok(), "Not ok: {f:?}");
         let f = f.unwrap();
         assert!(f.text().is_empty(), "Not empty: '{}'", f.text());
         assert!(
@@ -314,7 +314,7 @@ mod tests {
 
         let foo = match f.header().get("foo").unwrap() {
             FragmentData::Str(s) => s,
-            other => panic!("Expected String, found: {:?}", other),
+            other => panic!("Expected String, found: {other:?}"),
         };
 
         assert_eq!(

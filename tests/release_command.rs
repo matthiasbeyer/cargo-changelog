@@ -12,7 +12,7 @@ fn release_command_works() {
     self::common::init_cargo_changelog(temp_dir.path());
 
     self::common::cargo_changelog_new(temp_dir.path())
-        .args(&[
+        .args([
             "--format=yaml",
             "--set",
             "issue=123",
@@ -26,7 +26,7 @@ fn release_command_works() {
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(&["generate", "minor"])
+        .args(["generate", "minor"])
         .current_dir(&temp_dir)
         .assert()
         .success();
@@ -34,7 +34,7 @@ fn release_command_works() {
     // call `cargo-changelog generate`
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(&["release"])
+        .args(["release"])
         .current_dir(&temp_dir)
         .assert()
         .success();
@@ -57,7 +57,7 @@ fn release_command_works_for_alpha_release() {
     self::common::init_cargo_changelog(temp_dir.path());
 
     self::common::cargo_changelog_new(temp_dir.path())
-        .args(&[
+        .args([
             "--format=yaml",
             "--set",
             "issue=123",
@@ -71,7 +71,7 @@ fn release_command_works_for_alpha_release() {
 
     let unreleased_dir = temp_dir.path().join(".changelogs").join("unreleased");
 
-    let new_fragment_file_path = std::fs::read_dir(&unreleased_dir)
+    let new_fragment_file_path = std::fs::read_dir(unreleased_dir)
         .unwrap()
         .into_iter()
         .find(|rde| match rde {
@@ -95,7 +95,7 @@ fn release_command_works_for_alpha_release() {
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(&["generate", "custom", "0.1.0-alpha.1"])
+        .args(["generate", "custom", "0.1.0-alpha.1"])
         .current_dir(&temp_dir)
         .assert()
         .success();
@@ -103,7 +103,7 @@ fn release_command_works_for_alpha_release() {
     // call `cargo-changelog generate`
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(&["release"])
+        .args(["release"])
         .current_dir(&temp_dir)
         .assert()
         .success();
@@ -117,7 +117,7 @@ fn release_command_works_for_alpha_release() {
         panic!("Changelog is not a file");
     }
 
-    let changelog = std::fs::read_to_string(&changelog_file_path).unwrap();
+    let changelog = std::fs::read_to_string(changelog_file_path).unwrap();
     assert!(changelog.contains("0.1.0-alpha.1"));
     assert!(changelog.contains("test text"));
 }

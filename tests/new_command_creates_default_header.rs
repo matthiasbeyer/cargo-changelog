@@ -29,7 +29,7 @@ fn new_command_creates_default_header() {
     }
 
     self::common::cargo_changelog_new(temp_dir.path())
-        .args(&[
+        .args([
             "--format=yaml",
             "--set",
             "issue=123",
@@ -44,7 +44,7 @@ fn new_command_creates_default_header() {
         .success();
 
     let unreleased_dir = temp_dir.path().join(".changelogs").join("unreleased");
-    let fragment = std::fs::read_dir(&unreleased_dir)
+    let fragment = std::fs::read_dir(unreleased_dir)
         .unwrap()
         .into_iter()
         .find(|rde| match rde {
