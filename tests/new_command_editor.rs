@@ -64,7 +64,7 @@ fn new_command_opens_editor() {
             ]
             .into_iter(),
         )
-        .args(&[
+        .args([
             "new",
             "--interactive=false",
             "--format=yaml",
@@ -83,7 +83,7 @@ fn new_command_opens_editor() {
     drop(script_temp_dir);
 
     let unreleased_dir = temp_dir.path().join(".changelogs").join("unreleased");
-    let files = std::fs::read_dir(&unreleased_dir)
+    let files = std::fs::read_dir(unreleased_dir)
         .unwrap()
         .into_iter()
         .filter_map(|direntry| match direntry {

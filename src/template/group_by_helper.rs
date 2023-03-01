@@ -51,7 +51,7 @@ impl HelperDef for GroupByHelper {
                     .into_iter()
                     .group_by(|elt: &serde_json::Value| {
                         elt.get("header")
-                            .and_then(|hdr| hdr.get(&group_by_attr))
+                            .and_then(|hdr| hdr.get(group_by_attr))
                             .cloned()
                     })
                     .into_iter()
