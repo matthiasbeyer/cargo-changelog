@@ -2,10 +2,7 @@
   description = "The cargo-changelog binary";
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-22.05";
-    flake-utils = {
-      url = "github:numtide/flake-utils";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    flake-utils.url = "github:numtide/flake-utils";
     crane = {
       url = "github:ipetkov/crane";
       inputs.nixpkgs.follows = "nixpkgs";
