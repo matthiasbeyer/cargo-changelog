@@ -14,6 +14,9 @@ mod release_command;
 pub use self::release_command::ReleaseCommand;
 pub use self::release_command::VersionData;
 
+mod show;
+pub use self::show::Show;
+
 mod verify_metadata_command;
 pub use self::verify_metadata_command::VerifyMetadataCommand;
 

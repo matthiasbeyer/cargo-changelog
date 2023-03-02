@@ -85,6 +85,13 @@ pub enum Command {
         #[clap(long, default_value_t = false)]
         allow_dirty: bool,
     },
+
+    Show {
+        #[clap(long)]
+        format: Option<ShowFormat>,
+        #[clap(subcommand)]
+        range: Option<ShowRange>,
+    },
 }
 
 fn text_provider_parser(s: &str) -> Result<TextProvider, String> {
@@ -158,4 +165,17 @@ pub enum VersionSpec {
         #[clap(value_parser)]
         custom: String,
     },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, clap::ValueEnum)]
+pub enum ShowFormat {
+    Text,
+    Json,
+}
+
+#[derive(Clone, Debug, Subcommand)]
+pub enum ShowRange {
+    Unreleased,
+    Exact { exact: String },
+    Range { from: String, until: String },
 }

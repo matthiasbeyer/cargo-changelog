@@ -88,6 +88,12 @@ fn main() -> miette::Result<()> {
             .allow_dirty(allow_dirty)
             .build()
             .execute(&repo_workdir_path, &config)?,
+
+        Command::Show { format, range } => crate::command::Show::builder()
+            .format(format)
+            .range(range)
+            .build()
+            .execute(&repo_workdir_path, &config)?,
     }
 
     Ok(())
