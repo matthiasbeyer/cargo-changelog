@@ -55,6 +55,9 @@ pub enum Error {
     #[error("Environment variable '{0}' is not unicode")]
     EnvNotUnicode(String),
 
+    #[error(transparent)]
+    SemVer(#[from] semver::Error),
+
     #[error("Fragment Error: {}", .1.display())]
     FragmentError(#[source] FragmentError, PathBuf),
 
