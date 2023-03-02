@@ -1,6 +1,8 @@
 use std::path::{Path, PathBuf};
 
-use crate::{cli::VersionSpec, config::Configuration, error::Error};
+use crate::{
+    cli::VersionSpec, command::common::find_version_string, config::Configuration, error::Error,
+};
 
 #[derive(Debug, typed_builder::TypedBuilder)]
 pub struct GenerateCommand {
@@ -38,38 +40,6 @@ impl crate::command::Command for GenerateCommand {
         }
 
         Ok(())
-    }
-}
-
-fn find_version_string(workdir: &Path, version: &VersionSpec) -> Result<String, Error> {
-    use cargo_metadata::MetadataCommand;
-
-    if let VersionSpec::Custom { custom } = version {
-        Ok(custom.clone())
-    } else {
-        let metadata = MetadataCommand::new()
-            .manifest_path(workdir.join("./Cargo.toml"))
-            .exec()?;
-
-        let workspace_member_ids = &metadata.workspace_members;
-
-        let versions = metadata
-            .packages
-            .iter()
-            .filter(|pkg| workspace_member_ids.contains(&pkg.id))
-            .map(|pkg| &pkg.version)
-            .collect::<Vec<_>>();
-
-        if versions.is_empty() {
-            return Err(Error::NoVersionInCargoToml);
-        }
-
-        let first = versions[0];
-        let all_versions_same = versions.iter().all(|v| *v == first);
-        if !all_versions_same {
-            return Err(Error::WorkspaceVersionsNotEqual);
-        }
-        Ok(first.to_string())
     }
 }
 
