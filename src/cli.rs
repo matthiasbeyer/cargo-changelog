@@ -149,7 +149,7 @@ impl TextProvider {
     }
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Clone, Debug, Subcommand)]
 pub enum VersionSpec {
     Patch,
     Minor,
