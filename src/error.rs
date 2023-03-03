@@ -55,8 +55,17 @@ pub enum Error {
     #[error("Environment variable '{0}' is not unicode")]
     EnvNotUnicode(String),
 
+    #[error("Specified version '{version}' does not exist")]
+    ExactVersionDoesNotExist { version: String },
+
+    #[error(transparent)]
+    SemVer(#[from] semver::Error),
+
     #[error("Fragment Error: {}", .1.display())]
     FragmentError(#[source] FragmentError, PathBuf),
+
+    #[error(transparent)]
+    Json(#[from] serde_json::Error),
 
     #[error("Version error")]
     Version(#[from] VersionError),
