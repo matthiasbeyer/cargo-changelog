@@ -64,6 +64,9 @@ pub enum Error {
     #[error("Fragment Error: {}", .1.display())]
     FragmentError(#[source] FragmentError, PathBuf),
 
+    #[error(transparent)]
+    Json(#[from] serde_json::Error),
+
     #[error("Version error")]
     Version(#[from] VersionError),
 
