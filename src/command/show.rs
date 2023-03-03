@@ -40,6 +40,7 @@ impl crate::command::Command for Show {
 
         let pathes = match self.range {
             None | Some(ShowRange::Unreleased) => {
+                log::debug!("Showing unreleased");
                 let unreleased_dir_path = workdir
                     .join(config.fragment_dir())
                     .join(crate::consts::UNRELEASED_DIR_NAME);
@@ -49,6 +50,7 @@ impl crate::command::Command for Show {
                     .collect::<Result<Vec<PathBuf>, Error>>()?
             }
             Some(ShowRange::Exact { exact }) => {
+                log::debug!("Showing exact {exact}");
                 let path = workdir.join(config.fragment_dir()).join(&exact);
                 if !path.exists() {
                     return Err(Error::ExactVersionDoesNotExist { version: exact });
@@ -59,6 +61,7 @@ impl crate::command::Command for Show {
                     .collect::<Result<Vec<PathBuf>, Error>>()?
             }
             Some(ShowRange::Range { from, until }) => {
+                log::debug!("Showing range from {from} until {until}");
                 let from = semver::Version::parse(&from)?;
                 let until = semver::Version::parse(&until)?;
 
@@ -92,6 +95,7 @@ impl crate::command::Command for Show {
             }
         };
 
+        log::trace!("Looking at: {pathes:?}");
         let fragments = pathes.into_iter().map(|path| {
             std::fs::OpenOptions::new()
                 .read(true)
