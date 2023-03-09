@@ -19,12 +19,18 @@ touch "${1}.edited"
 
 #[test]
 fn new_command_opens_editor() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
     let (script_temp_dir, editor_script_path) = {
-        let temp = tempdir::TempDir::new("cargo-changelog-new-editor-script-helper").unwrap();
+        let temp = tempfile::Builder::new()
+            .prefix("cargo-changelog-new-editor-script-helper")
+            .tempdir()
+            .unwrap();
         let script_path = temp.path().join("editor");
         let mut script = std::fs::OpenOptions::new()
             .create(true)

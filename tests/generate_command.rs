@@ -6,7 +6,10 @@ mod common;
 
 #[test]
 fn generate_command_creates_new_directory() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo(temp_dir.path(), "cargo-changelog-testpkg-generatecommand");
     self::common::init_cargo_changelog(temp_dir.path());
@@ -32,7 +35,10 @@ fn generate_command_creates_new_directory() {
 
 #[test]
 fn generate_command_moves_from_unreleased_dir() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo(temp_dir.path(), "cargo-changelog-testpkg-generatecommand");
     self::common::init_cargo_changelog(temp_dir.path());

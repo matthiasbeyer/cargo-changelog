@@ -2,7 +2,10 @@ mod common;
 
 #[test]
 fn init_command_creates_config_file() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
@@ -14,7 +17,10 @@ fn init_command_creates_config_file() {
 
 #[test]
 fn init_command_creates_fragment_dir() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
@@ -26,7 +32,10 @@ fn init_command_creates_fragment_dir() {
 
 #[test]
 fn init_command_creates_fragment_dir_unreleased() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
@@ -38,7 +47,10 @@ fn init_command_creates_fragment_dir_unreleased() {
 
 #[test]
 fn init_command_creates_default_template() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 

@@ -6,7 +6,10 @@ mod common;
 
 #[test]
 fn release_command_works() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo(temp_dir.path(), "release_command_works");
     self::common::init_cargo_changelog(temp_dir.path());
@@ -51,7 +54,10 @@ fn release_command_works() {
 
 #[test]
 fn release_command_works_for_alpha_release() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo(temp_dir.path(), "release_command_works_for_alpha_release");
     self::common::init_cargo_changelog(temp_dir.path());

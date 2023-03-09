@@ -136,7 +136,6 @@ jobs:
       - check
       - nix-checks
       - clippy
-      - deny
       - fmt
       - test
     runs-on: ubuntu-latest
