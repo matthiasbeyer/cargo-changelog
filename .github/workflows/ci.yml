@@ -21,19 +21,21 @@ jobs:
           - beta
           # - nightly
 
+    # required because we have a different toolchain than {{ matrix.rust }} in
+    # rust-toolchain.toml, which we use for the flake.nix
+    env:
+      RUSTUP_TOOLCHAIN: ${{ matrix.rust }}
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@v3
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          override: true
       - uses: swatinem/rust-cache@v2
       - name: cargo-check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
+        run: cargo check
 
   deny:
     name: deny
@@ -59,17 +61,19 @@ jobs:
     name: format
     runs-on: ubuntu-latest
 
+    # required because we have a different toolchain in
+    # rust-toolchain.toml, which we use for the flake.nix
+    env:
+      RUSTUP_TOOLCHAIN: 1.67.0
+
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: 1.67.0
-      - run: rustup component add rustfmt
+          components: rustfmt
       - name: cargo-fmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: -- --check
+        run: cargo fmt -- --check
 
 
   test:
@@ -82,33 +86,39 @@ jobs:
           - stable
           - beta
           # - nightly
+
+    # required because we have a different toolchain than {{ matrix.rust }} in
+    # rust-toolchain.toml, which we use for the flake.nix
+    env:
+      RUSTUP_TOOLCHAIN: ${{ matrix.rust }}
+
     steps:
       - name: Checkout sources
         uses: actions/checkout@v3
-      - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          override: true
       - uses: swatinem/rust-cache@v2
       - name: cargo-test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --all --all-features
+        run: cargo test --all --all-features
 
 
   clippy:
     name: clippy
     runs-on: ubuntu-latest
+
+    # required because we have a different toolchain in
+    # rust-toolchain.toml, which we use for the flake.nix
+    env:
+      RUSTUP_TOOLCHAIN: 1.67.0
+
     steps:
       - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: 1.67.0
-          override: true
+          components: clippy
       - uses: swatinem/rust-cache@v2
-      - run: rustup component add clippy
       - name: cargo-clippy
         run: cargo clippy --all --all-targets --all-features -- -D warnings
 
