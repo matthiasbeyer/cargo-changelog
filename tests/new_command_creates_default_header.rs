@@ -4,7 +4,10 @@ mod common;
 
 #[test]
 fn new_command_creates_default_header() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 

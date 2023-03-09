@@ -4,7 +4,10 @@ mod common;
 
 #[test]
 fn no_configuration_file_errors() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
 
     Command::cargo_bin("cargo-changelog")
@@ -17,7 +20,10 @@ fn no_configuration_file_errors() {
 
 #[test]
 fn no_configuration_file_errors_with_error_message() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
 
     Command::cargo_bin("cargo-changelog")

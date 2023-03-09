@@ -4,7 +4,10 @@ mod common;
 
 #[test]
 fn new_command_creates_yaml_file() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
@@ -74,7 +77,10 @@ fn new_command_creates_yaml_file() {
 
 #[test]
 fn new_command_creates_unreleased_gitkeep() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
@@ -93,13 +99,19 @@ fn new_command_creates_unreleased_gitkeep() {
 
 #[test]
 fn new_command_with_text_creates_yaml_with_text_from_stdin() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
     let test_text = "This is a test text";
     {
-        let text_temp_dir = tempdir::TempDir::new("cargo-changelog-new-test-text").unwrap();
+        let text_temp_dir = tempfile::Builder::new()
+            .prefix("cargo-changelog-new-test-text")
+            .tempdir()
+            .unwrap();
         let path = text_temp_dir.path().join("text_file.txt");
         let mut file = std::fs::OpenOptions::new()
             .create(true)
@@ -153,13 +165,19 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
 
 #[test]
 fn new_command_with_text_creates_yaml_with_text_from_file() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
     let test_text = "This is a test text";
     {
-        let text_temp_dir = tempdir::TempDir::new("cargo-changelog-new-test-text").unwrap();
+        let text_temp_dir = tempfile::Builder::new()
+            .prefix("cargo-changelog-new-test-text")
+            .tempdir()
+            .unwrap();
         let path = text_temp_dir.path().join("text_file.txt");
         let mut file = std::fs::OpenOptions::new()
             .create(true)
@@ -215,7 +233,10 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
 
 #[test]
 fn new_command_creates_toml_header() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
@@ -262,7 +283,10 @@ fn new_command_creates_toml_header() {
 
 #[test]
 fn new_command_cannot_create_nonexistent_oneof() {
-    let temp_dir = tempdir::TempDir::new("cargo-changelog").unwrap();
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
