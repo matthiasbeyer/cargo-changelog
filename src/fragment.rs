@@ -65,7 +65,7 @@ impl Fragment {
     pub fn write_to<W: Write>(&self, writer: &mut W, format: Format) -> Result<(), FragmentError> {
         let (seperator, header) = match format {
             Format::Toml => {
-                let header = toml::to_string(&self.header)?;
+                let header = toml::to_string(&self.header)?.trim_end().to_string();
                 ("+++", header)
             }
         };
