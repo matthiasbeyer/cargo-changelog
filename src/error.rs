@@ -82,10 +82,10 @@ pub enum FragmentError {
     #[error("IO")]
     Io(#[from] std::io::Error),
 
-    #[error("Expected header seperator: '---' or '+++', found: '{0}'")]
+    #[error("Expected header seperator: '+++', found: '{0}'")]
     ExpectedSeperator(String),
 
-    #[error("Header seperator '---' or '+++' missing")]
+    #[error("Header seperator '+++' missing")]
     HeaderSeperatorMissing,
 
     #[error("TOML serialization error")]
@@ -93,9 +93,6 @@ pub enum FragmentError {
 
     #[error("TOML deserialization error")]
     TomlDe(#[from] toml::de::Error),
-
-    #[error("YAML error")]
-    Yaml(#[from] serde_yaml::Error),
 
     #[error("Type Error: Expected {exp}, got {recv} for field {field_name}")]
     DataType {

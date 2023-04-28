@@ -73,7 +73,7 @@ fn new_command_opens_editor() {
         .args([
             "new",
             "--interactive=false",
-            "--format=yaml",
+            "--format=toml",
             "--set",
             "issue=123",
             "--set",

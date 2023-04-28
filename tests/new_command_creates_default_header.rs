@@ -33,7 +33,7 @@ fn new_command_creates_default_header() {
 
     self::common::cargo_changelog_new(temp_dir.path())
         .args([
-            "--format=yaml",
+            "--format=toml",
             "--set",
             "issue=123",
             "--set",
@@ -58,30 +58,30 @@ fn new_command_creates_default_header() {
         .unwrap();
 
     let new_fragment_file_contents = std::fs::read_to_string(fragment.path()).unwrap();
-    let yaml_header = new_fragment_file_contents
+    let toml_header = new_fragment_file_contents
         .lines()
         .skip(1)
-        .take_while(|line| *line != "---")
+        .take_while(|line| *line != "+++")
         .collect::<Vec<_>>()
         .join("\n");
 
-    let yaml = serde_yaml::from_str::<serde_yaml::Value>(&yaml_header);
+    let toml = toml::from_str::<toml::Value>(&toml_header);
     assert!(
-        yaml.is_ok(),
+        toml.is_ok(),
         "Failed to parse fragment file: {:?}",
-        yaml.unwrap_err()
+        toml.unwrap_err()
     );
-    let yaml = yaml.unwrap();
+    let toml = toml.unwrap();
 
-    let field = yaml.get("field").unwrap();
+    let field = toml.get("field").unwrap();
     assert!(field.is_bool());
-    assert!(std::matches!(field, serde_yaml::Value::Bool(true)));
+    assert!(std::matches!(field, toml::Value::Boolean(true)));
 
-    let number = yaml.get("number").unwrap();
-    assert!(number.is_i64());
-    assert_eq!(number.as_i64().unwrap(), 345);
+    let number = toml.get("number").unwrap();
+    assert!(number.is_integer());
+    assert_eq!(number.as_integer().unwrap(), 345);
 
-    let number = yaml.get("issue").unwrap();
-    assert!(number.is_i64());
-    assert_eq!(number.as_i64().unwrap(), 123);
+    let number = toml.get("issue").unwrap();
+    assert!(number.is_integer());
+    assert_eq!(number.as_integer().unwrap(), 123);
 }

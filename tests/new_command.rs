@@ -3,7 +3,7 @@ use std::io::Write;
 mod common;
 
 #[test]
-fn new_command_creates_yaml_file() {
+fn new_command_creates_toml_file() {
     let temp_dir = tempfile::Builder::new()
         .prefix("cargo-changelog")
         .tempdir()
@@ -13,7 +13,7 @@ fn new_command_creates_yaml_file() {
 
     self::common::cargo_changelog_new(temp_dir.path())
         .args([
-            "--format=yaml",
+            "--format=toml",
             "--set",
             "issue=123",
             "--set",
@@ -60,18 +60,18 @@ fn new_command_creates_yaml_file() {
     }
 
     let new_fragment_file_contents = std::fs::read_to_string(new_fragment_file.path()).unwrap();
-    let yaml_header = new_fragment_file_contents
+    let toml_header = new_fragment_file_contents
         .lines()
         .skip(1)
-        .take_while(|line| *line != "---")
+        .take_while(|line| *line != "+++")
         .collect::<Vec<_>>()
         .join("\n");
 
-    let yaml = serde_yaml::from_str::<serde_yaml::Value>(&yaml_header);
+    let toml = toml::from_str::<toml::Value>(&toml_header);
     assert!(
-        yaml.is_ok(),
+        toml.is_ok(),
         "Failed to parse fragment file: {:?}",
-        yaml.unwrap_err()
+        toml.unwrap_err()
     );
 }
 
@@ -98,7 +98,7 @@ fn new_command_creates_unreleased_gitkeep() {
 }
 
 #[test]
-fn new_command_with_text_creates_yaml_with_text_from_stdin() {
+fn new_command_with_text_creates_toml_with_text_from_stdin() {
     let temp_dir = tempfile::Builder::new()
         .prefix("cargo-changelog")
         .tempdir()
@@ -126,7 +126,7 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
 
         self::common::cargo_changelog_new(temp_dir.path())
             .args([
-                "--format=yaml",
+                "--format=toml",
                 "--set",
                 "issue=123",
                 "--set",
@@ -155,7 +155,7 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
     let contents = new_fragment_file_contents
         .lines()
         .skip(1)
-        .skip_while(|line| *line != "---")
+        .skip_while(|line| *line != "+++")
         .skip(1)
         .collect::<Vec<_>>()
         .join("\n");
@@ -164,7 +164,7 @@ fn new_command_with_text_creates_yaml_with_text_from_stdin() {
 }
 
 #[test]
-fn new_command_with_text_creates_yaml_with_text_from_file() {
+fn new_command_with_text_creates_toml_with_text_from_file() {
     let temp_dir = tempfile::Builder::new()
         .prefix("cargo-changelog")
         .tempdir()
@@ -192,7 +192,7 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
 
         self::common::cargo_changelog_new(temp_dir.path())
             .args([
-                "--format=yaml",
+                "--format=toml",
                 "--set",
                 "issue=123",
                 "--set",
@@ -223,7 +223,7 @@ fn new_command_with_text_creates_yaml_with_text_from_file() {
     let contents = new_fragment_file_contents
         .lines()
         .skip(1)
-        .skip_while(|line| *line != "---")
+        .skip_while(|line| *line != "+++")
         .skip(1)
         .collect::<Vec<_>>()
         .join("\n");
@@ -273,7 +273,7 @@ fn new_command_creates_toml_header() {
         .collect::<Vec<_>>()
         .join("\n");
 
-    let toml = toml::from_str::<serde_yaml::Value>(&toml_header);
+    let toml = toml::from_str::<toml::Value>(&toml_header);
     assert!(
         toml.is_ok(),
         "Failed to parse fragment file: {:?}",

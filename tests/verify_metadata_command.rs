@@ -30,7 +30,7 @@ fn verify_metadata_command_succeeds_with_empty_changelog() {
 
     self::common::cargo_changelog_new(temp_dir.path())
         .args([
-            "--format=yaml",
+            "--format=toml",
             "--set",
             "issue=123",
             "--set",

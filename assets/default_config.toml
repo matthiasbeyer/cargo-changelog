@@ -24,11 +24,11 @@ edit_data = true
 
 #
 # The format to edit the header with.
-# Possible values: "yaml", "toml"
+# Possible values: "toml"
 #
-# Right now, only "yaml" is supported
+# Right now, only "toml" is supported
 #
-edit_format = "Yaml"
+edit_format = "toml"
 
 # Set whether and how to use git after creating a new entry
 #
