@@ -4,6 +4,23 @@ Changelog management tool for CLI.
 
 `cargo-changelog` is a merge-friendly changelog management utility.
 
+## Getting Started
+
+⚠️ `cargo-changelog` is still in alpha and will change and evolve. Do not use it
+unless you are ready to, potentially manually, upgrade configuration and/or
+templates on a regular basis.
+
+With that out of the way, to get started with `cargo-changelog` is to install it,
+and running `cargo changelog init`.
+
+If you are running this on a new project, you are good to go and can directly
+start building and adding changelog entries.
+
+If you are planning to use `cargo-changelog` on an already ongoing project,
+your old CHANGELOG.md will have moved to `.changelogs/suffix.md` and will be
+appended to the generated changelog. Be sure to update it so that it can
+seamlessly integrate with the generated one.
+
 ## Usage
 
 `cargo-changelog` is a tool to generate and manage changelog entries.
@@ -51,6 +68,15 @@ You can configure `cargo-changelog` in `/changelog.toml` and add mandatory or
 optional metadata fields to your changelog entries. You can also specify a
 template file that gets used when rendering your changelogs to your final
 `CHANGELOG.md` file.
+
+### Suffix
+
+If you wish to add something to the CHANGELOG that gets appended to the end of
+the file, you can create a `suffix.md` in your changelog directory (per default
+`.changelogs`).
+
+This is also where the `cargo changelog init` moves your existing CHANGELOG.md
+if you had one while running the command.
 
 ## Current state
 
