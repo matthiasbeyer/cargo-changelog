@@ -61,3 +61,21 @@ fn init_command_creates_default_template() {
         );
     }
 }
+
+#[test]
+fn init_command_creates_moves_existing_changelog() {
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
+    self::common::init_git(temp_dir.path());
+
+    std::fs::write(temp_dir.path().join("CHANGELOG.md"), "foobar").unwrap();
+
+    self::common::init_cargo_changelog(temp_dir.path());
+
+    let suffix_file_path = temp_dir.path().join(".changelogs").join("suffix.md");
+    if !suffix_file_path.exists() {
+        panic!("Suffix file does not exist after `cargo-changelog init`");
+    }
+}
