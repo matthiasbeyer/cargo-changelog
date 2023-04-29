@@ -5,13 +5,16 @@ use assert_cmd::Command;
 mod common;
 
 #[test]
-fn generate_command_creates_new_directory() {
+fn create_release_command_creates_new_directory() {
     let temp_dir = tempfile::Builder::new()
         .prefix("cargo-changelog")
         .tempdir()
         .unwrap();
     self::common::init_git(temp_dir.path());
-    self::common::init_cargo(temp_dir.path(), "cargo-changelog-testpkg-generatecommand");
+    self::common::init_cargo(
+        temp_dir.path(),
+        "cargo-changelog-testpkg-create-release_command",
+    );
     self::common::init_cargo_changelog(temp_dir.path());
 
     let unreleased_dir = temp_dir.path().join(".changelogs").join("unreleased");
@@ -19,10 +22,10 @@ fn generate_command_creates_new_directory() {
         panic!("Unreleased directory does not exist");
     }
 
-    // call `cargo-changelog generate`
+    // call `cargo-changelog create-release`
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["generate", "minor"])
+        .args(["create-release", "minor"])
         .current_dir(&temp_dir)
         .assert()
         .success();
@@ -34,16 +37,19 @@ fn generate_command_creates_new_directory() {
 }
 
 #[test]
-fn generate_command_moves_from_unreleased_dir() {
+fn create_release_command_moves_from_unreleased_dir() {
     let temp_dir = tempfile::Builder::new()
         .prefix("cargo-changelog")
         .tempdir()
         .unwrap();
     self::common::init_git(temp_dir.path());
-    self::common::init_cargo(temp_dir.path(), "cargo-changelog-testpkg-generatecommand");
+    self::common::init_cargo(
+        temp_dir.path(),
+        "cargo-changelog-testpkg-create-release_command",
+    );
     self::common::init_cargo_changelog(temp_dir.path());
 
-    self::common::cargo_changelog_new(temp_dir.path())
+    self::common::cargo_changelog_add(temp_dir.path())
         .args([
             "--format=toml",
             "--set",
@@ -80,10 +86,10 @@ fn generate_command_moves_from_unreleased_dir() {
         panic!("Release directory should not exist yet");
     }
 
-    // call `cargo-changelog generate`
+    // call `cargo-changelog create-release`
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["generate", "minor"])
+        .args(["create-release", "minor"])
         .current_dir(&temp_dir)
         .assert()
         .success();

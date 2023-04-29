@@ -5,11 +5,11 @@ use crate::{
 };
 
 #[derive(Debug, typed_builder::TypedBuilder)]
-pub struct GenerateCommand {
+pub struct CreateReleaseCommand {
     version: VersionSpec,
 }
 
-impl crate::command::Command for GenerateCommand {
+impl crate::command::Command for CreateReleaseCommand {
     fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), Error> {
         let version_string = find_version_string(workdir, &self.version)?;
         log::debug!("Creating new directory for version '{}'", version_string);

@@ -22,7 +22,7 @@ use crate::fragment::FragmentDataType;
 use crate::fragment::FragmentDataTypeDefinite;
 
 #[derive(Debug, typed_builder::TypedBuilder)]
-pub struct NewCommand {
+pub struct AddCommand {
     interactive: bool,
     edit: bool,
     format: Format,
@@ -31,7 +31,7 @@ pub struct NewCommand {
     git: Option<GitSetting>,
 }
 
-impl crate::command::Command for NewCommand {
+impl crate::command::Command for AddCommand {
     fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), Error> {
         let unreleased_dir_path = ensure_fragment_dir(workdir, config)?;
 

@@ -56,14 +56,14 @@ fn main() -> miette::Result<()> {
     match args.command {
         Command::Init => unreachable!(), // reached above
 
-        Command::New {
+        Command::Add {
             interactive,
             edit,
             format,
             read,
             set,
             git,
-        } => crate::command::NewCommand::builder()
+        } => crate::command::AddCommand::builder()
             .interactive(interactive)
             .edit(edit)
             .format(format)
@@ -77,17 +77,19 @@ fn main() -> miette::Result<()> {
             .build()
             .execute(&repo_workdir_path, &config)?,
 
-        Command::Generate(version) => crate::command::GenerateCommand::builder()
+        Command::CreateRelease(version) => crate::command::CreateReleaseCommand::builder()
             .version(version)
             .build()
             .execute(&repo_workdir_path, &config)?,
 
-        Command::Release { all, allow_dirty } => crate::command::ReleaseCommand::builder()
-            .repository(repository)
-            .all(all)
-            .allow_dirty(allow_dirty)
-            .build()
-            .execute(&repo_workdir_path, &config)?,
+        Command::GenerateChangelog { all, allow_dirty } => {
+            crate::command::GenerateChangelogCommand::builder()
+                .repository(repository)
+                .all(all)
+                .allow_dirty(allow_dirty)
+                .build()
+                .execute(&repo_workdir_path, &config)?
+        }
 
         Command::Show { format, range } => crate::command::Show::builder()
             .format(format)

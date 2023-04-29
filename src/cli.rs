@@ -32,7 +32,7 @@ pub enum Command {
     Init,
 
     /// Create a new changelog fragment
-    New {
+    Add {
         #[clap(short, long, action = clap::ArgAction::Set, default_value_t = true)]
         interactive: bool,
 
@@ -74,10 +74,10 @@ pub enum Command {
     /// Use the current unreleased changelog fragments to generate the changelog for the next
     /// release
     #[clap(subcommand)]
-    Generate(VersionSpec),
+    CreateRelease(VersionSpec),
 
     /// Generate the changelog file from the fragments marked for release
-    Release {
+    GenerateChangelog {
         /// Also write "unreleased" stuff to the CHANGELOG.md file
         #[clap(long)]
         all: bool,

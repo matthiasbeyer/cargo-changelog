@@ -5,16 +5,16 @@ use assert_cmd::Command;
 mod common;
 
 #[test]
-fn release_command_works() {
+fn generate_changelog_command_works() {
     let temp_dir = tempfile::Builder::new()
         .prefix("cargo-changelog")
         .tempdir()
         .unwrap();
     self::common::init_git(temp_dir.path());
-    self::common::init_cargo(temp_dir.path(), "release_command_works");
+    self::common::init_cargo(temp_dir.path(), "generate_changelog_command_works");
     self::common::init_cargo_changelog(temp_dir.path());
 
-    self::common::cargo_changelog_new(temp_dir.path())
+    self::common::cargo_changelog_add(temp_dir.path())
         .args([
             "--format=toml",
             "--set",
@@ -29,15 +29,15 @@ fn release_command_works() {
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["generate", "minor"])
+        .args(["create-release", "minor"])
         .current_dir(&temp_dir)
         .assert()
         .success();
 
-    // call `cargo-changelog generate`
+    // call `cargo-changelog create-release`
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["release"])
+        .args(["generate-changelog"])
         .current_dir(&temp_dir)
         .assert()
         .success();
@@ -53,16 +53,19 @@ fn release_command_works() {
 }
 
 #[test]
-fn release_command_works_for_alpha_release() {
+fn generate_changelog_command_works_for_alpha_release() {
     let temp_dir = tempfile::Builder::new()
         .prefix("cargo-changelog")
         .tempdir()
         .unwrap();
     self::common::init_git(temp_dir.path());
-    self::common::init_cargo(temp_dir.path(), "release_command_works_for_alpha_release");
+    self::common::init_cargo(
+        temp_dir.path(),
+        "generate_changelog_command_works_for_alpha_release",
+    );
     self::common::init_cargo_changelog(temp_dir.path());
 
-    self::common::cargo_changelog_new(temp_dir.path())
+    self::common::cargo_changelog_add(temp_dir.path())
         .args([
             "--format=toml",
             "--set",
@@ -101,15 +104,15 @@ fn release_command_works_for_alpha_release() {
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["generate", "custom", "0.1.0-alpha.1"])
+        .args(["create-release", "custom", "0.1.0-alpha.1"])
         .current_dir(&temp_dir)
         .assert()
         .success();
 
-    // call `cargo-changelog generate`
+    // call `cargo-changelog create-release`
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["release"])
+        .args(["generate-changelog"])
         .current_dir(&temp_dir)
         .assert()
         .success();
@@ -129,16 +132,19 @@ fn release_command_works_for_alpha_release() {
 }
 
 #[test]
-fn release_command_works_with_suffix() {
+fn generate_changelog_command_works_with_suffix() {
     let temp_dir = tempfile::Builder::new()
         .prefix("cargo-changelog")
         .tempdir()
         .unwrap();
     self::common::init_git(temp_dir.path());
-    self::common::init_cargo(temp_dir.path(), "release_command_works_with_suffix");
+    self::common::init_cargo(
+        temp_dir.path(),
+        "generate_changelog_command_works_with_suffix",
+    );
     self::common::init_cargo_changelog(temp_dir.path());
 
-    self::common::cargo_changelog_new(temp_dir.path())
+    self::common::cargo_changelog_add(temp_dir.path())
         .args([
             "--format=toml",
             "--set",
@@ -190,14 +196,14 @@ fn release_command_works_with_suffix() {
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["generate", "custom", "0.1.0-alpha.1"])
+        .args(["create-release", "custom", "0.1.0-alpha.1"])
         .current_dir(&temp_dir)
         .assert()
         .success();
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["release"])
+        .args(["generate-changelog"])
         .current_dir(&temp_dir)
         .assert()
         .success();

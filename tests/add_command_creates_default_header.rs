@@ -31,7 +31,7 @@ fn new_command_creates_default_header() {
         file.sync_all().unwrap()
     }
 
-    self::common::cargo_changelog_new(temp_dir.path())
+    self::common::cargo_changelog_add(temp_dir.path())
         .args([
             "--format=toml",
             "--set",
