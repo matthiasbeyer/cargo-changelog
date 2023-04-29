@@ -38,7 +38,7 @@ ignore-merge-commits=true
 
 # Enable community contributed rules
 # See http://jorisroovers.github.io/gitlint/contrib_rules for details
-contrib=CC1
+contrib=CC1, CC2
 
 # Set the extra-path where gitlint will search for user defined rules
 # See http://jorisroovers.github.io/gitlint/user_defined_rules for details
@@ -134,4 +134,5 @@ regex=(.*)dependabot(.*)
 # types = bugfix,user-story,epic
 [contrib-body-requires-signed-off-by]
 
+[contrib-disallow-cleanup-commits]
 
