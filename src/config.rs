@@ -90,8 +90,8 @@ pub fn changelog_default() -> PathBuf {
 }
 
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[serde(rename_all = "lowercase")]
 pub enum EditFormat {
-    Yaml,
     Toml,
 }
 
@@ -100,7 +100,6 @@ impl std::str::FromStr for EditFormat {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
-            "yaml" => Ok(Self::Yaml),
             "toml" => Ok(Self::Toml),
             fmt => Err(miette::miette!("Unknown edit format {}", fmt)),
         }

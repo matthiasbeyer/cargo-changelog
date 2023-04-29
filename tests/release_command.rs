@@ -16,7 +16,7 @@ fn release_command_works() {
 
     self::common::cargo_changelog_new(temp_dir.path())
         .args([
-            "--format=yaml",
+            "--format=toml",
             "--set",
             "issue=123",
             "--set",
@@ -64,7 +64,7 @@ fn release_command_works_for_alpha_release() {
 
     self::common::cargo_changelog_new(temp_dir.path())
         .args([
-            "--format=yaml",
+            "--format=toml",
             "--set",
             "issue=123",
             "--set",

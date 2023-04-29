@@ -35,9 +35,7 @@ impl Fragment {
 
         let mut lines = buf.lines();
         let format = if let Some(header_sep) = lines.next() {
-            if header_sep == "---" {
-                Format::Yaml
-            } else if header_sep == "+++" {
+            if header_sep == "+++" {
                 Format::Toml
             } else {
                 return Err(FragmentError::ExpectedSeperator(header_sep.to_string()));
@@ -49,13 +47,10 @@ impl Fragment {
         let header = {
             let header = lines
                 .by_ref()
-                .take_while(|line| *line != "---" && *line != "+++")
+                .take_while(|line| *line != "+++")
                 .collect::<Vec<_>>();
 
             match format {
-                Format::Yaml => {
-                    serde_yaml::from_str::<HashMap<String, FragmentData>>(&header.join("\n"))?
-                }
                 Format::Toml => {
                     toml::from_str::<HashMap<String, FragmentData>>(&header.join("\n"))?
                 }
@@ -69,11 +64,6 @@ impl Fragment {
 
     pub fn write_to<W: Write>(&self, writer: &mut W, format: Format) -> Result<(), FragmentError> {
         let (seperator, header) = match format {
-            Format::Yaml => {
-                let header = serde_yaml::to_string(&self.header)?;
-
-                ("---", header)
-            }
             Format::Toml => {
                 let header = toml::to_string(&self.header)?;
                 ("+++", header)
@@ -223,8 +213,8 @@ mod tests {
     #[test]
     fn read_empty_fragment() {
         let s = indoc::indoc!(
-            r#"---
-        ---
+            r#"+++
+        +++
         "#
         );
 
@@ -238,8 +228,8 @@ mod tests {
     #[test]
     fn read_empty_header() {
         let s = indoc::indoc!(
-            r#"---
-        ---
+            r#"+++
+        +++
         This is some text
         "#
         );
@@ -249,43 +239,6 @@ mod tests {
         let f = f.unwrap();
         assert_eq!(f.text(), "This is some text");
         assert!(f.header().is_empty());
-    }
-
-    #[test]
-    fn read_empty_content() {
-        let s = indoc::indoc!(
-            r#"---
-        foo: bar
-        ---
-        "#
-        );
-
-        let f = Fragment::from_reader(&mut Cursor::new(s));
-        assert!(f.is_ok(), "Not ok: {f:?}");
-        let f = f.unwrap();
-        assert!(f.text().is_empty(), "Not empty: '{}'", f.text());
-        assert!(
-            f.header().contains_key("foo"),
-            "'foo' key missing from header: {:?}",
-            f.header()
-        );
-        assert!(
-            std::matches!(f.header().get("foo").unwrap(), FragmentData::Str(_)),
-            "'foo' key does not point to String: {:?}",
-            f.header()
-        );
-
-        let foo = match f.header().get("foo").unwrap() {
-            FragmentData::Str(s) => s,
-            other => panic!("Expected String, found: {other:?}"),
-        };
-
-        assert_eq!(
-            foo,
-            "bar",
-            "'foo' key content is not 'bar': {:?}",
-            f.header()
-        );
     }
 
     #[test]
@@ -323,24 +276,6 @@ mod tests {
             "'foo' key content is not 'bar': {:?}",
             f.header()
         );
-    }
-
-    #[test]
-    fn test_write_to_yaml() {
-        let mut buffer = std::io::Cursor::new(Vec::with_capacity(1024));
-        let mut header = HashMap::new();
-        header.insert("foo".to_string(), FragmentData::Bool(true));
-        header.insert("bar".to_string(), FragmentData::Str(String::from("baz")));
-
-        let frag = Fragment::new(header, String::from("testtext"));
-        let res = frag.write_to(&mut buffer, Format::Yaml);
-        assert!(res.is_ok(), "Error writing: {}", res.unwrap_err());
-
-        let buffer = String::from_utf8(buffer.into_inner()).unwrap();
-        assert!(buffer.contains("---\n"));
-        assert!(buffer.contains("foo: true\n"));
-        assert!(buffer.contains("bar: baz\n"));
-        assert!(buffer.contains("\n---\ntesttext\n"));
     }
 
     #[test]

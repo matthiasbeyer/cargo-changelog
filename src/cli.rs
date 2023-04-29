@@ -39,7 +39,7 @@ pub enum Command {
         #[clap(short, long, action = clap::ArgAction::Set, default_value_t = true)]
         edit: bool,
 
-        #[clap(short, long, value_enum, value_parser, default_value_t = Format::Yaml)]
+        #[clap(short, long, value_enum, value_parser, default_value_t = Format::Toml)]
         format: Format,
 
         /// Read the changelog entry text from some path or stdin (via "-")

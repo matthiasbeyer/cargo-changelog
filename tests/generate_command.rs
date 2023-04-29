@@ -45,7 +45,7 @@ fn generate_command_moves_from_unreleased_dir() {
 
     self::common::cargo_changelog_new(temp_dir.path())
         .args([
-            "--format=yaml",
+            "--format=toml",
             "--set",
             "issue=123",
             "--set",
