@@ -8,6 +8,7 @@ use crate::error::Error;
 use crate::fragment::FragmentDataDesc;
 
 pub const CONFIG_FILE_NAMES: &[&str] = &[".changelog.toml", "changelog.toml"];
+pub const CONFIG_FILE_DEFAULT_NAME: &str = CONFIG_FILE_NAMES[1];
 pub const DEFAULT_CONFIG: &str = include_str!("../assets/default_config.toml");
 
 #[derive(Debug, getset::Getters, getset::CopyGetters, serde::Deserialize, serde::Serialize)]
