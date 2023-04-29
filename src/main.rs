@@ -1,5 +1,9 @@
+use std::io;
 use std::path::PathBuf;
 
+use clap::CommandFactory;
+use clap_complete::generate;
+use cli::Args;
 use miette::IntoDiagnostic;
 
 mod cli;
@@ -96,6 +100,10 @@ fn main() -> miette::Result<()> {
             .range(range)
             .build()
             .execute(&repo_workdir_path, &config)?,
+        Command::GenerationCompletions { shell } => {
+            let mut cmd = Args::command();
+            generate(shell, &mut cmd, "cargo-changelog", &mut io::stdout());
+        }
     }
 
     Ok(())

@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use clap::Parser;
 use clap::Subcommand;
+use clap_complete::Shell;
 
 use crate::config::GitSetting;
 use crate::error::TextProviderError;
@@ -91,6 +92,12 @@ pub enum Command {
         format: Option<ShowFormat>,
         #[clap(subcommand)]
         range: Option<ShowRange>,
+    },
+    /// Generation completions for the shell of your choice, available options:
+    /// [bash, elvish, fish, powershell, zsh]
+    GenerationCompletions {
+        #[clap(value_parser)]
+        shell: Shell,
     },
 }
 
