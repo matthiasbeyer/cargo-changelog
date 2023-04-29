@@ -18,6 +18,7 @@ maintenance = { status = "actively-developed" }
 [dependencies]
 cargo_metadata = "0.15.3"
 clap = { version = "4", features = [ "cargo", "derive", "wrap_help" ] }
+clap_complete = "4.2.1"
 comma = "1.0.0"
 dialoguer = "0.10.3"
 env_logger = "0.10.0"
