@@ -35,8 +35,11 @@ pub enum Error {
     #[error("Repository has no worktree")]
     NoWorkTree,
 
-    #[error("Configuration file does not exist: {0}")]
-    ConfigDoesNotExist(PathBuf),
+    #[error(
+        "Configuration file does not exist, tried {:?}",
+        crate::config::CONFIG_FILE_NAMES
+    )]
+    ConfigDoesNotExist,
 
     #[error("Not a file: {0}")]
     NotAFile(PathBuf),
