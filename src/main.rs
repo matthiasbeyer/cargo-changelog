@@ -82,12 +82,14 @@ fn main() -> miette::Result<()> {
             .build()
             .execute(&repo_workdir_path, &config)?,
 
-        Command::Release { all, allow_dirty } => crate::command::ReleaseCommand::builder()
-            .repository(repository)
-            .all(all)
-            .allow_dirty(allow_dirty)
-            .build()
-            .execute(&repo_workdir_path, &config)?,
+        Command::GenerateChangelog { all, allow_dirty } => {
+            crate::command::GenerateChangelogCommand::builder()
+                .repository(repository)
+                .all(all)
+                .allow_dirty(allow_dirty)
+                .build()
+                .execute(&repo_workdir_path, &config)?
+        }
 
         Command::Show { format, range } => crate::command::Show::builder()
             .format(format)

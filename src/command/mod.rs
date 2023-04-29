@@ -10,9 +10,9 @@ pub use self::add_command::AddCommand;
 mod create_release_command;
 pub use self::create_release_command::CreateReleaseCommand;
 
-mod release_command;
-pub use self::release_command::ReleaseCommand;
-pub use self::release_command::VersionData;
+mod generate_changelog_command;
+pub use self::generate_changelog_command::GenerateChangelogCommand;
+pub use self::generate_changelog_command::VersionData;
 
 mod show;
 pub use self::show::Show;

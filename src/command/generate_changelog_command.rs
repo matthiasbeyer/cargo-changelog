@@ -4,13 +4,13 @@ use std::{collections::HashMap, io::BufReader, path::Path};
 use crate::{config::Configuration, error::Error, fragment::Fragment};
 
 #[derive(typed_builder::TypedBuilder)]
-pub struct ReleaseCommand {
+pub struct GenerateChangelogCommand {
     repository: git2::Repository,
     all: bool,
     allow_dirty: bool,
 }
 
-impl std::fmt::Debug for ReleaseCommand {
+impl std::fmt::Debug for GenerateChangelogCommand {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ReleaseCommand")
             .field("repository", &self.repository.workdir())
@@ -20,7 +20,7 @@ impl std::fmt::Debug for ReleaseCommand {
     }
 }
 
-impl crate::command::Command for ReleaseCommand {
+impl crate::command::Command for GenerateChangelogCommand {
     fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), Error> {
         if crate::util::repo_is_dirty(&self.repository) && !self.allow_dirty {
             return Err(Error::GitRepoDirty);
