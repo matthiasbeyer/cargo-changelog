@@ -31,7 +31,32 @@ impl crate::command::Command for ReleaseCommand {
             .join(config.template_path());
         let template_source = std::fs::read_to_string(template_path)?;
         let template = crate::template::new_handlebars(&template_source)?;
-        let template_data = compute_template_data(load_release_files(workdir, config, self.all))?;
+
+        let suffix_path = workdir.join(config.fragment_dir()).join("suffix.md");
+        let suffix = match std::fs::read_to_string(&suffix_path) {
+            Ok(suffix) => Some(suffix),
+            Err(err) => {
+                match err.kind() {
+                    std::io::ErrorKind::NotFound => {
+                        // We don't want to spam the user for something they don't use
+                        log::trace!(
+                            "Did not find {}, not appending suffix",
+                            suffix_path.display()
+                        )
+                    }
+                    _ => {
+                        log::error!(
+                            "Could not read suffix file at {}: {err}",
+                            suffix_path.display()
+                        );
+                    }
+                }
+                None
+            }
+        };
+
+        let template_data =
+            generate_template_data(load_release_files(workdir, config, self.all), suffix)?;
 
         let changelog_contents =
             template.render(crate::consts::INTERNAL_TEMPLATE_NAME, &template_data)?;
@@ -117,6 +142,13 @@ fn load_release_files(
         })
 }
 
+/// The data sent to the handlebars template
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize, getset::Getters)]
+pub struct TemplateData {
+    versions: Vec<VersionData>,
+    suffix: Option<String>,
+}
+
 /// Helper type for storing version associated with Fragments
 ///
 /// only used for handlebars templating
@@ -128,9 +160,10 @@ pub struct VersionData {
     entries: Vec<Fragment>,
 }
 
-fn compute_template_data(
+fn generate_template_data(
     release_files: impl Iterator<Item = Result<(Option<semver::Version>, Fragment), Error>>,
-) -> Result<HashMap<String, Vec<VersionData>>, Error> {
+    suffix: Option<String>,
+) -> Result<TemplateData, Error> {
     let versions = {
         use itertools::Itertools;
         let mut hm = HashMap::new();
@@ -150,9 +183,10 @@ fn compute_template_data(
             .sorted_by(|va, vb| va.version.cmp(&vb.version))
     };
 
-    let mut hm: HashMap<String, Vec<VersionData>> = HashMap::new();
-    hm.insert("versions".to_string(), versions.collect());
-    Ok(hm)
+    Ok(TemplateData {
+        versions: versions.collect(),
+        suffix,
+    })
 }
 
 #[cfg(test)]
@@ -164,7 +198,7 @@ mod tests {
 
     #[test]
     fn test_template_data_is_sorted() {
-        let result = compute_template_data(
+        let result = generate_template_data(
             [
                 Ok((
                     Some(semver::Version::new(0, 2, 0)),
@@ -190,12 +224,13 @@ mod tests {
                 )),
             ]
             .into_iter(),
+            None,
         );
 
         assert!(result.is_ok());
         let result = result.unwrap();
 
-        let versions = result.get("versions").unwrap();
+        let versions = result.versions;
         assert_eq!(versions[0].version, "0.1.0");
         assert_eq!(versions[1].version, "0.2.0");
     }
