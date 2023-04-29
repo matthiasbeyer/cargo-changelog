@@ -7,7 +7,8 @@ use miette::IntoDiagnostic;
 use crate::error::Error;
 use crate::fragment::FragmentDataDesc;
 
-pub const CONFIG_FILE_NAME: &str = ".changelog.toml";
+pub const CONFIG_FILE_NAMES: &[&str] = &[".changelog.toml", "changelog.toml"];
+pub const CONFIG_FILE_DEFAULT_NAME: &str = CONFIG_FILE_NAMES[1];
 pub const DEFAULT_CONFIG: &str = include_str!("../assets/default_config.toml");
 
 #[derive(Debug, getset::Getters, getset::CopyGetters, serde::Deserialize, serde::Serialize)]
@@ -108,15 +109,23 @@ impl std::str::FromStr for EditFormat {
 
 /// Load the configuration from the repository
 pub fn load(repo_workdir_path: &Path) -> miette::Result<Configuration> {
-    let changelog_config_path = {
-        let mut cfg_path = repo_workdir_path.to_path_buf();
-        cfg_path.push(CONFIG_FILE_NAME);
-        cfg_path
-    };
+    let mut changelog_config_path = None;
+    for config_path in CONFIG_FILE_NAMES {
+        let check_path = {
+            let mut cfg_path = repo_workdir_path.to_path_buf();
+            cfg_path.push(config_path);
+            cfg_path
+        };
 
-    if !changelog_config_path.exists() {
-        miette::bail!(Error::ConfigDoesNotExist(changelog_config_path))
+        if check_path.exists() {
+            changelog_config_path = Some(check_path);
+            break;
+        }
     }
+
+    let Some(changelog_config_path) = changelog_config_path else {
+        miette::bail!(Error::ConfigDoesNotExist)
+    };
 
     let config = std::fs::read_to_string(changelog_config_path)
         .map_err(Error::from)

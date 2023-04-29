@@ -292,7 +292,7 @@ fn new_command_cannot_create_nonexistent_oneof() {
 
     {
         // Write some header field to the config file
-        let config_file_path = temp_dir.path().join(".changelog.toml");
+        let config_file_path = temp_dir.path().join("changelog.toml");
         let mut file = std::fs::OpenOptions::new()
             .append(true)
             .write(true)

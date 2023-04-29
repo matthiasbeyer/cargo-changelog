@@ -118,7 +118,7 @@ fn init(repo_workdir_path: PathBuf) -> miette::Result<()> {
         .create(true)
         .append(false)
         .write(true)
-        .open(repo_workdir_path.join(crate::config::CONFIG_FILE_NAME))
+        .open(repo_workdir_path.join(crate::config::CONFIG_FILE_DEFAULT_NAME))
         .map_err(Error::from)
         .into_diagnostic()?;
 
