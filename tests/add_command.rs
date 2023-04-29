@@ -3,7 +3,7 @@ use std::io::Write;
 mod common;
 
 #[test]
-fn new_command_creates_toml_file() {
+fn add_command_creates_toml_file() {
     let temp_dir = tempfile::Builder::new()
         .prefix("cargo-changelog")
         .tempdir()
@@ -11,7 +11,7 @@ fn new_command_creates_toml_file() {
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
-    self::common::cargo_changelog_new(temp_dir.path())
+    self::common::cargo_changelog_add(temp_dir.path())
         .args([
             "--format=toml",
             "--set",
@@ -76,7 +76,7 @@ fn new_command_creates_toml_file() {
 }
 
 #[test]
-fn new_command_creates_unreleased_gitkeep() {
+fn add_command_creates_unreleased_gitkeep() {
     let temp_dir = tempfile::Builder::new()
         .prefix("cargo-changelog")
         .tempdir()
@@ -98,7 +98,7 @@ fn new_command_creates_unreleased_gitkeep() {
 }
 
 #[test]
-fn new_command_with_text_creates_toml_with_text_from_stdin() {
+fn add_command_with_text_creates_toml_with_text_from_stdin() {
     let temp_dir = tempfile::Builder::new()
         .prefix("cargo-changelog")
         .tempdir()
@@ -124,7 +124,7 @@ fn new_command_with_text_creates_toml_with_text_from_stdin() {
         file.sync_all().unwrap();
         drop(file); // make sure we close the handle
 
-        self::common::cargo_changelog_new(temp_dir.path())
+        self::common::cargo_changelog_add(temp_dir.path())
             .args([
                 "--format=toml",
                 "--set",
@@ -164,7 +164,7 @@ fn new_command_with_text_creates_toml_with_text_from_stdin() {
 }
 
 #[test]
-fn new_command_with_text_creates_toml_with_text_from_file() {
+fn add_command_with_text_creates_toml_with_text_from_file() {
     let temp_dir = tempfile::Builder::new()
         .prefix("cargo-changelog")
         .tempdir()
@@ -190,7 +190,7 @@ fn new_command_with_text_creates_toml_with_text_from_file() {
         file.sync_all().unwrap();
         drop(file); // make sure we close the handle
 
-        self::common::cargo_changelog_new(temp_dir.path())
+        self::common::cargo_changelog_add(temp_dir.path())
             .args([
                 "--format=toml",
                 "--set",
@@ -232,7 +232,7 @@ fn new_command_with_text_creates_toml_with_text_from_file() {
 }
 
 #[test]
-fn new_command_creates_toml_header() {
+fn add_command_creates_toml_header() {
     let temp_dir = tempfile::Builder::new()
         .prefix("cargo-changelog")
         .tempdir()
@@ -240,7 +240,7 @@ fn new_command_creates_toml_header() {
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
-    self::common::cargo_changelog_new(temp_dir.path())
+    self::common::cargo_changelog_add(temp_dir.path())
         .args([
             "--format=toml",
             "--set",
@@ -282,7 +282,7 @@ fn new_command_creates_toml_header() {
 }
 
 #[test]
-fn new_command_cannot_create_nonexistent_oneof() {
+fn add_command_cannot_create_nonexistent_oneof() {
     let temp_dir = tempfile::Builder::new()
         .prefix("cargo-changelog")
         .tempdir()
@@ -306,7 +306,7 @@ fn new_command_cannot_create_nonexistent_oneof() {
         file.sync_all().unwrap()
     }
 
-    self::common::cargo_changelog_new(temp_dir.path())
+    self::common::cargo_changelog_add(temp_dir.path())
         .args([
             "--format=toml",
             "--set",

@@ -32,7 +32,7 @@ pub enum Command {
     Init,
 
     /// Create a new changelog fragment
-    New {
+    Add {
         #[clap(short, long, action = clap::ArgAction::Set, default_value_t = true)]
         interactive: bool,
 

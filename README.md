@@ -28,7 +28,7 @@ seamlessly integrate with the generated one.
 It works in the following way:
 
 - Everytime you add/change/fix something and want to document it, you create a
-  new changelog entry with `cargo changelog new`
+  new changelog entry with `cargo changelog add`
 - Then, when a new version is released, you run `cargo changelog generate
   <bump>` to move all unreleased changes to either the next patch/minor/major
   version
@@ -36,9 +36,9 @@ It works in the following way:
 
 Here's how they work individually:
 
-### cargo changelog new
+### cargo changelog add
 
-`cargo changelog new` generates a new changelog file in the unreleased
+`cargo changelog add` generates a new changelog file in the unreleased
 changelog directory. Per default that is `.changelogs/unreleased`.
 If interactive mode is enabled, which it is per-default, then you will be
 prompted to fill in the fields of the changelog as well as a larger free-form

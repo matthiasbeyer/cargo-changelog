@@ -56,14 +56,14 @@ fn main() -> miette::Result<()> {
     match args.command {
         Command::Init => unreachable!(), // reached above
 
-        Command::New {
+        Command::Add {
             interactive,
             edit,
             format,
             read,
             set,
             git,
-        } => crate::command::NewCommand::builder()
+        } => crate::command::AddCommand::builder()
             .interactive(interactive)
             .edit(edit)
             .format(format)

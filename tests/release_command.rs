@@ -14,7 +14,7 @@ fn release_command_works() {
     self::common::init_cargo(temp_dir.path(), "release_command_works");
     self::common::init_cargo_changelog(temp_dir.path());
 
-    self::common::cargo_changelog_new(temp_dir.path())
+    self::common::cargo_changelog_add(temp_dir.path())
         .args([
             "--format=toml",
             "--set",
@@ -62,7 +62,7 @@ fn release_command_works_for_alpha_release() {
     self::common::init_cargo(temp_dir.path(), "release_command_works_for_alpha_release");
     self::common::init_cargo_changelog(temp_dir.path());
 
-    self::common::cargo_changelog_new(temp_dir.path())
+    self::common::cargo_changelog_add(temp_dir.path())
         .args([
             "--format=toml",
             "--set",
@@ -138,7 +138,7 @@ fn release_command_works_with_suffix() {
     self::common::init_cargo(temp_dir.path(), "release_command_works_with_suffix");
     self::common::init_cargo_changelog(temp_dir.path());
 
-    self::common::cargo_changelog_new(temp_dir.path())
+    self::common::cargo_changelog_add(temp_dir.path())
         .args([
             "--format=toml",
             "--set",

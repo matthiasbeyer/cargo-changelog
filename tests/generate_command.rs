@@ -43,7 +43,7 @@ fn generate_command_moves_from_unreleased_dir() {
     self::common::init_cargo(temp_dir.path(), "cargo-changelog-testpkg-generatecommand");
     self::common::init_cargo_changelog(temp_dir.path());
 
-    self::common::cargo_changelog_new(temp_dir.path())
+    self::common::cargo_changelog_add(temp_dir.path())
         .args([
             "--format=toml",
             "--set",

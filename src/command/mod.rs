@@ -4,8 +4,8 @@ use crate::config::Configuration;
 
 mod common;
 
-mod new_command;
-pub use self::new_command::NewCommand;
+mod add_command;
+pub use self::add_command::AddCommand;
 
 mod generate_command;
 pub use self::generate_command::GenerateCommand;

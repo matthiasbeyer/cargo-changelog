@@ -9,7 +9,7 @@ mod common;
 // We create a shell script that "edits" a file by creating a file next to it with the same name +
 // ".edited".
 //
-// We set this script as EDITOR and VISUAL and then execute the "new" command. If the test sees the
+// We set this script as EDITOR and VISUAL and then execute the "add" command. If the test sees the
 // "*.edited" file, it knows that the editor was called
 //
 
@@ -18,7 +18,7 @@ touch "${1}.edited"
 "#;
 
 #[test]
-fn new_command_opens_editor() {
+fn add_command_opens_editor() {
     let temp_dir = tempfile::Builder::new()
         .prefix("cargo-changelog")
         .tempdir()
@@ -28,7 +28,7 @@ fn new_command_opens_editor() {
 
     let (script_temp_dir, editor_script_path) = {
         let temp = tempfile::Builder::new()
-            .prefix("cargo-changelog-new-editor-script-helper")
+            .prefix("cargo-changelog-add-editor-script-helper")
             .tempdir()
             .unwrap();
         let script_path = temp.path().join("editor");
@@ -71,7 +71,7 @@ fn new_command_opens_editor() {
             .into_iter(),
         )
         .args([
-            "new",
+            "add",
             "--interactive=false",
             "--format=toml",
             "--set",

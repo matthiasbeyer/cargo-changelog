@@ -39,9 +39,9 @@ pub fn cargo_changelog_cmd(dir: &std::path::Path) -> assert_cmd::Command {
     cmd
 }
 
-pub fn cargo_changelog_new(dir: &std::path::Path) -> assert_cmd::Command {
+pub fn cargo_changelog_add(dir: &std::path::Path) -> assert_cmd::Command {
     let mut cmd = cargo_changelog_cmd(dir);
-    cmd.arg("new");
+    cmd.arg("add");
     cmd.arg("--interactive");
     cmd.arg("false");
     cmd.arg("--edit");
