@@ -7,8 +7,8 @@ mod common;
 mod add_command;
 pub use self::add_command::AddCommand;
 
-mod generate_command;
-pub use self::generate_command::GenerateCommand;
+mod create_release_command;
+pub use self::create_release_command::CreateReleaseCommand;
 
 mod release_command;
 pub use self::release_command::ReleaseCommand;

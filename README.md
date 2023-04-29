@@ -29,7 +29,7 @@ It works in the following way:
 
 - Everytime you add/change/fix something and want to document it, you create a
   new changelog entry with `cargo changelog add`
-- Then, when a new version is released, you run `cargo changelog generate
+- Then, when a new version is released, you run `cargo changelog create-release
   <bump>` to move all unreleased changes to either the next patch/minor/major
   version
 - Finally, you re-generate the CHANGELOG.md file using `cargo changelog release`
@@ -44,13 +44,13 @@ If interactive mode is enabled, which it is per-default, then you will be
 prompted to fill in the fields of the changelog as well as a larger free-form
 entry where you can explain the motivation and consequences of the changes.
 
-### cargo changelog generate <bump>
+### cargo changelog create-release <bump>
 
-Once you are done with one release, `cargo-changelog generate <version>` (for
-example `cargo changelog generate minor` for the next minor version) will take
-all unreleased changelogs and move them to `/.changelogs/0.1.0` (if "0.1.0" is
-your next minor version - you can of course also specify an explicit version
-with the `generate` subcommand).
+Once you are done with one release, `cargo-changelog create-release <version>`
+(for example `cargo changelog create-release minor` for the next minor version)
+will take all unreleased changelogs and move them to `/.changelogs/0.1.0` (if
+"0.1.0" is your next minor version - you can of course also specify an explicit
+version with the `create-release` subcommand).
 
 ### cargo changelog release
 

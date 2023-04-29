@@ -29,12 +29,12 @@ fn release_command_works() {
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["generate", "minor"])
+        .args(["create-release", "minor"])
         .current_dir(&temp_dir)
         .assert()
         .success();
 
-    // call `cargo-changelog generate`
+    // call `cargo-changelog create-release`
     Command::cargo_bin("cargo-changelog")
         .unwrap()
         .args(["release"])
@@ -101,12 +101,12 @@ fn release_command_works_for_alpha_release() {
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["generate", "custom", "0.1.0-alpha.1"])
+        .args(["create-release", "custom", "0.1.0-alpha.1"])
         .current_dir(&temp_dir)
         .assert()
         .success();
 
-    // call `cargo-changelog generate`
+    // call `cargo-changelog create-release`
     Command::cargo_bin("cargo-changelog")
         .unwrap()
         .args(["release"])
@@ -190,7 +190,7 @@ fn release_command_works_with_suffix() {
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["generate", "custom", "0.1.0-alpha.1"])
+        .args(["create-release", "custom", "0.1.0-alpha.1"])
         .current_dir(&temp_dir)
         .assert()
         .success();

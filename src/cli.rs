@@ -74,7 +74,7 @@ pub enum Command {
     /// Use the current unreleased changelog fragments to generate the changelog for the next
     /// release
     #[clap(subcommand)]
-    Generate(VersionSpec),
+    CreateRelease(VersionSpec),
 
     /// Generate the changelog file from the fragments marked for release
     Release {
