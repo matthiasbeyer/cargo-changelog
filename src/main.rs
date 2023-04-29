@@ -150,5 +150,24 @@ fn init(repo_workdir_path: PathBuf) -> miette::Result<()> {
     template_file
         .sync_all()
         .map_err(Error::from)
-        .into_diagnostic()
+        .into_diagnostic()?;
+
+    let existing_changelog = repo_workdir_path.join("CHANGELOG.md");
+
+    if existing_changelog.exists() {
+        let suffix_path = repo_workdir_path
+            .join(crate::config::fragment_dir_default())
+            .join("suffix.md");
+
+        std::fs::rename(existing_changelog, &suffix_path)
+            .map_err(Error::from)
+            .into_diagnostic()?;
+
+        println!(
+            "Found an existing CHANGELOG.md, moved it to {}",
+            suffix_path.display()
+        );
+    }
+
+    Ok(())
 }

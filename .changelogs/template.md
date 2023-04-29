@@ -16,3 +16,6 @@
 {{~ /each ~}}
 {{~ /each ~}}
 {{/if}}
+{{#if this.suffix}}
+{{this.suffix}}
+{{/if}}
