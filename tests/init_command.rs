@@ -9,7 +9,7 @@ fn init_command_creates_config_file() {
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
-    let config_file_path = temp_dir.path().join(".changelog.toml");
+    let config_file_path = temp_dir.path().join("changelog.toml");
     if !config_file_path.exists() {
         panic!("Config file does not exist after `cargo-changelog init`");
     }
