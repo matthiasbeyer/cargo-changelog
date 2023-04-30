@@ -13,15 +13,44 @@ pub struct VerifyMetadataCommand {}
 
 impl crate::command::Command for VerifyMetadataCommand {
     fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), Error> {
-        let (oks, errors): (Vec<_>, Vec<VerificationError>) =
+        let (_oks, errors): (Vec<_>, Vec<VerificationError>) =
             walkdir::WalkDir::new(workdir.join(config.fragment_dir()))
                 .follow_links(false)
                 .max_open(100)
                 .same_file_system(true)
                 .into_iter()
-                .map(|rde| {
-                    rde.map_err(VerificationError::from)
-                        .and_then(|de| verify_entry(de.path()))
+                .map(|rde| -> Result<_, VerificationError> {
+                    let de = rde.map_err(VerificationError::from)?;
+                    let path = de.path();
+
+                    if crate::command::common::get_version_from_path(path)
+                        .map_err(VerificationError::from)?
+                        .is_none()
+                    {
+                        log::warn!("No version: {}", path.display());
+                    }
+
+                    std::fs::OpenOptions::new()
+                        .read(true)
+                        .create(false)
+                        .write(false)
+                        .open(path)
+                        .map_err(FragmentError::from)
+                        .map_err(|e| VerificationError::FragmentParsing(path.to_path_buf(), e))
+                        .map(BufReader::new)
+                        .and_then(|mut reader| {
+                            let fragment = Fragment::from_reader(&mut reader).map_err(|e| {
+                                VerificationError::FragmentParsing(path.to_path_buf(), e)
+                            })?;
+
+                            fragment
+                                .header_matches_config(config.header_fields())
+                                .map(|_| fragment)
+                                .map_err(|errors| VerificationError::Multiple {
+                                    fragment_path: path.to_path_buf(),
+                                    multiple: errors,
+                                })
+                        })
                 })
                 .partition_result();
 
@@ -29,50 +58,6 @@ impl crate::command::Command for VerifyMetadataCommand {
             return Err(Error::Verification(errors));
         }
 
-        let mut iter = oks.into_iter();
-        if let Some(first) = iter.next() {
-            let (_oks, errors): (Vec<_>, Vec<_>) = iter
-                .map(|elem| headers_equal(&first, elem))
-                .partition_result();
-
-            if !errors.is_empty() {
-                return Err(Error::Verification(errors));
-            }
-        }
-
         Ok(())
     }
-}
-
-fn verify_entry(entry: &std::path::Path) -> Result<Fragment, VerificationError> {
-    if crate::command::common::get_version_from_path(entry)?.is_none() {
-        log::warn!("No version: {}", entry.display());
-    }
-
-    std::fs::OpenOptions::new()
-        .read(true)
-        .create(false)
-        .write(false)
-        .open(entry)
-        .map_err(FragmentError::from)
-        .map(BufReader::new)
-        .and_then(|mut reader| Fragment::from_reader(&mut reader))
-        .map_err(|e| VerificationError::FragmentParsing(entry.to_path_buf(), e))
-}
-
-fn headers_equal(left: &Fragment, right: Fragment) -> Result<(), VerificationError> {
-    left.header()
-        .keys()
-        .map(|key| {
-            right
-                .header()
-                .keys()
-                .contains(key)
-                .then_some(())
-                .ok_or_else(|| VerificationError::HeaderLayout {
-                    right_keys: right.header().keys().cloned().collect(),
-                    left_keys: left.header().keys().cloned().collect(),
-                })
-        })
-        .collect()
 }
