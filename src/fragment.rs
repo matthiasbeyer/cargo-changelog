@@ -4,6 +4,7 @@ use std::io::Write;
 use std::path::PathBuf;
 
 use crate::error::FragmentError;
+use crate::error::VerificationError;
 use crate::format::Format;
 
 #[derive(
@@ -80,6 +81,47 @@ impl Fragment {
     #[cfg(test)]
     pub fn new(header: HashMap<String, FragmentData>, text: String) -> Self {
         Self { header, text }
+    }
+
+    pub fn header_matches_config(
+        &self,
+        header_fields: &HashMap<String, FragmentDataDesc>,
+    ) -> Result<(), Vec<VerificationError>> {
+        let mut errors = Vec::new();
+        for (header_field_key, header_field_conf) in header_fields {
+            if header_field_conf.required {
+                if let Some(header) = self.header().get(header_field_key) {
+                    match (header_field_conf.fragment_type(), header) {
+                        (
+                            FragmentDataType::Ty(FragmentDataTypeDefinite::Bool),
+                            FragmentData::Bool(_),
+                        ) => {}
+                        (
+                            FragmentDataType::Ty(FragmentDataTypeDefinite::Int),
+                            FragmentData::Int(_),
+                        ) => {}
+                        (
+                            FragmentDataType::Ty(FragmentDataTypeDefinite::Str),
+                            FragmentData::Str(_),
+                        ) => {}
+                        (FragmentDataType::OneOf(_), data) => {}
+                        (required, actual) => {
+                            errors.push(VerificationError::HeaderFieldTypesDontMatch {
+                                field_name: header_field_key.to_string(),
+                                required: required.type_name(),
+                                actual: actual.type_name(),
+                            });
+                        }
+                    }
+                } else {
+                    errors.push(VerificationError::RequiredHeaderFieldMissing(
+                        header_field_key.to_string(),
+                    ))
+                }
+            }
+        }
+
+        errors.is_empty().then_some(()).ok_or(errors)
     }
 }
 
