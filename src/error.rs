@@ -145,6 +145,37 @@ pub enum VerificationError {
 
     #[error("Error while walking directory")]
     WalkDir(#[from] walkdir::Error),
+
+    #[error("Header field '{}' missing", .0)]
+    RequiredHeaderFieldMissing(String),
+
+    #[error("Header field '{}' should have type '{}', but has '{}'", .field_name, .required, .actual)]
+    HeaderFieldTypesDontMatch {
+        field_name: String,
+        required: String,
+        actual: &'static str,
+    },
+
+    #[error("Header field '{}' should be one of {}, but has type '{}'", .field_name, .possible.join(", "), .actual)]
+    HeaderFieldTypesDontMatchOneOf {
+        field_name: String,
+        possible: Vec<String>,
+        actual: &'static str,
+    },
+
+    #[error("Header field '{}' should be one of {}, but has value '{}'", .field_name, .possible.join(", "), .actual)]
+    HeaderFieldHasNotPossibleValue {
+        field_name: String,
+        possible: Vec<String>,
+        actual: String,
+    },
+
+    #[error("Multiple verification errors in {}", .fragment_path.display())]
+    Multiple {
+        fragment_path: PathBuf,
+        #[related]
+        multiple: Vec<VerificationError>,
+    },
 }
 
 #[derive(Debug, thiserror::Error, miette::Diagnostic)]
