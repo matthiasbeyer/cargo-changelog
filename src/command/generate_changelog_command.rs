@@ -1,3 +1,4 @@
+use std::ffi::OsStr;
 use std::io::Write;
 use std::{collections::HashMap, io::BufReader, path::Path};
 
@@ -85,16 +86,21 @@ fn load_release_files(
     config: &Configuration,
     all: bool,
 ) -> impl Iterator<Item = Result<(Option<semver::Version>, Fragment), Error>> {
-    walkdir::WalkDir::new(workdir.join(config.fragment_dir()))
+    let root_path = workdir.join(config.fragment_dir());
+    walkdir::WalkDir::new(root_path.clone())
         .follow_links(false)
         .max_open(100)
         .same_file_system(true)
         .into_iter()
-        .filter_map(|rde| match rde {
+        .filter_map(move |rde| match rde {
             Err(e) => Some(Err(e)),
             Ok(de) => {
                 if de.file_type().is_file() {
-                    if de.path().ends_with("template.md") || de.path().ends_with(".gitkeep") {
+                    // Since the file itself comes from the workdir, this cannot fail?
+                    let clean_path = de.path().strip_prefix(root_path.as_path()).unwrap();
+                    if clean_path.components().count() <= 1
+                        || de.path().extension() != Some(OsStr::new("md"))
+                    {
                         None
                     } else {
                         log::debug!("Considering: {:?}", de);
