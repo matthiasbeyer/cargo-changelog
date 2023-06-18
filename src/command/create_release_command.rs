@@ -16,14 +16,14 @@ impl crate::command::Command for CreateReleaseCommand {
         config: &Configuration,
     ) -> Result<Option<std::process::ExitCode>, Error> {
         let version_string = find_version_string(workdir, &self.version)?;
-        log::debug!("Creating new directory for version '{}'", version_string);
+        tracing::debug!("Creating new directory for version '{}'", version_string);
         let release_dir = ensure_release_dir(workdir, config, &version_string)?;
         let unreleased_dir = workdir
             .join(config.fragment_dir())
             .join(crate::consts::UNRELEASED_DIR_NAME);
 
-        log::info!("Computed unrelease dir: {}", unreleased_dir.display());
-        log::info!("Computed release dir: {}", release_dir.display());
+        tracing::info!("Computed unrelease dir: {}", unreleased_dir.display());
+        tracing::info!("Computed release dir: {}", release_dir.display());
 
         let to_be_moved = std::fs::read_dir(&unreleased_dir)?
             .map(|rdirentry| rdirentry.map(|de| de.path()).map_err(Error::from))
@@ -38,7 +38,7 @@ impl crate::command::Command for CreateReleaseCommand {
                 .file_name()
                 .ok_or_else(|| Error::NotAFile(entry.to_path_buf()))?;
             let destination = release_dir.join(entry_file_name);
-            log::info!("Moving: {} -> {}", entry.display(), destination.display());
+            tracing::info!("Moving: {} -> {}", entry.display(), destination.display());
             std::fs::rename(entry, destination)?;
         }
 

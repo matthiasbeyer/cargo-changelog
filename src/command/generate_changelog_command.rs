@@ -44,13 +44,13 @@ impl crate::command::Command for GenerateChangelogCommand {
                 match err.kind() {
                     std::io::ErrorKind::NotFound => {
                         // We don't want to spam the user for something they don't use
-                        log::trace!(
+                        tracing::trace!(
                             "Did not find {}, not appending suffix",
                             suffix_path.display()
                         )
                     }
                     _ => {
-                        log::error!(
+                        tracing::error!(
                             "Could not read suffix file at {}: {err}",
                             suffix_path.display()
                         );
@@ -65,10 +65,10 @@ impl crate::command::Command for GenerateChangelogCommand {
 
         let changelog_contents =
             template.render(crate::consts::INTERNAL_TEMPLATE_NAME, &template_data)?;
-        log::debug!("Rendered successfully");
+        tracing::debug!("Rendered successfully");
 
         let changelog_file_path = workdir.join(config.changelog());
-        log::debug!(
+        tracing::debug!(
             "Writing changelog file now: {}",
             changelog_file_path.display()
         );
@@ -107,7 +107,7 @@ fn load_release_files(
                     {
                         None
                     } else {
-                        log::debug!("Considering: {:?}", de);
+                        tracing::debug!("Considering: {:?}", de);
                         Some(Ok(de))
                     }
                 } else {

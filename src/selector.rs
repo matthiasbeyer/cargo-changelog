@@ -18,7 +18,7 @@ impl<'sel> SelectorExecutor<'sel> {
     ) -> Result<Vec<PathBuf>, Error> {
         match self.selector.as_ref() {
             None | Some(Selector::Unreleased) => {
-                log::debug!("Showing unreleased");
+                tracing::debug!("Showing unreleased");
                 let unreleased_dir_path = workdir
                     .join(config.fragment_dir())
                     .join(crate::consts::UNRELEASED_DIR_NAME);
@@ -29,10 +29,10 @@ impl<'sel> SelectorExecutor<'sel> {
                     .collect::<Result<Vec<PathBuf>, Error>>()
             }
             Some(Selector::Exact { exact }) => {
-                log::debug!("Showing exact {exact}");
+                tracing::debug!("Showing exact {exact}");
                 let path = workdir.join(config.fragment_dir()).join(exact);
                 if !path.exists() {
-                    log::warn!("Version does not exist: {exact}");
+                    tracing::warn!("Version does not exist: {exact}");
                     return Ok(vec![]);
                 }
 
@@ -42,7 +42,7 @@ impl<'sel> SelectorExecutor<'sel> {
                     .collect::<Result<Vec<PathBuf>, Error>>()
             }
             Some(Selector::Range { from, until }) => {
-                log::debug!("Showing range from {from} until {until}");
+                tracing::debug!("Showing range from {from} until {until}");
                 let from = semver::Version::parse(from)?;
                 let until = semver::Version::parse(until)?;
 
@@ -50,7 +50,7 @@ impl<'sel> SelectorExecutor<'sel> {
 
                 Self::walk_dir(fragment_dir_path)
                     .filter_entry(|de| {
-                        log::debug!("Looking at {de:?}");
+                        tracing::debug!("Looking at {de:?}");
                         if de.path().is_dir() {
                             true
                         } else if de.path().is_file() {

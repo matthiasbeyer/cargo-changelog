@@ -16,7 +16,7 @@ pub fn get_version_from_path(path: &Path) -> Result<Option<semver::Version>, Ver
                 match s {
                     Err(e) => Some(Err(e)),
                     Ok(s) => {
-                        log::debug!("Parsing '{}' as semver", s);
+                        tracing::trace!("Parsing '{}' as semver", s);
                         match semver::Version::parse(s) {
                             Err(_) => None,
                             Ok(semver) => Some(Ok(semver)),

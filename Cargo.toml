@@ -18,6 +18,7 @@ maintenance = { status = "actively-developed" }
 [dependencies]
 cargo_metadata = "0.18.1"
 clap = { version = "4", features = [ "cargo", "derive", "wrap_help" ] }
+clap-verbosity-flag = { version = "3.0.2", default-features = false, features = ["tracing"] }
 clap_complete = "4.5.13"
 comma = "1.0.0"
 dialoguer = "0.11.0"
@@ -27,7 +28,6 @@ git2 = "0.19.0"
 handlebars = "4.3.6"
 is-terminal = "0.4.15"
 itertools = "0.12.1"
-log = "0.4.25"
 miette = { version = "7.5.0", features = ["fancy"] }
 semver = "1.0.23"
 serde = { version = "1", features = [ "derive" ] }
@@ -35,6 +35,8 @@ serde_json = "1"
 thiserror = "2.0.9"
 time = { version = "0.3.20", features = [ "formatting", "macros" ] }
 toml = "0.8.19"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 typed-builder = "0.20.0"
 walkdir = "2.5.0"
 yansi = "0.5.1"

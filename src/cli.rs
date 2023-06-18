@@ -25,6 +25,9 @@ pub fn get_args() -> Args {
 pub struct Args {
     #[clap(subcommand)]
     pub(crate) command: Command,
+
+    #[clap(flatten)]
+    pub(crate) verbose: clap_verbosity_flag::Verbosity,
 }
 
 #[derive(Subcommand)]

@@ -39,7 +39,7 @@ impl crate::command::Command for VerifyMetadataCommand {
 
 fn verify_entry(entry: &std::path::Path) -> Result<(), VerificationError> {
     if crate::command::common::get_version_from_path(entry)?.is_none() {
-        log::warn!("No version: {}", entry.display());
+        tracing::warn!("No version: {}", entry.display());
     }
 
     std::fs::OpenOptions::new()
