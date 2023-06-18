@@ -24,19 +24,25 @@ impl crate::command::Command for VerifyMetadataCommand {
                 Ok(de) => de.path().is_file().then(|| de.path().to_path_buf()).map(Ok),
                 Err(e) => Some(Err(e)),
             })
-            .map(|rde| -> Result<_, Error> {
-                let de = rde.map_err(VerificationError::from)?;
+            .filter_map(|rde| {
+                let de = match rde {
+                    Err(e) => return Some(Err(Error::from(VerificationError::from(e)))),
+                    Ok(de) => de,
+                };
                 let path = de.as_path();
                 log::trace!("Looking at {}", path.display());
 
-                if crate::command::common::get_version_from_path(path)
-                    .map_err(VerificationError::from)?
-                    .is_none()
+                match crate::command::common::get_version_from_path(path)
+                    .map_err(VerificationError::from)
                 {
-                    log::warn!("No version: {}", path.display());
+                    Err(e) => return Some(Err(Error::from(e))),
+                    Ok(None) => return None,
+                    Ok(_some) => {
+                        // nothing
+                    }
                 }
 
-                std::fs::OpenOptions::new()
+                let res = std::fs::OpenOptions::new()
                     .read(true)
                     .create(false)
                     .write(false)
@@ -57,7 +63,9 @@ impl crate::command::Command for VerifyMetadataCommand {
                                 multiple: errors,
                             })
                     })
-                    .map_err(|ve| Error::Verification(ve))
+                    .map_err(|ve| Error::Verification(ve));
+
+                Some(res)
             })
             .partition_result();
 
