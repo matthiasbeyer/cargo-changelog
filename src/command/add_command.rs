@@ -157,6 +157,16 @@ impl crate::command::Command for AddCommand {
                             } else {
                                 Some(Err(FragmentError::RequiredValueMissing(key.to_string())))
                             }
+                        } else if self.interactive {
+                            match ask_do_provide_data_for(key, data_desc)
+                                .map_err(FragmentError::from)
+                            {
+                                Ok(true) => interactive_provide(key, data_desc)
+                                    .map_err(FragmentError::from)
+                                    .transpose(),
+                                Ok(false) => None,
+                                Err(e) => Some(Err(e)),
+                            }
                         } else {
                             None
                         }
@@ -277,6 +287,22 @@ fn interactive_edit(
         Some(true) => Ok(Some((key.to_string(), value.clone()))),
         Some(false) => interactive_provide(key, value_desc),
     }
+}
+
+fn ask_do_provide_data_for(
+    key: &str,
+    value_desc: &FragmentDataDesc,
+) -> Result<bool, InteractiveError> {
+    let prompt = format!("Provide data for '{key}' ({type})?",
+        key = key,
+        type = value_desc.fragment_type().type_name());
+
+    dialoguer::Confirm::new()
+        .default(true)
+        .show_default(true)
+        .with_prompt(prompt)
+        .interact()
+        .map_err(InteractiveError::from)
 }
 
 /// Let the user provide a value matching the description interactively
