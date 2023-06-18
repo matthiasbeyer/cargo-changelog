@@ -78,6 +78,19 @@ pub enum Error {
 
     #[error("Verification failed")]
     Verification(#[related] Vec<VerificationError>),
+
+    #[error("Semver incompatibility found: Header field '{header_field}' of '{path}' has value '{value}'", path = .path.display())]
+    SemverError {
+        header_field: String,
+        path: PathBuf,
+        value: String,
+    },
+
+    #[error("Multiple errors")]
+    Multiple {
+        #[related]
+        errors: Vec<Error>,
+    },
 }
 
 #[derive(Debug, thiserror::Error, miette::Diagnostic)]
