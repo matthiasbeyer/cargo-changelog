@@ -13,15 +13,19 @@ pub struct VerifyMetadataCommand {}
 
 impl crate::command::Command for VerifyMetadataCommand {
     fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), Error> {
-        let (_oks, errors): (Vec<_>, Vec<VerificationError>) =
+        let (_oks, errors): (Vec<_>, Vec<Error>) =
             walkdir::WalkDir::new(workdir.join(config.fragment_dir()))
                 .follow_links(false)
                 .max_open(100)
                 .same_file_system(true)
                 .into_iter()
-                .map(|rde| -> Result<_, VerificationError> {
+                .filter_map(|rde| match rde {
+                    Ok(de) => de.path().is_file().then(|| de.path().to_path_buf()).map(Ok),
+                    Err(e) => Some(Err(e)),
+                })
+                .map(|rde| -> Result<_, Error> {
                     let de = rde.map_err(VerificationError::from)?;
-                    let path = de.path();
+                    let path = de.as_path();
 
                     if crate::command::common::get_version_from_path(path)
                         .map_err(VerificationError::from)?
@@ -51,11 +55,12 @@ impl crate::command::Command for VerifyMetadataCommand {
                                     multiple: errors,
                                 })
                         })
+                        .map_err(|ve| Error::Verification(ve))
                 })
                 .partition_result();
 
         if !errors.is_empty() {
-            return Err(Error::Verification(errors));
+            return Err(Error::Multiple { errors });
         }
 
         Ok(())
