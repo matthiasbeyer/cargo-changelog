@@ -77,7 +77,13 @@ pub enum Error {
     TextProvider(#[from] TextProviderError),
 
     #[error("Verification failed")]
-    Verification(#[related] Vec<VerificationError>),
+    Verification(#[from] VerificationError),
+
+    #[error("Multiple errors")]
+    Multiple {
+        #[related]
+        errors: Vec<Error>,
+    },
 }
 
 #[derive(Debug, thiserror::Error, miette::Diagnostic)]
