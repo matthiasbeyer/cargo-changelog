@@ -48,6 +48,23 @@ edit_format = "toml"
 # Defaults to false, because we cannot decide whether you want to signoff
 git_commit_signoff = false
 
+# Whether to check semver compatibility
+#
+# Because cargo-changelog does not know which header fields describe a
+# semver-incompatible value, you need to set `incompatible_semver_on_value` as
+# well, if you set this to `true`
+check_semver_compat = false
+
+# Mapping for detecting semver-incompatible changes
+#
+# This setting is a map from "header field name" to "value that tells
+# cargo-changelog that when releasing this changelog fragment, it should be in a
+# semver-incompatible manner"
+[incompatible_semver_on_value]
+# If we release a changelog fragment which has `type = "Bugfix"`, then this
+# fragment introduces a semver-incompatible change
+#type = ["Bugfix"]
+
 #
 # The header fields that each fragment can have
 #
