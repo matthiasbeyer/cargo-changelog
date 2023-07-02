@@ -63,7 +63,7 @@ impl crate::command::Command for VerifyMetadataCommand {
                                 multiple: errors,
                             })
                     })
-                    .map_err(|ve| Error::Verification(ve));
+                    .map_err(Error::Verification);
 
                 Some(res)
             })
