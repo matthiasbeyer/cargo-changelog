@@ -58,17 +58,16 @@ impl crate::command::Command for CreateReleaseCommand {
                     let (_oks, errors): (Vec<_>, Vec<Error>) = config
                         .incompatible_semver_on_value()
                         .iter()
-                        .filter_map(|(key, values)| match fragment.header().get(key) {
-                            Some(value) => {
-                                Some(values.contains(value).not().then_some(()).ok_or_else(|| {
+                        .filter_map(|(key, values)| {
+                            fragment.header().get(key).map(|value| {
+                                values.contains(value).not().then_some(()).ok_or_else(|| {
                                     Error::SemverError {
                                         header_field: key.to_string(),
                                         path: path.to_path_buf(),
                                         value: value.display().to_string(),
                                     }
-                                }))
-                            }
-                            None => None,
+                                })
+                            })
                         })
                         .partition_result();
 
