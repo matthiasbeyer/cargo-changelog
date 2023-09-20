@@ -5,6 +5,9 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use is_terminal::IsTerminal;
+use yansi::Paint;
+
 use crate::{
     cli::{ShowFormat, ShowRange},
     config::Configuration,
@@ -123,15 +126,26 @@ fn pretty_print(
     let out = std::io::stdout();
     let mut output = out.lock();
 
+    let is_terminal = std::io::stdout().is_terminal();
+    if !is_terminal {
+        yansi::Paint::disable()
+    }
+
     iter.try_for_each(|fragment| {
         let (path, fragment) = fragment?;
-        writeln!(output, "{}", path.display())?;
+        writeln!(output, "{}", Paint::new(path.display()).bold())?;
         fragment.header().iter().try_for_each(|(key, value)| {
-            writeln!(output, "{key}: {value}", value = value.display())?;
+            writeln!(
+                output,
+                "{key}: {value}",
+                key = Paint::new(key).italic(),
+                value = value.display()
+            )?;
             Ok(()) as Result<(), Error>
         })?;
 
         writeln!(output, "{text}", text = fragment.text())?;
+        writeln!(output)?;
         Ok(())
     })
 }

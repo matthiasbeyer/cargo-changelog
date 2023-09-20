@@ -25,6 +25,7 @@ env_logger = "0.10.0"
 getset = "0.1.2"
 git2 = "0.16.1"
 handlebars = "4.3.6"
+is-terminal = "0.4.9"
 itertools = "0.10.5"
 log = "0.4.17"
 miette = { version = "5.5.0", features = ["fancy"] }
@@ -36,6 +37,7 @@ time = { version = "0.3.20", features = [ "formatting", "macros" ] }
 toml = "0.7.3"
 typed-builder = "0.14.0"
 walkdir = "2.3.3"
+yansi = "0.5.1"
 
 [dev-dependencies]
 assert_cmd = "2.0.5"
