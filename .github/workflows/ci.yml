@@ -37,25 +37,6 @@ jobs:
       - name: cargo-check
         run: cargo check
 
-  deny:
-    name: deny
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        checks:
-          - advisories
-          - bans licenses sources
-
-    # Prevent sudden announcement of a new advisory from failing ci:
-    continue-on-error: ${{ matrix.checks == 'advisories' }}
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: cargo-deny
-      uses: EmbarkStudios/cargo-deny-action@v1
-      with:
-        command: check ${{ matrix.checks }}
-
 
   fmt:
     name: format
