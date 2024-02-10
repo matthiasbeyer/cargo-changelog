@@ -138,7 +138,7 @@ fn load_release_files(
                 .map(BufReader::new)
                 .and_then(|mut reader| {
                     Fragment::from_reader(&mut reader)
-                        .map_err(|e| Error::FragmentError(e, de.path().to_path_buf()))
+                        .map_err(|e| Error::Fragment(e, de.path().to_path_buf()))
                 });
 
             match fragment {

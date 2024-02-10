@@ -65,7 +65,7 @@ pub enum Error {
     SemVer(#[from] semver::Error),
 
     #[error("Fragment Error: {}", .1.display())]
-    FragmentError(#[source] FragmentError, PathBuf),
+    Fragment(#[source] FragmentError, PathBuf),
 
     #[error(transparent)]
     Json(#[from] serde_json::Error),
