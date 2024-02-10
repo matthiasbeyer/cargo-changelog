@@ -110,7 +110,7 @@ impl crate::command::Command for Show {
                 .and_then(|mut reader| {
                     Fragment::from_reader(&mut reader).map(|f| (path.to_path_buf(), f))
                 })
-                .map_err(|e| Error::FragmentError(e, path.to_path_buf()))
+                .map_err(|e| Error::Fragment(e, path.to_path_buf()))
         });
 
         match self.format {

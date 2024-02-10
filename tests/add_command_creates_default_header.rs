@@ -49,7 +49,6 @@ fn new_command_creates_default_header() {
     let unreleased_dir = temp_dir.path().join(".changelogs").join("unreleased");
     let fragment = std::fs::read_dir(unreleased_dir)
         .unwrap()
-        .into_iter()
         .find(|rde| match rde {
             Ok(de) => !de.path().ends_with(".gitkeep"),
             Err(_) => true,

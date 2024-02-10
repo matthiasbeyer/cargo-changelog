@@ -174,11 +174,11 @@ impl crate::command::Command for AddCommand {
                 }
             })
             .collect::<Result<HashMap<String, FragmentData>, _>>()
-            .map_err(|e| Error::FragmentError(e, new_file_path.to_path_buf()))?;
+            .map_err(|e| Error::Fragment(e, new_file_path.to_path_buf()))?;
 
         fragment
             .write_to(&mut file, self.format)
-            .map_err(|e| Error::FragmentError(e, new_file_path.to_path_buf()))?;
+            .map_err(|e| Error::Fragment(e, new_file_path.to_path_buf()))?;
         file.sync_all()?;
         drop(file);
 
