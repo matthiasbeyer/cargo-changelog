@@ -82,7 +82,6 @@ fn generate_changelog_command_works_for_alpha_release() {
 
     let new_fragment_file_path = std::fs::read_dir(unreleased_dir)
         .unwrap()
-        .into_iter()
         .find(|rde| match rde {
             Ok(de) => !de.path().ends_with(".gitkeep"),
             Err(_) => true,
@@ -161,7 +160,6 @@ fn generate_changelog_command_works_with_suffix() {
 
     let new_fragment_file_path = std::fs::read_dir(unreleased_dir)
         .unwrap()
-        .into_iter()
         .find(|rde| match rde {
             Ok(de) => !de.path().ends_with(".gitkeep"),
             Err(_) => true,
@@ -253,7 +251,6 @@ fn generate_changelog_command_works_with_suffix_with_all_flag() {
 
     let new_fragment_file_path = std::fs::read_dir(unreleased_dir)
         .unwrap()
-        .into_iter()
         .find(|rde| match rde {
             Ok(de) => !de.path().ends_with(".gitkeep"),
             Err(_) => true,

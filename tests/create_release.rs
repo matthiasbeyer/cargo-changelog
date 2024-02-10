@@ -66,7 +66,6 @@ fn create_release_command_moves_from_unreleased_dir() {
     let files_in_dir = |path: &Path| -> Vec<_> {
         std::fs::read_dir(path)
             .unwrap_or_else(|e| panic!("Should exist: {} -> {e}", path.display()))
-            .into_iter()
             .collect::<Vec<_>>()
     };
 

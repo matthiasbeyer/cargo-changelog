@@ -63,13 +63,10 @@ fn add_command_opens_editor() {
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .envs(
-            [
-                ("EDITOR", editor_script_path.display().to_string()),
-                ("VISUAL", editor_script_path.display().to_string()),
-            ]
-            .into_iter(),
-        )
+        .envs([
+            ("EDITOR", editor_script_path.display().to_string()),
+            ("VISUAL", editor_script_path.display().to_string()),
+        ])
         .args([
             "add",
             "--interactive=false",
@@ -91,7 +88,6 @@ fn add_command_opens_editor() {
     let unreleased_dir = temp_dir.path().join(".changelogs").join("unreleased");
     let files = std::fs::read_dir(unreleased_dir)
         .unwrap()
-        .into_iter()
         .filter_map(|direntry| match direntry {
             Ok(direntry) => {
                 if direntry.path().display().to_string().ends_with("edited") {

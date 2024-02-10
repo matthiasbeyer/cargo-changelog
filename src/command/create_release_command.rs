@@ -22,7 +22,6 @@ impl crate::command::Command for CreateReleaseCommand {
         log::info!("Computed release dir: {}", release_dir.display());
 
         let to_be_moved = std::fs::read_dir(&unreleased_dir)?
-            .into_iter()
             .map(|rdirentry| rdirentry.map(|de| de.path()).map_err(Error::from))
             .filter(|rpb| match rpb {
                 Ok(pb) => !pb.ends_with(".gitkeep"),

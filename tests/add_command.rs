@@ -31,7 +31,6 @@ fn add_command_creates_toml_file() {
 
     let files = std::fs::read_dir(&unreleased_dir)
         .unwrap()
-        .into_iter()
         .collect::<Vec<_>>();
     assert_eq!(
         files.len(),
@@ -143,7 +142,6 @@ fn add_command_with_text_creates_toml_with_text_from_stdin() {
 
     let fragment_file = std::fs::read_dir(temp_dir.path().join(".changelogs").join("unreleased"))
         .unwrap()
-        .into_iter()
         .find(|rde| match rde {
             Ok(de) => !de.path().ends_with(".gitkeep"),
             Err(_) => true,
@@ -211,7 +209,6 @@ fn add_command_with_text_creates_toml_with_text_from_file() {
 
     let fragment_file = std::fs::read_dir(temp_dir.path().join(".changelogs").join("unreleased"))
         .unwrap()
-        .into_iter()
         .find(|rde| match rde {
             Ok(de) => !de.path().ends_with(".gitkeep"),
             Err(_) => true,
@@ -257,7 +254,6 @@ fn add_command_creates_toml_header() {
 
     let new_fragment_file = std::fs::read_dir(unreleased_dir)
         .unwrap()
-        .into_iter()
         .find(|rde| match rde {
             Ok(de) => !de.path().ends_with(".gitkeep"),
             Err(_) => true,
