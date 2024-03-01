@@ -21,7 +21,7 @@ clap = { version = "4", features = [ "cargo", "derive", "wrap_help" ] }
 clap_complete = "4.2.1"
 comma = "1.0.0"
 dialoguer = "0.10.3"
-env_logger = "0.10.0"
+env_logger = "0.10.2"
 getset = "0.1.2"
 git2 = "0.16.1"
 handlebars = "4.3.6"
