@@ -3,7 +3,10 @@ use std::io::Read;
 use std::io::Write;
 use std::path::PathBuf;
 
+use itertools::Itertools;
+
 use crate::error::FragmentError;
+use crate::error::VerificationError;
 use crate::format::Format;
 
 #[derive(
@@ -80,6 +83,68 @@ impl Fragment {
     #[cfg(test)]
     pub fn new(header: HashMap<String, FragmentData>, text: String) -> Self {
         Self { header, text }
+    }
+
+    pub fn header_matches_config(
+        &self,
+        header_fields: &HashMap<String, FragmentDataDesc>,
+    ) -> Result<(), Vec<VerificationError>> {
+        let (_, errs): (Vec<_>, Vec<_>) = header_fields
+            .iter()
+            .map(|(header_field_key, header_field_conf)| {
+                if header_field_conf.required {
+                    if let Some(header) = self.header().get(header_field_key) {
+                        match (header_field_conf.fragment_type(), header) {
+                            (
+                                FragmentDataType::Ty(FragmentDataTypeDefinite::Bool),
+                                FragmentData::Bool(_),
+                            ) => Ok(()),
+                            (
+                                FragmentDataType::Ty(FragmentDataTypeDefinite::Int),
+                                FragmentData::Int(_),
+                            ) => Ok(()),
+                            (
+                                FragmentDataType::Ty(FragmentDataTypeDefinite::Str),
+                                FragmentData::Str(_),
+                            ) => Ok(()),
+                            (FragmentDataType::OneOf(list), FragmentData::Str(s)) => {
+                                if list.contains(s) {
+                                    Ok(())
+                                } else {
+                                    Err(VerificationError::HeaderFieldHasNotPossibleValue {
+                                        field_name: header_field_key.to_string(),
+                                        possible: list.to_vec(),
+                                        actual: s.to_string(),
+                                    })
+                                }
+                            }
+                            (FragmentDataType::OneOf(list), actual) => {
+                                Err(VerificationError::HeaderFieldTypesDontMatchOneOf {
+                                    field_name: header_field_key.to_string(),
+                                    possible: list.to_vec(),
+                                    actual: actual.type_name(),
+                                })
+                            }
+                            (required, actual) => {
+                                Err(VerificationError::HeaderFieldTypesDontMatch {
+                                    field_name: header_field_key.to_string(),
+                                    required: required.type_name(),
+                                    actual: actual.type_name(),
+                                })
+                            }
+                        }
+                    } else {
+                        Err(VerificationError::RequiredHeaderFieldMissing(
+                            header_field_key.to_string(),
+                        ))
+                    }
+                } else {
+                    Ok(())
+                }
+            })
+            .partition_result();
+
+        errs.is_empty().then_some(()).ok_or(errs)
     }
 }
 
