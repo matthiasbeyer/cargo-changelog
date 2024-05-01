@@ -36,7 +36,7 @@ thiserror = "1.0.38"
 time = { version = "0.3.20", features = [ "formatting", "macros" ] }
 toml = "0.7.3"
 typed-builder = "0.14.0"
-walkdir = "2.3.3"
+walkdir = "2.5.0"
 yansi = "0.5.1"
 
 [dev-dependencies]
