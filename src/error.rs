@@ -166,4 +166,7 @@ pub enum InteractiveError {
 
     #[error("Index error: Tried to select entry {}, but list has only {}", .0, .1)]
     IndexError(usize, usize),
+
+    #[error(transparent)]
+    Dialoguer(#[from] dialoguer::Error),
 }
