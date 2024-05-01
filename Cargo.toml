@@ -27,7 +27,7 @@ git2 = "0.16.1"
 handlebars = "4.3.6"
 is-terminal = "0.4.12"
 itertools = "0.12.1"
-log = "0.4.17"
+log = "0.4.21"
 miette = { version = "7.2.0", features = ["fancy"] }
 semver = "1.0.22"
 serde = { version = "1", features = [ "derive" ] }
