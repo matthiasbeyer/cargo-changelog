@@ -312,18 +312,19 @@ fn interactive_provide(
 ) -> Result<Option<(String, FragmentData)>, InteractiveError> {
     match desc.fragment_type() {
         FragmentDataType::Ty(FragmentDataTypeDefinite::Bool) => {
-            let mut dialoguer = Confirm::new();
-            dialoguer.with_prompt(format!("'{key}'?"));
-            if let Some(data) = desc.default_value() {
+            let dialoguer = Confirm::new().with_prompt(format!("'{key}'?"));
+            let dialoguer = if let Some(data) = desc.default_value() {
                 if let FragmentData::Bool(b) = data {
-                    dialoguer.default(*b);
+                    dialoguer.default(*b)
                 } else {
                     return Err(InteractiveError::TypeError(
                         desc.fragment_type().clone(),
                         data.clone(),
                     ));
                 }
-            }
+            } else {
+                dialoguer
+            };
 
             let value = if desc.required() {
                 dialoguer.interact().map_err(InteractiveError::from)?
@@ -338,47 +339,49 @@ fn interactive_provide(
             Ok(Some((key.to_string(), FragmentData::Bool(value))))
         }
         FragmentDataType::Ty(FragmentDataTypeDefinite::Int) => {
-            let mut dialoguer = Input::<u64>::new();
-            dialoguer.with_prompt(format!("Enter a number for '{key}'"));
+            let dialoguer = Input::<u64>::new().with_prompt(format!("Enter a number for '{key}'"));
 
-            if let Some(data) = desc.default_value() {
+            let dialoguer = if let Some(data) = desc.default_value() {
                 if let FragmentData::Int(i) = data {
-                    dialoguer.default(*i);
+                    dialoguer.default(*i)
                 } else {
                     return Err(InteractiveError::TypeError(
                         desc.fragment_type().clone(),
                         data.clone(),
                     ));
                 }
-            }
+            } else {
+                dialoguer
+            };
 
             let value = dialoguer.interact_text().map_err(InteractiveError::from)?;
             Ok(Some((key.to_string(), FragmentData::Int(value))))
         }
         FragmentDataType::Ty(FragmentDataTypeDefinite::Str) => {
-            let mut dialoguer = Input::<String>::new();
-            dialoguer.with_prompt(format!("Enter a text for '{key}'"));
+            let dialoguer = Input::<String>::new().with_prompt(format!("Enter a text for '{key}'"));
 
-            if let Some(data) = desc.default_value() {
+            let dialoguer = if let Some(data) = desc.default_value() {
                 if let FragmentData::Str(s) = data {
-                    dialoguer.default(s.to_string());
+                    dialoguer.default(s.to_string())
                 } else {
                     return Err(InteractiveError::TypeError(
                         desc.fragment_type().clone(),
                         data.clone(),
                     ));
                 }
-            }
+            } else {
+                dialoguer
+            };
 
             let value = dialoguer.interact_text().map_err(InteractiveError::from)?;
             Ok(Some((key.to_string(), FragmentData::Str(value))))
         }
         FragmentDataType::OneOf(possible_values) => {
-            let mut dialoguer = Select::new();
-            dialoguer.items(possible_values);
-            dialoguer.with_prompt("Select one");
+            let dialoguer = Select::new()
+                .items(possible_values)
+                .with_prompt("Select one");
 
-            if let Some(default_value) = desc.default_value() {
+            let dialoguer = if let Some(default_value) = desc.default_value() {
                 if let FragmentData::Str(default_value) = default_value {
                     if let Some(default_idx) = possible_values
                         .iter()
@@ -386,7 +389,9 @@ fn interactive_provide(
                         .find(|(_, elmt)| *elmt == default_value)
                         .map(|(i, _)| i)
                     {
-                        dialoguer.default(default_idx);
+                        dialoguer.default(default_idx)
+                    } else {
+                        dialoguer
                     }
                 } else {
                     return Err(InteractiveError::TypeError(
@@ -394,7 +399,9 @@ fn interactive_provide(
                         default_value.clone(),
                     ));
                 }
-            }
+            } else {
+                dialoguer
+            };
 
             let value_idx = dialoguer.interact().map_err(InteractiveError::from)?;
             let value = possible_values
