@@ -42,5 +42,5 @@ yansi = "0.5.1"
 [dev-dependencies]
 assert_cmd = "2.0.14"
 indoc = "2.0.0"
-predicates = "3.0.2"
+predicates = "3.1.0"
 tempfile = "3.8.0"
