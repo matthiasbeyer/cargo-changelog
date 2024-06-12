@@ -53,6 +53,7 @@ impl crate::command::Command for AddCommand {
 
         let mut file = std::fs::OpenOptions::new()
             .create(true)
+            .truncate(true)
             .write(true)
             .append(false)
             .open(&new_file_path)?;

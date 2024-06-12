@@ -126,6 +126,7 @@ fn init(repo_workdir_path: PathBuf) -> miette::Result<()> {
 
     let mut config_file = std::fs::OpenOptions::new()
         .create(true)
+        .truncate(true)
         .append(false)
         .write(true)
         .open(repo_workdir_path.join(crate::config::CONFIG_FILE_DEFAULT_NAME))
@@ -143,6 +144,7 @@ fn init(repo_workdir_path: PathBuf) -> miette::Result<()> {
 
     let mut template_file = std::fs::OpenOptions::new()
         .create(true)
+        .truncate(true)
         .append(false)
         .write(true)
         .open({
