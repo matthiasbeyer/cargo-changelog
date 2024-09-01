@@ -25,7 +25,7 @@ env_logger = "0.10.2"
 getset = "0.1.2"
 git2 = "0.19.0"
 handlebars = "4.3.6"
-is-terminal = "0.4.12"
+is-terminal = "0.4.13"
 itertools = "0.12.1"
 log = "0.4.21"
 miette = { version = "7.2.0", features = ["fancy"] }
