@@ -37,7 +37,7 @@ time = { version = "0.3.20", features = [ "formatting", "macros" ] }
 toml = "0.8.19"
 typed-builder = "0.20.0"
 walkdir = "2.5.0"
-yansi = "0.5.1"
+yansi = "1.0.1"
 
 [dev-dependencies]
 assert_cmd = "2.0.16"
