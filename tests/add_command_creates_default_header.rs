@@ -16,7 +16,6 @@ fn new_command_creates_default_header() {
         let config_file_path = temp_dir.path().join("changelog.toml");
         let mut file = std::fs::OpenOptions::new()
             .append(true)
-            .write(true)
             .open(config_file_path)
             .unwrap();
 
