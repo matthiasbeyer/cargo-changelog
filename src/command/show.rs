@@ -9,7 +9,7 @@ use is_terminal::IsTerminal;
 use yansi::Paint;
 
 use crate::{
-    cli::{ShowFormat, ShowRange},
+    cli::{Selector, ShowFormat},
     config::Configuration,
     error::{Error, FragmentError},
     fragment::Fragment,
@@ -18,7 +18,7 @@ use crate::{
 #[derive(Debug, typed_builder::TypedBuilder)]
 pub struct Show {
     format: Option<crate::cli::ShowFormat>,
-    range: Option<ShowRange>,
+    selector: Option<Selector>,
 }
 
 impl crate::command::Command for Show {
@@ -41,8 +41,8 @@ impl crate::command::Command for Show {
             Err(_) => true,
         };
 
-        let pathes = match self.range {
-            None | Some(ShowRange::Unreleased) => {
+        let pathes = match self.selector {
+            None | Some(Selector::Unreleased) => {
                 log::debug!("Showing unreleased");
                 let unreleased_dir_path = workdir
                     .join(config.fragment_dir())
@@ -52,7 +52,7 @@ impl crate::command::Command for Show {
                     .filter(|r| !is_gitkeep(r))
                     .collect::<Result<Vec<PathBuf>, Error>>()?
             }
-            Some(ShowRange::Exact { exact }) => {
+            Some(Selector::Exact { exact }) => {
                 log::debug!("Showing exact {exact}");
                 let path = workdir.join(config.fragment_dir()).join(&exact);
                 if !path.exists() {
@@ -63,7 +63,7 @@ impl crate::command::Command for Show {
                     .filter(|r| !is_gitkeep(r))
                     .collect::<Result<Vec<PathBuf>, Error>>()?
             }
-            Some(ShowRange::Range { from, until }) => {
+            Some(Selector::Range { from, until }) => {
                 log::debug!("Showing range from {from} until {until}");
                 let from = semver::Version::parse(&from)?;
                 let until = semver::Version::parse(&until)?;

@@ -95,9 +95,9 @@ fn main() -> miette::Result<()> {
                 .execute(&repo_workdir_path, &config)?
         }
 
-        Command::Show { format, range } => crate::command::Show::builder()
+        Command::Show { format, selector } => crate::command::Show::builder()
             .format(format)
-            .range(range)
+            .selector(selector)
             .build()
             .execute(&repo_workdir_path, &config)?,
         Command::GenerationCompletions { shell } => {

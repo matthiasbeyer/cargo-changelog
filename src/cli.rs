@@ -91,7 +91,7 @@ pub enum Command {
         #[clap(long)]
         format: Option<ShowFormat>,
         #[clap(subcommand)]
-        range: Option<ShowRange>,
+        selector: Option<Selector>,
     },
     /// Generation completions for the shell of your choice, available options:
     /// [bash, elvish, fish, powershell, zsh]
@@ -181,8 +181,13 @@ pub enum ShowFormat {
 }
 
 #[derive(Clone, Debug, Subcommand)]
-pub enum ShowRange {
+pub enum Selector {
+    /// Select unreleased changelogs
     Unreleased,
+
+    /// Select changelogs with exact version
     Exact { exact: String },
+
+    /// Select changelogs from version to version
     Range { from: String, until: String },
 }
