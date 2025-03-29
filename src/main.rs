@@ -106,7 +106,13 @@ fn main() -> miette::Result<std::process::ExitCode> {
             generate(shell, &mut cmd, "cargo-changelog", &mut io::stdout());
             None
         }
-    }
+
+        Command::Has { format, selector } => crate::command::HasCommand::builder()
+            .format(format)
+            .selector(selector)
+            .build()
+            .execute(&repo_workdir_path, &config)?,
+    };
 
     Ok(opt_exit_code.unwrap_or(std::process::ExitCode::SUCCESS))
 }

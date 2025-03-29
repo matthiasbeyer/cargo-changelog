@@ -99,6 +99,16 @@ pub enum Command {
         #[clap(value_parser)]
         shell: Shell,
     },
+
+    /// Plumbing command to check whether a certain changelog exists
+    Has {
+        /// The format to reply with.
+        #[clap(long)]
+        format: Option<HasFormat>,
+
+        #[clap(subcommand)]
+        selector: Selector,
+    },
 }
 
 fn text_provider_parser(s: &str) -> Result<TextProvider, String> {
@@ -190,4 +200,26 @@ pub enum Selector {
 
     /// Select changelogs from version to version
     Range { from: String, until: String },
+}
+
+#[derive(Clone, Debug, Default, Eq, PartialEq, Hash, clap::ValueEnum)]
+pub enum HasFormat {
+    #[default]
+    ExitCode,
+
+    /// Reply with a JSON object with metadata about the requested changelog.
+    ///
+    /// # Note
+    ///
+    /// The JSON returned by this command is printed to STDOUT.
+    /// The JSON returned by this command ALWAYS contains the following key-value pairs:
+    ///
+    /// ```json
+    /// { "cargo-changelog": { "version": "<version of cargo-changelog>" } }
+    /// ```
+    ///
+    /// # Warning
+    ///
+    /// The format is currently considered unstable.
+    Json,
 }

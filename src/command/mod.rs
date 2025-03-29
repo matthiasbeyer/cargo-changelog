@@ -20,6 +20,9 @@ pub use self::show::Show;
 mod verify_metadata_command;
 pub use self::verify_metadata_command::VerifyMetadataCommand;
 
+mod has;
+pub use self::has::HasCommand;
+
 pub trait Command {
     fn execute(
         self,
