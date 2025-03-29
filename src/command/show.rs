@@ -22,7 +22,11 @@ pub struct Show {
 }
 
 impl crate::command::Command for Show {
-    fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), Error> {
+    fn execute(
+        self,
+        workdir: &Path,
+        config: &Configuration,
+    ) -> Result<Option<std::process::ExitCode>, Error> {
         let pathes =
             crate::selector::SelectorExecutor::new(self.selector.as_ref()).run(workdir, config)?;
 
@@ -42,9 +46,11 @@ impl crate::command::Command for Show {
         });
 
         match self.format {
-            None | Some(ShowFormat::Text) => pretty_print(fragments),
-            Some(ShowFormat::Json) => json_print(fragments),
+            None | Some(ShowFormat::Text) => pretty_print(fragments)?,
+            Some(ShowFormat::Json) => json_print(fragments)?,
         }
+
+        Ok(None)
     }
 }
 

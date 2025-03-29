@@ -10,7 +10,11 @@ pub struct CreateReleaseCommand {
 }
 
 impl crate::command::Command for CreateReleaseCommand {
-    fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), Error> {
+    fn execute(
+        self,
+        workdir: &Path,
+        config: &Configuration,
+    ) -> Result<Option<std::process::ExitCode>, Error> {
         let version_string = find_version_string(workdir, &self.version)?;
         log::debug!("Creating new directory for version '{}'", version_string);
         let release_dir = ensure_release_dir(workdir, config, &version_string)?;
@@ -38,7 +42,7 @@ impl crate::command::Command for CreateReleaseCommand {
             std::fs::rename(entry, destination)?;
         }
 
-        Ok(())
+        Ok(None)
     }
 }
 

@@ -32,7 +32,11 @@ pub struct AddCommand {
 }
 
 impl crate::command::Command for AddCommand {
-    fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), Error> {
+    fn execute(
+        self,
+        workdir: &Path,
+        config: &Configuration,
+    ) -> Result<Option<std::process::ExitCode>, Error> {
         let unreleased_dir_path = ensure_fragment_dir(workdir, config)?;
 
         let new_file_path = {
@@ -235,7 +239,7 @@ impl crate::command::Command for AddCommand {
             None => {}
         }
 
-        Ok(())
+        Ok(None)
     }
 }
 

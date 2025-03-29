@@ -21,5 +21,9 @@ mod verify_metadata_command;
 pub use self::verify_metadata_command::VerifyMetadataCommand;
 
 pub trait Command {
-    fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), crate::error::Error>;
+    fn execute(
+        self,
+        workdir: &Path,
+        config: &Configuration,
+    ) -> Result<Option<std::process::ExitCode>, crate::error::Error>;
 }

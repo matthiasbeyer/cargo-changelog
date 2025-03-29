@@ -22,7 +22,11 @@ impl std::fmt::Debug for GenerateChangelogCommand {
 }
 
 impl crate::command::Command for GenerateChangelogCommand {
-    fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), Error> {
+    fn execute(
+        self,
+        workdir: &Path,
+        config: &Configuration,
+    ) -> Result<Option<std::process::ExitCode>, Error> {
         if crate::util::repo_is_dirty(&self.repository) && !self.allow_dirty {
             return Err(Error::GitRepoDirty);
         }
@@ -77,7 +81,7 @@ impl crate::command::Command for GenerateChangelogCommand {
 
         write!(changelog_file, "{changelog_contents}")?;
         changelog_file.sync_all()?;
-        Ok(())
+        Ok(None)
     }
 }
 
