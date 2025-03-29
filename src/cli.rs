@@ -91,13 +91,23 @@ pub enum Command {
         #[clap(long)]
         format: Option<ShowFormat>,
         #[clap(subcommand)]
-        range: Option<ShowRange>,
+        selector: Option<Selector>,
     },
     /// Generation completions for the shell of your choice, available options:
     /// [bash, elvish, fish, powershell, zsh]
     GenerationCompletions {
         #[clap(value_parser)]
         shell: Shell,
+    },
+
+    /// Plumbing command to check whether a certain changelog exists
+    Has {
+        /// The format to reply with.
+        #[clap(long)]
+        format: Option<HasFormat>,
+
+        #[clap(subcommand)]
+        selector: Selector,
     },
 }
 
@@ -180,9 +190,37 @@ pub enum ShowFormat {
     Json,
 }
 
-#[derive(Clone, Debug, Subcommand)]
-pub enum ShowRange {
+#[derive(Clone, Debug, Subcommand, serde::Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Selector {
+    /// Select unreleased changelogs
     Unreleased,
+
+    /// Select changelogs with exact version
     Exact { exact: String },
+
+    /// Select changelogs from version to version
     Range { from: String, until: String },
+}
+
+#[derive(Clone, Debug, Default, Eq, PartialEq, Hash, clap::ValueEnum)]
+pub enum HasFormat {
+    #[default]
+    ExitCode,
+
+    /// Reply with a JSON object with metadata about the requested changelog.
+    ///
+    /// # Note
+    ///
+    /// The JSON returned by this command is printed to STDOUT.
+    /// The JSON returned by this command ALWAYS contains the following key-value pairs:
+    ///
+    /// ```json
+    /// { "cargo-changelog": { "version": "<version of cargo-changelog>" } }
+    /// ```
+    ///
+    /// # Warning
+    ///
+    /// The format is currently considered unstable.
+    Json,
 }

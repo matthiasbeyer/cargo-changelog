@@ -13,6 +13,7 @@ mod consts;
 mod error;
 mod format;
 mod fragment;
+mod selector;
 mod template;
 mod util;
 
@@ -20,7 +21,7 @@ use crate::cli::Command;
 use crate::command::Command as _;
 use crate::error::Error;
 
-fn main() -> miette::Result<()> {
+fn main() -> miette::Result<std::process::ExitCode> {
     env_logger::try_init().into_diagnostic()?;
 
     let args = cli::get_args();
@@ -40,7 +41,7 @@ fn main() -> miette::Result<()> {
         .to_path_buf();
 
     if let Command::Init = args.command {
-        return init(repo_workdir_path);
+        return init(repo_workdir_path).map(|_| std::process::ExitCode::SUCCESS);
     }
 
     let config = crate::config::load(&repo_workdir_path)?;
@@ -57,7 +58,7 @@ fn main() -> miette::Result<()> {
             .into_diagnostic()?;
     }
 
-    match args.command {
+    let opt_exit_code = match args.command {
         Command::Init => unreachable!(), // reached above
 
         Command::Add {
@@ -95,18 +96,25 @@ fn main() -> miette::Result<()> {
                 .execute(&repo_workdir_path, &config)?
         }
 
-        Command::Show { format, range } => crate::command::Show::builder()
+        Command::Show { format, selector } => crate::command::Show::builder()
             .format(format)
-            .range(range)
+            .selector(selector)
             .build()
             .execute(&repo_workdir_path, &config)?,
         Command::GenerationCompletions { shell } => {
             let mut cmd = Args::command();
             generate(shell, &mut cmd, "cargo-changelog", &mut io::stdout());
+            None
         }
-    }
 
-    Ok(())
+        Command::Has { format, selector } => crate::command::HasCommand::builder()
+            .format(format)
+            .selector(selector)
+            .build()
+            .execute(&repo_workdir_path, &config)?,
+    };
+
+    Ok(opt_exit_code.unwrap_or(std::process::ExitCode::SUCCESS))
 }
 
 fn init(repo_workdir_path: PathBuf) -> miette::Result<()> {

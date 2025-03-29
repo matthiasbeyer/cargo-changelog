@@ -12,7 +12,11 @@ use crate::{
 pub struct VerifyMetadataCommand {}
 
 impl crate::command::Command for VerifyMetadataCommand {
-    fn execute(self, workdir: &Path, config: &Configuration) -> Result<(), Error> {
+    fn execute(
+        self,
+        workdir: &Path,
+        config: &Configuration,
+    ) -> Result<Option<std::process::ExitCode>, Error> {
         let (_oks, errors): (Vec<_>, Vec<VerificationError>) =
             walkdir::WalkDir::new(workdir.join(config.fragment_dir()))
                 .follow_links(false)
@@ -28,7 +32,7 @@ impl crate::command::Command for VerifyMetadataCommand {
         if !errors.is_empty() {
             Err(Error::Verification(errors))
         } else {
-            Ok(())
+            Ok(None)
         }
     }
 }

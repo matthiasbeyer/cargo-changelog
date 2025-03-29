@@ -58,9 +58,6 @@ pub enum Error {
     #[error("Environment variable '{0}' is not unicode")]
     EnvNotUnicode(String),
 
-    #[error("Specified version '{version}' does not exist")]
-    ExactVersionDoesNotExist { version: String },
-
     #[error(transparent)]
     SemVer(#[from] semver::Error),
 
