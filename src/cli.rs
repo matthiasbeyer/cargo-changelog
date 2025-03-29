@@ -190,7 +190,8 @@ pub enum ShowFormat {
     Json,
 }
 
-#[derive(Clone, Debug, Subcommand)]
+#[derive(Clone, Debug, Subcommand, serde::Serialize)]
+#[serde(rename_all = "lowercase")]
 pub enum Selector {
     /// Select unreleased changelogs
     Unreleased,

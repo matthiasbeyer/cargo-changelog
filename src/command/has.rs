@@ -23,7 +23,39 @@ impl crate::command::Command for HasCommand {
                     Ok(Some(std::process::ExitCode::SUCCESS))
                 }
             }
-            HasFormat::Json => todo!(),
+            HasFormat::Json => {
+                let reply = HasReply {
+                    cargo_changelog: CargoChangelogMetadata::default(),
+                    selector: self.selector.clone(),
+                    pathes,
+                };
+
+                let reply = serde_json::to_string(&reply)?;
+
+                println!("{reply}");
+                Ok(None)
+            }
+        }
+    }
+}
+
+#[derive(Debug, serde::Serialize)]
+struct HasReply {
+    #[serde(rename = "cargo-changelog")]
+    cargo_changelog: CargoChangelogMetadata,
+    selector: Selector,
+    pathes: Vec<std::path::PathBuf>,
+}
+
+#[derive(Debug, serde::Serialize)]
+struct CargoChangelogMetadata {
+    version: String,
+}
+
+impl Default for CargoChangelogMetadata {
+    fn default() -> Self {
+        Self {
+            version: env!("CARGO_PKG_VERSION").to_string(),
         }
     }
 }
