@@ -13,6 +13,7 @@ mod consts;
 mod error;
 mod format;
 mod fragment;
+mod selector;
 mod template;
 mod util;
 
