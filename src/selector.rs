@@ -32,9 +32,8 @@ impl<'sel> SelectorExecutor<'sel> {
                 log::debug!("Showing exact {exact}");
                 let path = workdir.join(config.fragment_dir()).join(exact);
                 if !path.exists() {
-                    return Err(Error::ExactVersionDoesNotExist {
-                        version: exact.to_string(),
-                    });
+                    log::warn!("Version does not exist: {exact}");
+                    return Ok(vec![]);
                 }
 
                 Self::walk_dir(path)
