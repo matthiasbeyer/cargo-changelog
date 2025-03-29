@@ -2,7 +2,7 @@ use itertools::Itertools;
 
 pub fn repo_is_dirty(repo: &git2::Repository) -> bool {
     if repo.state() != git2::RepositoryState::Clean {
-        log::trace!("Repository status is unclean: {:?}", repo.state());
+        tracing::trace!("Repository status is unclean: {:?}", repo.state());
         return true;
     }
 
@@ -12,7 +12,7 @@ pub fn repo_is_dirty(repo: &git2::Repository) -> bool {
     if status.is_empty() {
         false
     } else {
-        log::trace!(
+        tracing::trace!(
             "Repository is dirty: {}",
             status
                 .iter()

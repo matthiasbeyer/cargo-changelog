@@ -196,9 +196,9 @@ impl crate::command::Command for AddCommand {
                 .output()?;
 
             if status.success() {
-                log::info!("Successfully edited");
+                tracing::info!("Successfully edited");
             } else {
-                log::error!("Failure editing {}", new_file_path.display());
+                tracing::error!("Failure editing {}", new_file_path.display());
             }
         }
 
@@ -452,12 +452,12 @@ fn crawl_with_crawler(
         .map_err(FragmentError::from)?;
 
     if status.success() {
-        log::info!("Executed crawl successfully");
+        tracing::info!("Executed crawl successfully");
         let out = String::from_utf8(stdout)
             .map_err(|e| FragmentError::NoUtf8Output(command_str, e))?
             .trim()
             .to_string();
-        log::info!("crawled = '{}'", out);
+        tracing::info!("crawled = '{}'", out);
         let data = FragmentData::parse(&out)?;
         if expected_type.matches(&data) {
             Ok(data)

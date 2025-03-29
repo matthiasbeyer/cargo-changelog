@@ -30,7 +30,7 @@ impl crate::command::Command for Show {
         let pathes =
             crate::selector::SelectorExecutor::new(self.selector.as_ref()).run(workdir, config)?;
 
-        log::trace!("Looking at: {pathes:?}");
+        tracing::trace!("Looking at: {pathes:?}");
         let fragments = pathes.into_iter().map(|path| {
             std::fs::OpenOptions::new()
                 .read(true)

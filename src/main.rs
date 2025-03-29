@@ -5,6 +5,8 @@ use clap::CommandFactory;
 use clap_complete::generate;
 use cli::Args;
 use miette::IntoDiagnostic;
+use tracing_subscriber::layer::SubscriberExt;
+use tracing_subscriber::util::SubscriberInitExt;
 
 mod cli;
 mod command;
@@ -22,9 +24,23 @@ use crate::command::Command as _;
 use crate::error::Error;
 
 fn main() -> miette::Result<std::process::ExitCode> {
-    env_logger::try_init().into_diagnostic()?;
-
     let args = cli::get_args();
+
+    let filter = tracing_subscriber::filter::EnvFilter::builder()
+        .with_default_directive(args.verbose.tracing_level_filter().into())
+        .from_env_lossy();
+
+    let fmt_layer = tracing_subscriber::fmt::layer()
+        .with_timer(tracing_subscriber::fmt::time::uptime())
+        .with_level(true)
+        .with_file(true)
+        .with_line_number(true)
+        .pretty();
+
+    tracing_subscriber::registry()
+        .with(filter)
+        .with(fmt_layer)
+        .init();
 
     let cwd = std::env::current_dir()
         .map_err(Error::from)
