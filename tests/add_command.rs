@@ -114,6 +114,7 @@ fn add_command_with_text_creates_toml_with_text_from_stdin() {
         let path = text_temp_dir.path().join("text_file.txt");
         let mut file = std::fs::OpenOptions::new()
             .create(true)
+            .truncate(true)
             .write(true)
             .append(false)
             .open(&path)
@@ -179,6 +180,7 @@ fn add_command_with_text_creates_toml_with_text_from_file() {
         let path = text_temp_dir.path().join("text_file.txt");
         let mut file = std::fs::OpenOptions::new()
             .create(true)
+            .truncate(true)
             .write(true)
             .append(false)
             .open(&path)
@@ -291,7 +293,6 @@ fn add_command_cannot_create_nonexistent_oneof() {
         let config_file_path = temp_dir.path().join("changelog.toml");
         let mut file = std::fs::OpenOptions::new()
             .append(true)
-            .write(true)
             .open(config_file_path)
             .unwrap();
 

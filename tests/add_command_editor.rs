@@ -34,6 +34,7 @@ fn add_command_opens_editor() {
         let script_path = temp.path().join("editor");
         let mut script = std::fs::OpenOptions::new()
             .create(true)
+            .truncate(true)
             .append(false)
             .write(true)
             .open(&script_path)

@@ -90,7 +90,6 @@ fn generate_changelog_command_works_for_alpha_release() {
         .unwrap();
 
     let mut new_fragment_file = std::fs::OpenOptions::new()
-        .write(true)
         .append(true)
         .create(false)
         .open(new_fragment_file_path.path())
@@ -168,7 +167,6 @@ fn generate_changelog_command_works_with_suffix() {
         .unwrap();
 
     let mut new_fragment_file = std::fs::OpenOptions::new()
-        .write(true)
         .append(true)
         .create(false)
         .open(new_fragment_file_path.path())
@@ -185,6 +183,7 @@ fn generate_changelog_command_works_with_suffix() {
         let mut suffix_file = std::fs::OpenOptions::new()
             .write(true)
             .create(true)
+            .truncate(true)
             .open(suffix_path)
             .unwrap();
 
@@ -259,7 +258,6 @@ fn generate_changelog_command_works_with_suffix_with_all_flag() {
         .unwrap();
 
     let mut new_fragment_file = std::fs::OpenOptions::new()
-        .write(true)
         .append(true)
         .create(false)
         .open(new_fragment_file_path.path())
@@ -276,6 +274,7 @@ fn generate_changelog_command_works_with_suffix_with_all_flag() {
         let mut suffix_file = std::fs::OpenOptions::new()
             .write(true)
             .create(true)
+            .truncate(true)
             .open(suffix_path)
             .unwrap();
 
