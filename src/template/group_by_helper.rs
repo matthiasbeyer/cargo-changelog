@@ -49,7 +49,7 @@ impl HelperDef for GroupByHelper {
 
                 for (group, list) in object_list
                     .into_iter()
-                    .group_by(|elt: &serde_json::Value| {
+                    .chunk_by(|elt: &serde_json::Value| {
                         elt.get("header")
                             .and_then(|hdr| hdr.get(group_by_attr))
                             .cloned()
