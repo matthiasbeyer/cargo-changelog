@@ -62,7 +62,7 @@ fn pretty_print(
 
     let is_terminal = std::io::stdout().is_terminal();
     if !is_terminal {
-        yansi::Paint::disable()
+        yansi::disable()
     }
 
     iter.try_for_each(|fragment| {
