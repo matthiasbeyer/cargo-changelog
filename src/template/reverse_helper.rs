@@ -1,4 +1,7 @@
-use handlebars::{Context, Handlebars, Helper, HelperDef, RenderContext, RenderError, ScopedJson};
+use handlebars::{
+    Context, Handlebars, Helper, HelperDef, RenderContext, RenderError, RenderErrorReason,
+    ScopedJson,
+};
 
 use serde_json::Value;
 
@@ -8,23 +11,17 @@ pub struct ReverseHelper;
 impl HelperDef for ReverseHelper {
     fn call_inner<'reg: 'rc, 'rc>(
         &self,
-        h: &Helper<'reg, 'rc>,
+        h: &Helper<'rc>,
         _: &'reg Handlebars<'reg>,
         _: &'rc Context,
         _: &mut RenderContext<'reg, 'rc>,
-    ) -> Result<handlebars::ScopedJson<'reg, 'rc>, RenderError> {
+    ) -> Result<handlebars::ScopedJson<'rc>, RenderError> {
         match h.param(0).map(|p| p.value()) {
-            None => Err(RenderError::new(format!(
-                "Insufficient arguments, expected one, got {}",
-                h.params().len()
-            ))),
+            None => Err(RenderErrorReason::ParamNotFoundForIndex("reverse", 0).into()),
             Some(Value::Array(list)) => Ok(ScopedJson::Derived(Value::Array(
                 list.iter().cloned().rev().collect(),
             ))),
-            Some(other) => Err(RenderError::new(format!(
-                "Expected array as argument, got {}",
-                crate::template::common::json_type_name(other)
-            ))),
+            Some(_other) => Err(RenderErrorReason::InvalidParamType("array").into()),
         }
     }
 }
