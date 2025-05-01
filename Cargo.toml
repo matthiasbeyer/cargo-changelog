@@ -42,7 +42,7 @@ walkdir = "2.5.0"
 yansi = "1"
 
 [dev-dependencies]
-assert_cmd = "2.0.16"
+assert_cmd = "2.0.17"
 indoc = "2.0.0"
 predicates = "3.1.2"
 tempfile = "3.8.0"
