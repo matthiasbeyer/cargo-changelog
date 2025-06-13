@@ -6,7 +6,7 @@
 {{#each (reverse (sort_versions this.versions))}}
 ## v{{this.version}}
 
-{{#each (group_by_header this.entries "type")}}
+{{#each (group_by_header this.entries "type" default="Misc")}}
 ### {{ @key }}
 
 {{#each this ~}}

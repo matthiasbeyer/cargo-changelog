@@ -310,3 +310,49 @@ fn generate_changelog_command_works_with_suffix_with_all_flag() {
     assert!(changelog.contains("test text"));
     assert!(changelog.contains("this is the suffix part"));
 }
+
+#[test]
+fn generate_changelog_works_with_default_headers() {
+    let temp_dir = tempfile::Builder::new()
+        .prefix("cargo-changelog")
+        .tempdir()
+        .unwrap();
+    self::common::init_git(temp_dir.path());
+    self::common::init_cargo(temp_dir.path(), "generate_changelog_command_works");
+    self::common::init_cargo_changelog(temp_dir.path());
+
+    self::common::cargo_changelog_add(temp_dir.path())
+        .args([
+            "--format=toml",
+            "--set",
+            "issue=123",
+            "--set",
+            "subject='Test subject'",
+        ])
+        .assert()
+        .success();
+
+    Command::cargo_bin("cargo-changelog")
+        .unwrap()
+        .args(["create-release", "minor"])
+        .current_dir(&temp_dir)
+        .assert()
+        .success();
+
+    // call `cargo-changelog create-release`
+    Command::cargo_bin("cargo-changelog")
+        .unwrap()
+        .args(["generate-changelog"])
+        .current_dir(&temp_dir)
+        .assert()
+        .success();
+
+    let changelog_file_path = temp_dir.path().join("CHANGELOG.md");
+    if !changelog_file_path.exists() {
+        panic!("Changelog does not exist");
+    }
+
+    if !changelog_file_path.is_file() {
+        panic!("Changelog is not a file");
+    }
+}

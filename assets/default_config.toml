@@ -120,8 +120,8 @@ required = false
 
 # A header field named "type"
 # With three possible values: "Bugfix", "Feature" or "Misc"
-# which is required
+# which is optional
 [header_fields.type]
 type = [ "Bugfix", "Feature", "Misc" ]
-required = true
+required = false
 
