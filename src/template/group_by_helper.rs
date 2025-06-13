@@ -24,6 +24,16 @@ impl HelperDef for GroupByHelper {
             .as_str()
             .ok_or_else(|| RenderErrorReason::InvalidParamType("string"))?;
 
+        let unknown_group = h
+            .hash_get("default")
+            .map(|p| p.value())
+            .map(|v| {
+                v.as_str()
+                    .map(ToString::to_string)
+                    .ok_or_else(|| RenderErrorReason::InvalidParamType("string"))
+            })
+            .transpose()?;
+
         match h.param(0).map(|p| p.value()) {
             None => Err(RenderErrorReason::ParamNotFoundForIndex("group_by_header", 0).into()),
             Some(Value::Array(list)) => {
@@ -49,11 +59,12 @@ impl HelperDef for GroupByHelper {
                     .into_iter()
                 {
                     let list = list.into_iter().collect();
-                    let group = group.ok_or_else(|| {
-                        RenderErrorReason::Other(format!("Failed to group by '{group_by_attr}', not all elements in the list have that attribute! List: {list:?}"))
+                    let group = group.map(|v| v.to_string()).or_else(|| unknown_group.clone()).ok_or_else(|| {
+                        RenderErrorReason::Other(format!("Failed to group by '{group_by_attr}', not all elements in the list have that attribute,\
+                                and no default has been given! Use `group_by_header default=<name>` to set a default. List: {list:?}"))
                     })?;
 
-                    res.insert(group.to_string(), serde_json::Value::Array(list));
+                    res.insert(group, serde_json::Value::Array(list));
                 }
 
                 Ok(ScopedJson::Derived(serde_json::Value::from(res)))
