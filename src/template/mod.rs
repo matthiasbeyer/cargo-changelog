@@ -3,6 +3,7 @@ use handlebars::Handlebars;
 use crate::error::Error;
 
 mod group_by_helper;
+mod indent_helper;
 mod reverse_helper;
 mod sort_versions_helper;
 
@@ -21,5 +22,6 @@ pub fn new_handlebars(template_source: &str) -> Result<Handlebars, Error> {
         "group_by_header",
         Box::new(self::group_by_helper::GroupByHelper),
     );
+    handlebars.register_helper("indent", Box::new(self::indent_helper::IndentHelper));
     Ok(handlebars)
 }
