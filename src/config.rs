@@ -1,7 +1,7 @@
-use std::collections::HashMap;
 use std::path::Path;
 use std::path::PathBuf;
 
+use indexmap::IndexMap;
 use miette::IntoDiagnostic;
 
 use crate::error::Error;
@@ -75,7 +75,7 @@ pub struct Configuration {
     git_commit_signoff: bool,
 
     #[getset(get = "pub")]
-    header_fields: HashMap<String, FragmentDataDesc>,
+    header_fields: IndexMap<String, FragmentDataDesc>,
 }
 
 pub fn fragment_dir_default() -> PathBuf {

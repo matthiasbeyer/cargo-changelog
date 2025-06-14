@@ -52,10 +52,10 @@ will take all unreleased changelogs and move them to `/.changelogs/0.1.0` (if
 "0.1.0" is your next minor version - you can of course also specify an explicit
 version with the `create-release` subcommand).
 
-### cargo changelog generate-changelog
+### cargo changelog generate
 
 After that you can create your final `CHANGELOG.md` file using
-`cargo-changelog generate-changelog`
+`cargo-changelog generate`
 
 This will take all released changelog entries and generate a new file,
 overwriting the old.

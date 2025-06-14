@@ -49,7 +49,7 @@ fn generate_changelog_with_body_indented() {
     // call `cargo-changelog create-release`
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["generate-changelog"])
+        .args(["generate"])
         .current_dir(&temp_dir)
         .assert()
         .success();
