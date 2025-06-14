@@ -103,7 +103,7 @@ fn main() -> miette::Result<std::process::ExitCode> {
             .build()
             .execute(&repo_workdir_path, &config)?,
 
-        Command::GenerateChangelog { all, allow_dirty } => {
+        Command::Generate { all, allow_dirty } => {
             crate::command::GenerateChangelogCommand::builder()
                 .repository(repository)
                 .all(all)
