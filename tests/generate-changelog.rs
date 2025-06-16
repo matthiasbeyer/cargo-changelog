@@ -37,7 +37,7 @@ fn generate_changelog_command_works() {
     // call `cargo-changelog create-release`
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["generate-changelog"])
+        .args(["generate"])
         .current_dir(&temp_dir)
         .assert()
         .success();
@@ -110,7 +110,7 @@ fn generate_changelog_command_works_for_alpha_release() {
     // call `cargo-changelog create-release`
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["generate-changelog"])
+        .args(["generate"])
         .current_dir(&temp_dir)
         .assert()
         .success();
@@ -200,7 +200,7 @@ fn generate_changelog_command_works_with_suffix() {
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["generate-changelog"])
+        .args(["generate"])
         .current_dir(&temp_dir)
         .assert()
         .success();
@@ -291,7 +291,7 @@ fn generate_changelog_command_works_with_suffix_with_all_flag() {
 
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["generate-changelog", "--all"])
+        .args(["generate", "--all"])
         .current_dir(&temp_dir)
         .assert()
         .success();
@@ -342,7 +342,7 @@ fn generate_changelog_works_with_default_headers() {
     // call `cargo-changelog create-release`
     Command::cargo_bin("cargo-changelog")
         .unwrap()
-        .args(["generate-changelog"])
+        .args(["generate"])
         .current_dir(&temp_dir)
         .assert()
         .success();

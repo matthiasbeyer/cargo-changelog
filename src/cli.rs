@@ -81,7 +81,7 @@ pub enum Command {
     CreateRelease(VersionSpec),
 
     /// Generate the changelog file from the fragments marked for release
-    GenerateChangelog {
+    Generate {
         /// Also write "unreleased" stuff to the CHANGELOG.md file
         #[clap(long)]
         all: bool,
