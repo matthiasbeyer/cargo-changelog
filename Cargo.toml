@@ -18,7 +18,7 @@ maintenance = { status = "actively-developed" }
 [dependencies]
 cargo_metadata = "0.20.0"
 clap = { version = "4", features = [ "cargo", "derive", "wrap_help" ] }
-clap-verbosity-flag = { version = "3.0.2", default-features = false, features = ["tracing"] }
+clap-verbosity-flag = { version = "3.0.3", default-features = false, features = ["tracing"] }
 clap_complete = "4.5.54"
 comma = "1.0.0"
 dialoguer = "0.11.0"
