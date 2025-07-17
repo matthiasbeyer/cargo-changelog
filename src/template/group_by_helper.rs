@@ -54,7 +54,7 @@ impl HelperDef for GroupByHelper {
                     .into_grouping_map_by(|elt: &serde_json::Value| {
                         elt.get("header")
                             .and_then(|hdr| hdr.get(group_by_attr))
-                            .cloned()
+                            .and_then(|v| v.as_str().map(ToString::to_string))
                     })
                     .collect::<Vec<_>>()
                 {
