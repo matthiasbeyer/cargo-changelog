@@ -51,12 +51,12 @@ impl HelperDef for GroupByHelper {
 
                 for (group, list) in object_list
                     .into_iter()
-                    .chunk_by(|elt: &serde_json::Value| {
+                    .into_grouping_map_by(|elt: &serde_json::Value| {
                         elt.get("header")
                             .and_then(|hdr| hdr.get(group_by_attr))
                             .cloned()
                     })
-                    .into_iter()
+                    .collect::<Vec<_>>()
                 {
                     let list = list.into_iter().collect();
                     let group = group.map(|v| v.to_string()).or_else(|| unknown_group.clone()).ok_or_else(|| {
