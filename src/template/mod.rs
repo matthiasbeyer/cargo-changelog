@@ -7,7 +7,7 @@ mod indent_helper;
 mod reverse_helper;
 mod sort_versions_helper;
 
-pub fn new_handlebars(template_source: &str) -> Result<Handlebars, Error> {
+pub fn new_handlebars(template_source: &str) -> Result<Handlebars<'_>, Error> {
     let mut handlebars = Handlebars::new();
     handlebars.register_escape_fn(handlebars::no_escape);
     handlebars
