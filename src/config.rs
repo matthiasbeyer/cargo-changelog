@@ -74,8 +74,26 @@ pub struct Configuration {
     #[getset(get_copy = "pub")]
     git_commit_signoff: bool,
 
+    /// Check semver version compatibility when creating a release
+    ///
+    /// Default: false
+    #[getset(get_copy = "pub")]
+    #[serde(default = "false_value")]
+    check_semver_compat: bool,
+
+    /// If fragment data at one of these keys with one of these values is encountered, semver
+    /// incompatible changes are assumed
+    ///
+    /// Ignored if `check_semver_compat` is set to `false`
+    #[getset(get = "pub")]
+    incompatible_semver_on_value: HashMap<String, Vec<crate::fragment::FragmentData>>,
+
     #[getset(get = "pub")]
     header_fields: IndexMap<String, FragmentDataDesc>,
+}
+
+pub fn false_value() -> bool {
+    false
 }
 
 pub fn fragment_dir_default() -> PathBuf {
