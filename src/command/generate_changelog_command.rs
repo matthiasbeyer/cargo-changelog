@@ -170,6 +170,12 @@ pub struct VersionData {
     entries: Vec<Fragment>,
 }
 
+impl VersionData {
+    pub(crate) fn version_as_semver(&self) -> Option<semver::Version> {
+        semver::Version::parse(&self.version).ok()
+    }
+}
+
 fn generate_template_data(
     release_files: impl Iterator<Item = Result<(Option<semver::Version>, Fragment), Error>>,
     suffix: Option<String>,
