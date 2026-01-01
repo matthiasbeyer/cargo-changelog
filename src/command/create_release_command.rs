@@ -1,7 +1,14 @@
-use std::path::{Path, PathBuf};
+use std::ops::Not;
+use std::{
+    io::BufReader,
+    path::{Path, PathBuf},
+};
+
+use itertools::Itertools;
 
 use crate::{
     cli::VersionSpec, command::common::find_version_string, config::Configuration, error::Error,
+    fragment::Fragment,
 };
 
 #[derive(Debug, typed_builder::TypedBuilder)]
@@ -30,6 +37,49 @@ impl crate::command::Command for CreateReleaseCommand {
             .filter(|rpb| match rpb {
                 Ok(pb) => !pb.ends_with(".gitkeep"),
                 Err(_) => true,
+            })
+            .map(|rpath| match rpath {
+                Err(e) => Err(e),
+                Ok(path) => {
+                    if !config.check_semver_compat() {
+                        return Ok(path);
+                    }
+                    // else:
+
+                    let fragment = std::fs::OpenOptions::new()
+                        .read(true)
+                        .create(false)
+                        .write(false)
+                        .open(&path)
+                        .map_err(Error::from)
+                        .map(BufReader::new)
+                        .and_then(|mut reader| {
+                            Fragment::from_reader(&mut reader)
+                                .map_err(|e| Error::FragmentError(e, path.to_path_buf()))
+                        })?;
+
+                    let (_oks, errors): (Vec<_>, Vec<Error>) = config
+                        .incompatible_semver_on_value()
+                        .iter()
+                        .filter_map(|(key, values)| {
+                            fragment.header().get(key).map(|value| {
+                                values.contains(value).not().then_some(()).ok_or_else(|| {
+                                    Error::SemverError {
+                                        header_field: key.to_string(),
+                                        path: path.to_path_buf(),
+                                        value: value.display().to_string(),
+                                    }
+                                })
+                            })
+                        })
+                        .partition_result();
+
+                    if errors.is_empty() {
+                        Ok(path)
+                    } else {
+                        Err(Error::Multiple { errors })
+                    }
+                }
             })
             .collect::<Result<Vec<PathBuf>, _>>()?;
 
