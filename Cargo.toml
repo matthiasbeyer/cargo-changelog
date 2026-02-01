@@ -38,7 +38,7 @@ time = { version = "0.3.46", features = [ "formatting", "macros" ] }
 toml = { version = "0.9.10", features = [ "preserve_order" ] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
-typed-builder = "0.21.0"
+typed-builder = "0.23.2"
 walkdir = "2.5.0"
 yansi = "1"
 
