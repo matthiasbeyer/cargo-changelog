@@ -1,7 +1,5 @@
 use std::io::Write;
 
-use assert_cmd::Command;
-
 mod common;
 
 #[test]
@@ -27,16 +25,14 @@ fn generate_changelog_command_works() {
         .assert()
         .success();
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["create-release", "minor"])
         .current_dir(&temp_dir)
         .assert()
         .success();
 
     // call `cargo-changelog create-release`
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["generate"])
         .current_dir(&temp_dir)
         .assert()
@@ -100,16 +96,14 @@ fn generate_changelog_command_works_for_alpha_release() {
     new_fragment_file.sync_all().unwrap();
     drop(new_fragment_file);
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["create-release", "custom", "0.1.0-alpha.1"])
         .current_dir(&temp_dir)
         .assert()
         .success();
 
     // call `cargo-changelog create-release`
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["generate"])
         .current_dir(&temp_dir)
         .assert()
@@ -191,15 +185,13 @@ fn generate_changelog_command_works_with_suffix() {
         suffix_file.sync_all().unwrap();
     }
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["create-release", "custom", "0.1.0-alpha.1"])
         .current_dir(&temp_dir)
         .assert()
         .success();
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["generate"])
         .current_dir(&temp_dir)
         .assert()
@@ -282,15 +274,13 @@ fn generate_changelog_command_works_with_suffix_with_all_flag() {
         suffix_file.sync_all().unwrap();
     }
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["create-release", "custom", "0.1.0-alpha.1"])
         .current_dir(&temp_dir)
         .assert()
         .success();
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["generate", "--all"])
         .current_dir(&temp_dir)
         .assert()
@@ -332,16 +322,14 @@ fn generate_changelog_works_with_default_headers() {
         .assert()
         .success();
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["create-release", "minor"])
         .current_dir(&temp_dir)
         .assert()
         .success();
 
     // call `cargo-changelog create-release`
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["generate"])
         .current_dir(&temp_dir)
         .assert()

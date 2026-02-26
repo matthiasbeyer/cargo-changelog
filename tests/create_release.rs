@@ -1,7 +1,5 @@
 use std::path::Path;
 
-use assert_cmd::Command;
-
 mod common;
 
 #[test]
@@ -23,8 +21,7 @@ fn create_release_command_creates_new_directory() {
     }
 
     // call `cargo-changelog create-release`
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["create-release", "minor"])
         .current_dir(&temp_dir)
         .assert()
@@ -86,8 +83,7 @@ fn create_release_command_moves_from_unreleased_dir() {
     }
 
     // call `cargo-changelog create-release`
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["create-release", "minor"])
         .current_dir(&temp_dir)
         .assert()
