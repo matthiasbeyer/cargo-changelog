@@ -1,5 +1,3 @@
-use assert_cmd::Command;
-
 mod common;
 
 #[test]
@@ -10,8 +8,7 @@ fn no_configuration_file_errors() {
         .unwrap();
     self::common::init_git(temp_dir.path());
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["generate"]) // we need some subcommand, otherwise nothing happens
         .current_dir(&temp_dir)
         .assert()
@@ -26,8 +23,7 @@ fn no_configuration_file_errors_with_error_message() {
         .unwrap();
     self::common::init_git(temp_dir.path());
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["generate"]) // we need some subcommand, otherwise nothing happens
         .current_dir(&temp_dir)
         .assert()

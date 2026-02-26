@@ -1,5 +1,3 @@
-use assert_cmd::Command;
-
 mod common;
 
 #[test]
@@ -11,8 +9,7 @@ fn verify_metadata_command_succeeds_with_no_changelogs() {
     self::common::init_git(temp_dir.path());
     self::common::init_cargo_changelog(temp_dir.path());
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["verify-metadata"])
         .current_dir(&temp_dir)
         .assert()
@@ -41,8 +38,7 @@ fn verify_metadata_command_succeeds_with_empty_changelog() {
         .assert()
         .success();
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["verify-metadata"])
         .current_dir(&temp_dir)
         .assert()

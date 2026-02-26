@@ -1,5 +1,3 @@
-use assert_cmd::Command;
-
 mod common;
 
 const TEMPLATE: &str = r#"
@@ -39,16 +37,14 @@ fn generate_changelog_with_body_indented() {
         .assert()
         .success();
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["create-release", "minor"])
         .current_dir(&temp_dir)
         .assert()
         .success();
 
     // call `cargo-changelog create-release`
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["generate"])
         .current_dir(&temp_dir)
         .assert()

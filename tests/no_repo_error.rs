@@ -1,5 +1,3 @@
-use assert_cmd::Command;
-
 #[test]
 fn no_repo_errors() {
     let temp_dir = tempfile::Builder::new()
@@ -7,8 +5,7 @@ fn no_repo_errors() {
         .tempdir()
         .unwrap();
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["generate"]) // we need some subcommand, otherwise nothing happens
         .current_dir(&temp_dir)
         .assert()
@@ -22,8 +19,7 @@ fn no_repo_errors_with_no_repo_error_message() {
         .tempdir()
         .unwrap();
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .args(["generate"]) // we need some subcommand, otherwise nothing happens
         .current_dir(&temp_dir)
         .assert()

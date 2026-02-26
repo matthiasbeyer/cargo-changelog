@@ -1,7 +1,5 @@
 use std::io::Write;
 
-use assert_cmd::Command;
-
 mod common;
 
 // In this test implementation we use a trick:
@@ -62,8 +60,7 @@ fn add_command_opens_editor() {
         (temp, script_path)
     };
 
-    Command::cargo_bin("cargo-changelog")
-        .unwrap()
+    assert_cmd::cargo::cargo_bin_cmd!("cargo-changelog")
         .envs([
             ("EDITOR", editor_script_path.display().to_string()),
             ("VISUAL", editor_script_path.display().to_string()),
