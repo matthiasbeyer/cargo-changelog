@@ -1,6 +1,6 @@
 use std::ffi::OsStr;
 use std::io::Write;
-use std::{collections::HashMap, io::BufReader, path::Path};
+use std::{collections::BTreeMap, io::BufReader, path::Path};
 
 use crate::{config::Configuration, error::Error, fragment::Fragment};
 
@@ -182,7 +182,7 @@ fn generate_template_data(
 ) -> Result<TemplateData, Error> {
     let versions = {
         use itertools::Itertools;
-        let mut hm = HashMap::new();
+        let mut hm = BTreeMap::new();
         for r in release_files {
             let (version, fragment) = r?;
 
@@ -220,7 +220,7 @@ mod tests {
                     Some(semver::Version::new(0, 2, 0)),
                     Fragment::new(
                         {
-                            let mut hm = HashMap::new();
+                            let mut hm = BTreeMap::new();
                             hm.insert("issue".to_string(), FragmentData::Int(123));
                             hm
                         },
@@ -231,7 +231,7 @@ mod tests {
                     Some(semver::Version::new(0, 1, 0)),
                     Fragment::new(
                         {
-                            let mut hm = HashMap::new();
+                            let mut hm = BTreeMap::new();
                             hm.insert("issue".to_string(), FragmentData::Int(345));
                             hm
                         },
@@ -254,7 +254,7 @@ mod tests {
     #[test]
     fn default_template_renders_with_empty_data() {
         let hb = crate::template::new_handlebars(crate::consts::DEFAULT_TEMPLATE).unwrap();
-        let data: HashMap<String, Vec<String>> = HashMap::new();
+        let data: BTreeMap<String, Vec<String>> = BTreeMap::new();
         let template = hb.render(crate::consts::INTERNAL_TEMPLATE_NAME, &data);
         assert!(template.is_ok(), "Not ok: {:?}", template.unwrap_err());
         let template = template.unwrap();
@@ -268,14 +268,14 @@ mod tests {
     #[test]
     fn default_template_renders_with_one_entry() {
         let hb = crate::template::new_handlebars(crate::consts::DEFAULT_TEMPLATE).unwrap();
-        let mut data: HashMap<String, Vec<_>> = HashMap::new();
+        let mut data: BTreeMap<String, Vec<_>> = BTreeMap::new();
         data.insert(
             "versions".to_string(),
             vec![VersionData {
                 version: "0.1.0".to_string(),
                 entries: vec![Fragment::new(
                     {
-                        let mut hdr = HashMap::new();
+                        let mut hdr = BTreeMap::new();
                         hdr.insert("issue".to_string(), FragmentData::Int(123));
                         hdr.insert("type".to_string(), FragmentData::Str("Bugfix".to_string()));
                         hdr
@@ -302,14 +302,14 @@ mod tests {
     #[test]
     fn default_template_renders_with_one_entry_with_header() {
         let hb = crate::template::new_handlebars(crate::consts::DEFAULT_TEMPLATE).unwrap();
-        let mut data: HashMap<String, Vec<_>> = HashMap::new();
+        let mut data: BTreeMap<String, Vec<_>> = BTreeMap::new();
         data.insert(
             "versions".to_string(),
             vec![VersionData {
                 version: "0.1.0".to_string(),
                 entries: vec![Fragment::new(
                     {
-                        let mut hdr = HashMap::new();
+                        let mut hdr = BTreeMap::new();
                         hdr.insert("issue".to_string(), FragmentData::Int(123));
                         hdr.insert("type".to_string(), FragmentData::Str("Bugfix".to_string()));
                         hdr
@@ -331,7 +331,7 @@ mod tests {
     #[test]
     fn default_template_renders_versions_sorted() {
         let hb = crate::template::new_handlebars(crate::consts::DEFAULT_TEMPLATE).unwrap();
-        let mut data: HashMap<String, Vec<_>> = HashMap::new();
+        let mut data: BTreeMap<String, Vec<_>> = BTreeMap::new();
         data.insert(
             "versions".to_string(),
             vec![
@@ -339,7 +339,7 @@ mod tests {
                     version: "0.1.0".to_string(),
                     entries: vec![Fragment::new(
                         {
-                            let mut hdr = HashMap::new();
+                            let mut hdr = BTreeMap::new();
                             hdr.insert("issue".to_string(), FragmentData::Int(123));
                             hdr.insert("type".to_string(), FragmentData::Str("Bugfix".to_string()));
                             hdr
@@ -351,7 +351,7 @@ mod tests {
                     version: "0.2.0".to_string(),
                     entries: vec![Fragment::new(
                         {
-                            let mut hdr = HashMap::new();
+                            let mut hdr = BTreeMap::new();
                             hdr.insert("issue".to_string(), FragmentData::Int(234));
                             hdr.insert(
                                 "type".to_string(),
