@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
@@ -178,7 +178,7 @@ impl crate::command::Command for AddCommand {
                     }
                 }
             })
-            .collect::<Result<HashMap<String, FragmentData>, _>>()
+            .collect::<Result<BTreeMap<String, FragmentData>, _>>()
             .map_err(|e| Error::Fragment(e, new_file_path.to_path_buf()))?;
 
         fragment

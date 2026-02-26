@@ -1,5 +1,5 @@
 use std::{
-    collections::HashMap,
+    collections::BTreeMap,
     io::BufReader,
     io::Write,
     path::{Path, PathBuf},
@@ -85,7 +85,7 @@ fn pretty_print(
 }
 
 fn json_print(iter: impl Iterator<Item = Result<(PathBuf, Fragment), Error>>) -> Result<(), Error> {
-    let v = iter.collect::<Result<HashMap<PathBuf, Fragment>, _>>()?;
+    let v = iter.collect::<Result<BTreeMap<PathBuf, Fragment>, _>>()?;
     let out = std::io::stdout();
     let output = out.lock();
     serde_json::to_writer(output, &v).map_err(Error::from)

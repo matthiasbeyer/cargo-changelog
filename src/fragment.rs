@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::io::Read;
 use std::io::Write;
 use std::path::PathBuf;
@@ -11,7 +11,7 @@ use crate::format::Format;
 )]
 pub struct Fragment {
     #[getset(get = "pub", get_mut = "pub")]
-    header: HashMap<String, FragmentData>,
+    header: BTreeMap<String, FragmentData>,
     #[getset(get = "pub")]
     text: String,
 }
@@ -19,7 +19,7 @@ pub struct Fragment {
 impl Fragment {
     pub fn empty() -> Self {
         Fragment {
-            header: HashMap::new(),
+            header: BTreeMap::new(),
             text: String::new(),
         }
     }
@@ -52,7 +52,7 @@ impl Fragment {
 
             match format {
                 Format::Toml => {
-                    toml::from_str::<HashMap<String, FragmentData>>(&header.join("\n"))?
+                    toml::from_str::<BTreeMap<String, FragmentData>>(&header.join("\n"))?
                 }
             }
         };
@@ -78,7 +78,7 @@ impl Fragment {
     }
 
     #[cfg(test)]
-    pub fn new(header: HashMap<String, FragmentData>, text: String) -> Self {
+    pub fn new(header: BTreeMap<String, FragmentData>, text: String) -> Self {
         Self { header, text }
     }
 }
