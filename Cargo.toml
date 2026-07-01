@@ -28,7 +28,7 @@ git2 = "0.21.0"
 handlebars = "6"
 indexmap = { version = "2.14.0", features = ["serde"] }
 is-terminal = "0.4.17"
-itertools = "0.14"
+itertools = "0.15"
 miette = { version = "7.6.0", features = ["fancy"] }
 semver = "1.0.28"
 serde = { version = "1", features = [ "derive" ] }
