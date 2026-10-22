@@ -46,7 +46,7 @@ fn main() -> miette::Result<std::process::ExitCode> {
         .map_err(Error::from)
         .into_diagnostic()?;
 
-    let repository = git2::Repository::open(cwd)
+    let repository = git2::Repository::discover(cwd)
         .map_err(Error::from)
         .into_diagnostic()?;
 
